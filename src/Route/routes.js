@@ -17,6 +17,7 @@ import Login from "../pages/admin/auth/login";
 import Check from "../pages/admin/accommodation/Check/Check";
 import QuanTri from "../pages/admin/accommodation/QuanTri";
 import ManageUser from "../pages/admin/users/user-manage";
+import UserDetail from "../pages/admin/users/detail";
 
 export const routes = [{
     path: "/",
@@ -98,7 +99,17 @@ export const routes = [{
                 },
                 {
                     "path": "user",
-                    "element": <ManageUser />
+                    "children": [
+                        {
+                            "path": "",
+                            "element": <ManageUser />
+                        },
+                        {
+                            "path": "detail/:id",
+                            "element": <UserDetail />
+                        }
+                    ]
+                    
                 }
             ]
         }

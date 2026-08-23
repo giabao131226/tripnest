@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import "./user.css";
 import Pagination from "../../../Component/Pagination/pagination";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Swal from 'sweetalert2';
 
 
@@ -192,7 +192,7 @@ export default function ManageUser() {
                         <tbody>
                             {users.map((user, index) => (
                                 <tr key={user._id}>
-                                    <td>{index}</td>
+                                    <td>{index+1}</td>
                                     <td>
                                         <div className="user-info">
                                             <div className="user-avatar">
@@ -238,9 +238,11 @@ export default function ManageUser() {
 
                                     <td>
                                         <div className="user-actions">
-                                            <button title="Xem">
-                                                👁
-                                            </button>
+                                            <Link to = {`/admin/user/detail/${user._id}`} className="text-decoration-none">
+                                                <button title="Xem">
+                                                    👁
+                                                </button>
+                                            </Link>
 
                                             <button title="Chỉnh sửa">
                                                 ✏️
