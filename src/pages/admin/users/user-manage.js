@@ -12,15 +12,11 @@ export default function ManageUser() {
     const [currentPage, setCurrentPage] = useState(params.page || 1);
     const [totalPage, setTotalPage] = useState(0);
 
-    const handleBanAccount = useCallback((id) => {
+    const handleChangeStatus = useCallback((id,status) => {
         console.log("đã bấm");
-        fetch(`http://localhost:5000/admin/user/banned/${id}`, {
+        fetch(`http://localhost:5000/admin/user/change-status/${status}/${id}`, {
             method: "PATCH",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ "id": id })
+            credentials: "include"
         })
             .then(res => res.json())
             .then(data => {
@@ -39,7 +35,7 @@ export default function ManageUser() {
                         position: "top-end"
                     });
                     const newUsers = users.map((item) => {
-                        if (item._id == id) item.status = "banned";
+                        if (item._id == id) item.status = status;
                         return { ...item };
                     })
                     setUsers(newUsers);
@@ -61,7 +57,7 @@ export default function ManageUser() {
             })
     }, [])
 
-     const onPageChange = useCallback((page) => {
+    const onPageChange = useCallback((page) => {
         setCurrentPage(page);
     }, [currentPage])
 
@@ -235,9 +231,11 @@ export default function ManageUser() {
                                                 ✏️
                                             </button>
 
-                                            <button title="Khóa tài khoản" onClick={() => { handleBanAccount(user._id) }}>
+                                            {user?.status == "banned" ? <><button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id,"active") }}>
+                                                🔓
+                                            </button></> : <button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id,"banned") }}>
                                                 🔒
-                                            </button>
+                                            </button>}
                                         </div>
                                     </td>
                                 </tr>
