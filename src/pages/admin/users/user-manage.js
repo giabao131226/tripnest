@@ -61,12 +61,18 @@ export default function ManageUser() {
             })
     }, [])
 
+     const onPageChange = useCallback((page) => {
+        setCurrentPage(page);
+    }, [currentPage])
+
+
     useEffect(() => {
-        fetch("http://localhost:5000/admin/user", {
+        fetch(`http://localhost:5000/admin/user?page=${currentPage}`, {
             "credentials": "include"
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 if (data.success) {
                     setStatistic(data.statistic);
                     setUsers(data.users);
@@ -74,7 +80,7 @@ export default function ManageUser() {
                     setTotalPage(data.totalPage);
                 }
             })
-    }, [])
+    }, [currentPage])
 
     return (
         <>
@@ -245,7 +251,7 @@ export default function ManageUser() {
                         <span>
                             Hiển thị 1–10 trong {statistic.totalUser} tài khoản
                         </span>
-                        <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={function () { }} />
+                        <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={onPageChange} />
                     </div>
                 </div>
             </div>
