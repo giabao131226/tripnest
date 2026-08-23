@@ -11,9 +11,21 @@ export default function ManageUser() {
     const params = useParams();
     const [currentPage, setCurrentPage] = useState(params.page || 1);
     const [totalPage, setTotalPage] = useState(0);
+    const [filterRole,setFilterRole] = useState("");
+    const [filterStatus,setFilterStatus] = useState("");
+    const [search,setSearch] = useState("");
+
+    const handleChange = (e) => {
+        const {name,value} = e.target;
+        if(name == "role"){
+            setFilterRole(value);
+        }else if(name == "status"){
+            setFilterStatus(value);
+        }
+        setSearch(value);
+    }
 
     const handleChangeStatus = useCallback((id,status) => {
-        console.log("đã bấm");
         fetch(`http://localhost:5000/admin/user/change-status/${status}/${id}`, {
             method: "PATCH",
             credentials: "include"
@@ -63,7 +75,8 @@ export default function ManageUser() {
 
 
     useEffect(() => {
-        fetch(`http://localhost:5000/admin/user?page=${currentPage}`, {
+        console.log(search);
+        fetch(`http://localhost:5000/admin/user?page=${currentPage}&role=${filterRole}&status=${filterStatus}&search=${search}`, {
             "credentials": "include"
         })
             .then(res => res.json())
@@ -76,7 +89,7 @@ export default function ManageUser() {
                     setTotalPage(data.totalPage);
                 }
             })
-    }, [currentPage])
+    }, [currentPage,filterRole,filterStatus,search])
 
     return (
         <>
@@ -142,20 +155,22 @@ export default function ManageUser() {
                             <span>⌕</span>
                             <input
                                 type="text"
+                                name = "search"
                                 placeholder="Tìm kiếm tài khoản..."
+                                onChange={handleChange}
                             />
                         </div>
 
-                        <select>
-                            <option>Tất cả vai trò</option>
-                            <option>Khách hàng</option>
-                            <option>Chủ cơ sở</option>
+                        <select name = "role" onChange={handleChange}>
+                            <option value = "all">Tất cả vai trò</option>
+                            <option value = "user">Khách hàng</option>
+                            <option value = "owner">Chủ cơ sở</option>
                         </select>
 
-                        <select>
-                            <option>Tất cả trạng thái</option>
-                            <option>Đang hoạt động</option>
-                            <option>Bị khóa</option>
+                        <select name = "status" onChange={handleChange}>
+                            <option value = "all">Tất cả trạng thái</option>
+                            <option value= "active">Đang hoạt động</option>
+                            <option value = "banned">Bị khóa</option>
                         </select>
 
                     </div>
