@@ -75,7 +75,6 @@ export default function ManageUser() {
 
 
     useEffect(() => {
-        console.log(search);
         fetch(`http://localhost:5000/admin/user?page=${currentPage}&role=${filterRole}&status=${filterStatus}&search=${search}`, {
             "credentials": "include"
         })

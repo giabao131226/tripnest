@@ -1,0 +1,224 @@
+.edit-user {
+    min-height: 100vh;
+    padding: 30px;
+    background: #f6f8fb;
+    color: #172033;
+}
+
+.edit-user-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.edit-user-header h1 {
+    margin: 0 0 6px;
+    font-size: 27px;
+}
+
+.edit-user-header p {
+    margin: 0;
+    color: #8a94a6;
+    font-size: 14px;
+}
+
+.back-btn {
+    border: 1px solid #dfe3e8;
+    background: white;
+    color: #4b5563;
+    padding: 10px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.edit-user-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-card {
+    background: white;
+    border: 1px solid #e8ebf0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.edit-card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.edit-card-header h3 {
+    margin: 0 0 5px;
+    font-size: 16px;
+}
+
+.edit-card-header span {
+    color: #8a94a6;
+    font-size: 12px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group label {
+    color: #596273;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 7px;
+
+    padding: 0 12px;
+
+    outline: none;
+
+    color: #303846;
+    background: white;
+
+    font-size: 13px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #1677ff;
+    box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.08);
+}
+
+.upload-section {
+    padding: 22px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.upload-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.upload-group > label {
+    color: #596273;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.upload-box {
+    height: 170px;
+
+    border: 1px dashed #cbd1d9;
+    border-radius: 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    background: #fafbfc;
+    overflow: hidden;
+}
+
+.upload-box:hover {
+    border-color: #1677ff;
+    background: #f8fbff;
+}
+
+.upload-box > span {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.upload-box p {
+    margin: 0 0 10px;
+    color: #8a94a6;
+    font-size: 12px;
+}
+
+.upload-box input {
+    width: 90%;
+    font-size: 11px;
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+
+.cancel-btn,
+.save-btn {
+    padding: 11px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.cancel-btn {
+    border: 1px solid #dfe3e8;
+    background: white;
+    color: #596273;
+}
+
+.save-btn {
+    border: 1px solid #1677ff;
+    background: #1677ff;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #0958d9;
+}
+
+@media (max-width: 900px) {
+    .upload-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .edit-user {
+        padding: 20px 15px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-user-header {
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .edit-actions {
+        width: 100%;
+    }
+
+    .cancel-btn,
+    .save-btn {
+        flex: 1;
+    }
+}
