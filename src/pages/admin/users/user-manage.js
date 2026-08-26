@@ -11,21 +11,21 @@ export default function ManageUser() {
     const params = useParams();
     const [currentPage, setCurrentPage] = useState(params.page || 1);
     const [totalPage, setTotalPage] = useState(0);
-    const [filterRole,setFilterRole] = useState("");
-    const [filterStatus,setFilterStatus] = useState("");
-    const [search,setSearch] = useState("");
+    const [filterRole, setFilterRole] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
+    const [search, setSearch] = useState("");
 
     const handleChange = (e) => {
-        const {name,value} = e.target;
-        if(name == "role"){
+        const { name, value } = e.target;
+        if (name == "role") {
             setFilterRole(value);
-        }else if(name == "status"){
+        } else if (name == "status") {
             setFilterStatus(value);
         }
         setSearch(value);
     }
 
-    const handleChangeStatus = useCallback((id,status) => {
+    const handleChangeStatus = useCallback((id, status) => {
         fetch(`http://localhost:5000/admin/user/change-status/${status}/${id}`, {
             method: "PATCH",
             credentials: "include"
@@ -88,7 +88,7 @@ export default function ManageUser() {
                     setTotalPage(data.totalPage);
                 }
             })
-    }, [currentPage,filterRole,filterStatus,search])
+    }, [currentPage, filterRole, filterStatus, search])
 
     return (
         <>
@@ -154,22 +154,22 @@ export default function ManageUser() {
                             <span>⌕</span>
                             <input
                                 type="text"
-                                name = "search"
+                                name="search"
                                 placeholder="Tìm kiếm tài khoản..."
                                 onChange={handleChange}
                             />
                         </div>
 
-                        <select name = "role" onChange={handleChange}>
-                            <option value = "all">Tất cả vai trò</option>
-                            <option value = "user">Khách hàng</option>
-                            <option value = "owner">Chủ cơ sở</option>
+                        <select name="role" onChange={handleChange}>
+                            <option value="all">Tất cả vai trò</option>
+                            <option value="user">Khách hàng</option>
+                            <option value="owner">Chủ cơ sở</option>
                         </select>
 
-                        <select name = "status" onChange={handleChange}>
-                            <option value = "all">Tất cả trạng thái</option>
-                            <option value= "active">Đang hoạt động</option>
-                            <option value = "banned">Bị khóa</option>
+                        <select name="status" onChange={handleChange}>
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="active">Đang hoạt động</option>
+                            <option value="banned">Bị khóa</option>
                         </select>
 
                     </div>
@@ -191,7 +191,7 @@ export default function ManageUser() {
                         <tbody>
                             {users.map((user, index) => (
                                 <tr key={user._id}>
-                                    <td>{index+1}</td>
+                                    <td>{index + 1}</td>
                                     <td>
                                         <div className="user-info">
                                             <div className="user-avatar">
@@ -237,19 +237,20 @@ export default function ManageUser() {
 
                                     <td>
                                         <div className="user-actions">
-                                            <Link to = {`/admin/user/detail/${user._id}`} className="text-decoration-none">
+                                            <Link to={`/admin/user/detail/${user._id}`} className="text-decoration-none">
                                                 <button title="Xem">
                                                     👁
                                                 </button>
                                             </Link>
+                                            <Link to={`/admin/user/edit/${user._id}`} className="text-decoration-none">
+                                                <button title="Chỉnh sửa">
+                                                    ✏️
+                                                </button>
+                                            </Link>
 
-                                            <button title="Chỉnh sửa">
-                                                ✏️
-                                            </button>
-
-                                            {user?.status == "banned" ? <><button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id,"active") }}>
+                                            {user?.status == "banned" ? <><button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id, "active") }}>
                                                 🔓
-                                            </button></> : <button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id,"banned") }}>
+                                            </button></> : <button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id, "banned") }}>
                                                 🔒
                                             </button>}
                                         </div>
