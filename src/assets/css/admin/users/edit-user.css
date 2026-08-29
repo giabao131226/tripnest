@@ -141,6 +141,11 @@
     overflow: hidden;
 }
 
+.upload-box img{
+    width: 100%;
+    object-fit: cover;
+}
+
 .upload-box:hover {
     border-color: #1677ff;
     background: #f8fbff;

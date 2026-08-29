@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/admin/users/edit-user.css";
 import { useParams } from "react-router-dom";
+import {Image} from "antd";
 
 export default function EditUser() {
     const params = useParams();
@@ -232,7 +233,7 @@ export default function EditUser() {
                                     <label htmlFor="id_card_front">Chọn ảnh</label>
                                 </div>
                                 <div className="upload-box cursor-pointer">
-                                    {idCardFrontPreview != "" ? <img src={idCardFrontPreview}></img> : <><span>📷</span>
+                                    {idCardFrontPreview != "" ? <Image src={idCardFrontPreview}></Image> : <><span>📷</span>
                                         <p>Chọn ảnh mặt trước</p></>}
                                     <input type="file" name="id_card_front" id="id_card_front" accept="image/*" hidden onChange={handleChangeImage} />
                                 </div>
@@ -243,7 +244,7 @@ export default function EditUser() {
                                     <label htmlFor="id_card_back">Chọn ảnh</label>
                                 </div>
                                 <div className="upload-box cursor-pointer">
-                                    {idCardBackPreview != "" ? <img src={idCardBackPreview}></img> : <><span>📷</span>
+                                    {idCardBackPreview != "" ? <Image src={idCardBackPreview}></Image> : <><span>📷</span>
                                         <p>Chọn ảnh mặt sau</p></>}
                                     <input type="file" name="id_card_back" id="id_card_back" accept="image/*" hidden onChange={handleChangeImage} />
                                 </div>
@@ -254,7 +255,7 @@ export default function EditUser() {
                                     <label htmlFor="business_lisence">Chọn ảnh</label>
                                 </div>
                                 <div className="upload-box cursor-pointer">
-                                    {businessLisence != "" ? <img src={businessLisence}></img> : <>
+                                    {businessLisence != "" ? <Image src={businessLisence}></Image> : <>
                                         <span>📄</span>
                                         <p>Chọn ảnh giấy phép</p></>}
                                     <input type="file" name="business_lisence" id="business_lisence" accept="image/*" hidden onChange={handleChangeImage} />
