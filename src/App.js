@@ -7,9 +7,9 @@ import "./assets/css/style.css"
 import "./assets/css/position.css"
 
 function App() {
-  
   return (
     <>
+
       <AllRoutes />
     </>
   );

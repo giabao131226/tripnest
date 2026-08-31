@@ -21,7 +21,6 @@ export default function Login() {
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
-        console.log(data);
         fetch("http://localhost:5000/admin/auth/login",{
             method: "POST",
             credentials: "include",

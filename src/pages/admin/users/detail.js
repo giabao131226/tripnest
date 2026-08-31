@@ -70,9 +70,9 @@ export default function UserDetail() {
                     <p>Xem thông tin chi tiết người dùng</p>
                 </div>
 
-                <button className="back-btn">
+                <Link to={"/admin/user"}><button className="back-btn">
                     ← Quay lại
-                </button>
+                </button></Link>
             </div>
 
             <div className="user-profile-card">

@@ -25,6 +25,7 @@ function SignIn({ open, setCookie, handleCancel, handleOK, setAcc }) {
     const [accountSignIn, setAccountSignIn] = useState({})
     const [errors, setErrors] = useState({})
     const [api, contextHolder] = notification.useNotification();
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleChange = useCallback((e) => {
         // ẩn text-error
@@ -37,7 +38,7 @@ function SignIn({ open, setCookie, handleCancel, handleOK, setAcc }) {
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
-        fetch(`http://localhost:5000/account/sign-in`, {
+        fetch(`${apiUrl}account/sign-in`, {
             "method": "POST",
             "credentials": "include",
             "headers": {
