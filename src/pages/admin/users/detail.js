@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router-dom";
 import { Image } from "antd";
 import Swal from 'sweetalert2';
 
-
 export default function UserDetail() {
     const [detail, setDetail] = useState([]);
     const params = useParams();
@@ -78,7 +77,7 @@ export default function UserDetail() {
 
             <div className="user-profile-card">
                 <div className="user-profile">
-                    <img src={detail.avatar} className="user-avatar"></img>
+                    <img src={detail.avatar} className="user-detail-avatar"></img>
 
                     <div>
                         <h2>{detail.username}</h2>

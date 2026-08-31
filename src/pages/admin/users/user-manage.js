@@ -14,6 +14,8 @@ export default function ManageUser() {
     const [filterRole, setFilterRole] = useState("");
     const [filterStatus, setFilterStatus] = useState("");
     const [search, setSearch] = useState("");
+    const [reload,setReload] = useState(false);
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,6 +26,49 @@ export default function ManageUser() {
         }
         setSearch(value);
     }
+
+    const handleRemove = useCallback((id) => {
+        fetch(`${apiUrl}admin/user/delete/${id}`, {
+            method: "DELETE"
+        })
+            .then(async res => {
+                const data = res.json();
+                if (!res.ok) throw new Error(data.message || "Có lỗi xảy ra");
+                return data;
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "🎉 Thành công!",
+                        text: `${data.message}`,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        background: "#ffffff",
+                        color: "#333",
+                        iconColor: "#22c55e",
+                        toast: true,
+                        position: "top-end"
+                    });
+                    setReload(reload => !reload);
+                }
+            }).catch(error => {
+                Swal.fire({
+                    icon: "error",
+                    title: "❌ Có lỗi xảy ra!",
+                    text: `${error.message}`,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    background: "#ffffff",
+                    color: "#333",
+                    iconColor: "#ef4444",
+                    toast: true,
+                    position: "top-end"
+                });
+            })
+    })
 
     const handleChangeStatus = useCallback((id, status) => {
         fetch(`http://localhost:5000/admin/user/change-status/${status}/${id}`, {
@@ -67,7 +112,7 @@ export default function ManageUser() {
                     });
                 }
             })
-    }, [])
+    }, [reload,users])
 
     const onPageChange = useCallback((page) => {
         setCurrentPage(page);
@@ -75,12 +120,11 @@ export default function ManageUser() {
 
 
     useEffect(() => {
-        fetch(`http://localhost:5000/admin/user?page=${currentPage}&role=${filterRole}&status=${filterStatus}&search=${search}`, {
+        fetch(`${apiUrl}admin/user?page=${currentPage}&role=${filterRole}&status=${filterStatus}&search=${search}`, {
             "credentials": "include"
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 if (data.success) {
                     setStatistic(data.statistic);
                     setUsers(data.users);
@@ -88,7 +132,7 @@ export default function ManageUser() {
                     setTotalPage(data.totalPage);
                 }
             })
-    }, [currentPage, filterRole, filterStatus, search])
+    }, [reload,currentPage, filterRole, filterStatus, search])
 
     return (
         <>
@@ -103,9 +147,11 @@ export default function ManageUser() {
                         </p>
                     </div>
 
-                    <button className="add-user-btn">
-                        + Thêm tài khoản
-                    </button>
+                    <Link to="/admin/user/create">
+                        <button className="add-user-btn">
+                            + Thêm tài khoản
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Statistics */}
@@ -233,7 +279,7 @@ export default function ManageUser() {
                                         </span>
                                     </td>
 
-                                    <td>{user.createdAt}</td>
+                                    <td>{new Date(user.createdAt).toLocaleString("vi-VN")}</td>
 
                                     <td>
                                         <div className="user-actions">
@@ -253,6 +299,9 @@ export default function ManageUser() {
                                             </button></> : <button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id, "banned") }}>
                                                 🔒
                                             </button>}
+                                            <button title="Xoá" onClick={() => handleRemove(user._id)}>
+                                                🗑️
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

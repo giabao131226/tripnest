@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/admin/users/edit-user.css";
-import { useParams } from "react-router-dom";
 import { Image } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 
-
-export default function EditUser() {
-    const params = useParams();
+export default function CreateUser() {
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const [user, setUser] = useState({
         full_name: "",
@@ -26,6 +23,7 @@ export default function EditUser() {
     const [idCardFrontPreview, setIDCardFrontPreview] = useState("");
     const [idCardBackPreview, setIDCardBackPreview] = useState("");
     const [businessLisence, setBusinessLisence] = useState("");
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
@@ -70,18 +68,24 @@ export default function EditUser() {
             });
         }
 
-        fetch(apiUrl + `admin/user/edit/${params.id}`, {
-            method: "PATCH",
+        fetch(apiUrl + `admin/user/create`, {
+            method: "POST",
             credentials: 'include',
             body: formData
         })
-            .then(res => res.json())
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || "Có lỗi xảy ra!");
+                }
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     Swal.fire({
                         icon: "success",
                         title: "🎉 Thành công!",
-                        text: "Cập nhật thông tin người dùng thành công.",
+                        text: "Tạo mới tài khoản người dùng thành công",
                         showConfirmButton: false,
                         timer: 2000,
                         timerProgressBar: true,
@@ -91,46 +95,31 @@ export default function EditUser() {
                         toast: true,
                         position: "top-end"
                     });
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "❌ Có lỗi xảy ra!",
-                        text: data.message,
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#ef4444",
-                        toast: true,
-                        position: "top-end"
-                    });
+                    navigate("/admin/user");
                 }
+            }).catch(ex => {
+                Swal.fire({
+                    icon: "error",
+                    title: "❌ Có lỗi xảy ra!",
+                    text: `${ex.message}`,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    background: "#ffffff",
+                    color: "#333",
+                    iconColor: "#ef4444",
+                    toast: true,
+                    position: "top-end"
+                });
             })
-    },[user])
-
-    useEffect(() => {
-        fetch(apiUrl + `admin/user/detail/${params.id}`, {
-            credentials: "include"
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setUser(data.detail);
-                    setAvatarPreview(data.detail.avatar || "");
-                    if (data.detail.id_card_front) setIDCardFrontPreview(data.detail.id_card_front);
-                    if (data.detail.id_card_back) setIDCardBackPreview(data.detail.id_card_back);
-                    if (data.detail.business_lisence) setBusinessLisence(data.detail.business_lisence);
-                }
-            });
-    }, [apiUrl, params.id]);
+    }, [user])
 
     return (
         <div className="edit-user">
             <div className="edit-user-header">
                 <div>
-                    <h1>Chỉnh sửa thông tin</h1>
-                    <p>Cập nhật thông tin tài khoản người dùng</p>
+                    <h1>Tạo mới tài khoản</h1>
+                    <p>Tạo mới tài khoản người dùng</p>
                 </div>
                 <Link to={"/admin"}><button className="back-btn">← Quay lại</button></Link>
             </div>
@@ -169,11 +158,6 @@ export default function EditUser() {
                         </div>
 
                         <div className="form-group">
-                            <label>Tên đăng nhập</label>
-                            <input type="text" name="username" value={user.username || ""} onChange={handleChange} placeholder="Nhập tên đăng nhập" />
-                        </div>
-
-                        <div className="form-group">
                             <label>Email</label>
                             <input type="email" name="email" value={user.email || ""} onChange={handleChange} placeholder="Nhập email" />
                         </div>
@@ -197,6 +181,15 @@ export default function EditUser() {
                     </div>
 
                     <div className="form-grid">
+                        <div className="form-group">
+                            <label>Tên đăng nhập</label>
+                            <input type="text" name="username" onChange={handleChange} placeholder="Nhập tên đăng nhập" />
+                        </div>
+                        <div className="form-group">
+                            <label>Mật khẩu</label>
+                            <input type="password" name="password" onChange={handleChange} placeholder="Nhập tên đăng nhập" />
+                        </div>
+
                         <div className="form-group">
                             <label>Vai trò</label>
                             <select name="role" value={user.role || "client"} onChange={handleChange}>
@@ -226,12 +219,12 @@ export default function EditUser() {
                         <div className="form-grid">
                             <div className="form-group">
                                 <label>Số tài khoản</label>
-                                <input type="text" name="stk" value={user.stk || ""} onChange={handleChange} placeholder="Nhập số tài khoản" />
+                                <input type="text" name="stk" onChange={handleChange} placeholder="Nhập số tài khoản" />
                             </div>
 
                             <div className="form-group">
                                 <label>Ngân hàng</label>
-                                <select name="bank_name" value={user.bank_name || ""} onChange={handleChange}>
+                                <select name="bank_name" onChange={handleChange}>
                                     <option value="">Chọn ngân hàng</option>
                                     <option value="Vietcombank">Vietcombank</option>
                                     <option value="BIDV">BIDV</option>
@@ -244,7 +237,7 @@ export default function EditUser() {
 
                             <div className="form-group">
                                 <label>Mã số thuế</label>
-                                <input type="text" name="tax_code" value={user.tax_code || ""} onChange={handleChange} placeholder="Nhập mã số thuế" />
+                                <input type="text" name="tax_code" onChange={handleChange} placeholder="Nhập mã số thuế" />
                             </div>
                         </div>
                     </div>
@@ -302,5 +295,5 @@ export default function EditUser() {
                 </div>
             </form>
         </div>
-    );
+    )
 }
