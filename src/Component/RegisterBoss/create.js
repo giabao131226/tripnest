@@ -2,7 +2,7 @@ import { Modal, Form, Input, Select, Button, Image } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 import { useCallback, useEffect, useRef } from "react";
 import { useState } from "react";
-import "./registerboss.css"
+import "../../assets/css/client/manage-accommodation/create.css"
 import { FaInbox } from "react-icons/fa6";
 import { data, useAsyncError } from "react-router-dom";
 import Swal from 'sweetalert2'
@@ -17,6 +17,7 @@ export default function CreateAccommodation() {
     const [dataUpToSever, setDataUpToSever] = useState({});
     const [amenities, setAmenities] = useState([]);
     const [amenity, setAmenity] = useState([]);
+    const [roomCount, setRoomCount] = useState(1);
 
     const handlePreviewImage = useCallback((e) => {
         const files = e.target.files;
@@ -127,6 +128,39 @@ export default function CreateAccommodation() {
             })
     }, [dataUpToSever, amenity, imagesUpToSever])
 
+    const generateCode = () => {
+        return Math.floor(100000 + Math.random() * 900000);
+    };
+    // Xử lý room
+    const handleChangeRoomCount = useCallback((action, id) => {
+        console.log(id);
+        if (action == "add") {
+            const newRoom = dataUpToSever.rooms != undefined ? dataUpToSever.rooms : [];
+            newRoom.push({ "id-tmp": generateCode() });
+            setDataUpToSever({ ...dataUpToSever, rooms: newRoom });
+        }
+        else {
+            setDataUpToSever(prev => ({
+                ...prev,
+                rooms: prev.rooms.filter(
+                    item => (item._id || item["id-tmp"]) !== id
+                )
+            }));
+        }
+    }, [dataUpToSever])
+
+    const handleChangeDetailRoom = useCallback((e, id) => {
+        const { name, value } = e.target;
+        const rooms = dataUpToSever.rooms;
+
+        const index = rooms.findIndex(
+            item => (item._id || item["id-tmp"]) === id
+        );
+        if (index < 0) return;
+        rooms[index][name] = value;
+        setDataUpToSever({ ...dataUpToSever, "rooms": rooms });
+    }, [dataUpToSever])
+
     useEffect(() => {
         fetch("http://localhost:5000/province")
             .then(res => res.json())
@@ -141,158 +175,236 @@ export default function CreateAccommodation() {
                 }
             })
     }, [])
-
     return (
         <>
-            <div className="container-fluid text-align-start">
-                <div className="container">
-                    <form className="formCreateAccomodation d-flex flex-column" onSubmit={handleSubmit}>
-                        <h3 className="m-0">Thông Tin Cơ Bản</h3>
-                        <div className="d-flex flex-column">
-                            <label>Tên Cơ Sở Lưu Trú</label>
-                            <input type="text" name="name" onChange={handleChange} required></input>
-                        </div>
-                        <div className="d-flex flex-column">
-                            <label>Địa chỉ</label>
-
-                            <div className="d-flex gap-x-3">
-                                <div className="col-6 d-flex flex-column">
-                                    <label>Thành phố</label>
-                                    <select name="province_id" onChange={handleChangeProvince}>
-                                        <option value="province-default">--Chọn thành phố--</option>
-                                        {provinces.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)}
+            <div className="py-3"></div>
+            <div className="accommodation-page">
+                <form className="accommodation-form" onSubmit={handleSubmit}>
+                    <div className="accommodation-content">
+                        <div className="accommodation-left">
+                            <div className="form-section">
+                                <h3>Thông Tin Cơ Bản</h3>
+                                <div className="form-group">
+                                    <label>Tên Cơ Sở Lưu Trú</label>
+                                    <input type="text" name="name" onChange={handleChange} required />
+                                </div>
+                                <div className="form-group">
+                                    <label>Địa chỉ</label>
+                                    <div className="address-row">
+                                        <div className="form-group">
+                                            <label>Thành phố</label>
+                                            <select name="province_id" onChange={handleChangeProvince}>
+                                                <option value="province-default">--Chọn thành phố--</option>
+                                                {provinces.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Xã / Phường</label>
+                                            <select name="ward_id" onChange={handleChange}>
+                                                <option>--Chọn xã/phường--</option>
+                                                {wards.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group address-detail">
+                                        <label>Địa chỉ cụ thể</label>
+                                        <input onChange={handleChange} name="address" type="text" placeholder="Ví dụ: 123 Trần Duy Hưng, Cầu Giấy" required />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Loại Cơ Sở Lưu Trú</label>
+                                    <select name="category_id" onChange={handleChange}>
+                                        <option></option>
                                     </select>
                                 </div>
-
-                                <div className="col-6 d-flex flex-column">
-                                    <label>Xã / Phường</label>
-                                    <select name="ward_id" onChange={handleChange}>
-                                        <option>--Chọn xã/phường--</option>
-                                        {wards.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="d-flex flex-column">
-                                <label>Địa chỉ cụ thể</label>
-                                <input
-                                    onChange={handleChange}
-                                    name="address"
-                                    type="text"
-                                    placeholder="Ví dụ: 123 Trần Duy Hưng, Cầu Giấy"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="d-flex flex-column">
-                            <label>Loại Cơ Sở Lưu Trú</label>
-                            <select name="category_id" onChange={handleChange}>
-                                <option></option>
-                            </select>
-                        </div>
-                        <div className="d-flex flex-column">
-                            <label>Tiện Ích</label>
-                            <div className="images d-flex flex-wrap items-center justify-center">
-                                {amenities.length > 0 ?
-                                    <>
-                                        {amenities.map((item, index) =>
-
-                                            <div key={index} className="col-3 p-2">
-                                                <label className="amenity-item">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="amenity"
-                                                        value={item._id}
-                                                        onChange={handleChangeAmenity}
-                                                    />
-
-                                                    <div className="amenity-content">
-                                                        <div className="amenity-icon">
-                                                            <i className={item.icon}></i>
+                                <div className="form-group">
+                                    <label>Tiện Ích</label>
+                                    <div className="amenity-grid">
+                                        {amenities.length > 0 ? (
+                                            <>
+                                                {amenities.map((item, index) =>
+                                                    <label key={index} className="amenity-item">
+                                                        <input type="checkbox" name="amenity" value={item._id} onChange={handleChangeAmenity} />
+                                                        <div className="amenity-content">
+                                                            <div className="amenity-icon">
+                                                                <i className={item.icon}></i>
+                                                            </div>
+                                                            <span>{item.name}</span>
                                                         </div>
+                                                    </label>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="empty">
+                                                <FaInbox className="font-30" />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Mô Tả</label>
+                                    <Editor apiKey="1a2hzecrr53ypadb7v095uo5i8u7xzhzy2a0al9uyn03q53h" value={dataUpToSever.description} onEditorChange={(newValue) => setDataUpToSever({ ...dataUpToSever, "description": newValue })} />
+                                </div>
+                            </div>
+                            <div className="form-section">
+                                <div className="section-header">
+                                    <div>
+                                        <h3>Danh Sách Phòng</h3>
+                                        <span>Thêm các loại phòng của cơ sở lưu trú</span>
+                                    </div>
+                                    <button type="button" className="btn-add-room" onClick={() => { handleChangeRoomCount("add") }}>+ Thêm phòng</button>
+                                </div>
+                                <div className="room-list">
+                                    {dataUpToSever.rooms?.map((room, index) =>
+                                        <div className="room-card" key={room._id || room["id-tmp"]}>
+                                            <div className="room-header">
+                                                <div>
+                                                    <h4>Phòng {room["id-tmp"]}</h4>
+                                                    <span>Thông tin loại phòng</span>
+                                                </div>
+                                                <button type="button" className="btn-remove-room" onClick={() => { handleChangeRoomCount("delete", room._id || room["id-tmp"]) }}>× Xóa</button>
+                                            </div>
+                                            <div className="room-grid">
+                                                <div className="form-group">
+                                                    <label>Tên phòng</label>
+                                                    <input type="text" name="title" placeholder="Ví dụ: Phòng Deluxe" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Diện tích (m²)</label>
+                                                    <input type="number" name="room_size" placeholder="Ví dụ: 35" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Giá mỗi đêm (VNĐ)</label>
+                                                    <input type="number" name="price_per_night" placeholder="Ví dụ: 500000" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Số khách tối đa</label>
+                                                    <input type="number" name="max_guests" placeholder="Ví dụ: 4" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Phí vệ sinh (VNĐ)</label>
+                                                    <input type="number" name="clean_fee" placeholder="Ví dụ: 50000" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Phí dịch vụ (%)</label>
+                                                    <input type="number" name="service_fee_percent" placeholder="Ví dụ: 10" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Số phòng ngủ</label>
+                                                    <input type="number" name="beds_count" placeholder="Ví dụ: 2" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Số giường</label>
+                                                    <input type="number" name="bedrooms_count" placeholder="Ví dụ: 2" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Số phòng tắm</label>
+                                                    <input type="number" placeholder="Ví dụ: 1" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Tổng số phòng</label>
+                                                    <input type="number" placeholder="Ví dụ: 5" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Tổng số lượng phòng</label>
+                                                    <input type="number" placeholder="Ví dụ: 5" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }} />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Trạng thái</label>
+                                                    <select>
+                                                        <option value="active">Đang hoạt động</option>
+                                                        <option value="inactive">Ngừng hoạt động</option>
+                                                    </select>
+                                                </div>
+                                                <div className="form-group room-description">
+                                                    <label>Mô tả phòng</label>
+                                                    <textarea placeholder="Nhập mô tả về phòng..."></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
 
-                                                        <span>{item.name}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="accommodation-right">
+                            <div className="form-section">
+                                <div className="upload-section">
+                                    <div className="upload-header">
+                                        <label>Ảnh Về Cơ Sở Lưu Trú</label>
+                                        <label htmlFor="imageAccomodation" className="add-image-label">Thêm ảnh</label>
+                                    </div>
+                                    <input onChange={handlePreviewImage} id="imageAccomodation" type="file" name="image" accept="image/*" multiple className="hidden-input" />
+                                    <div className="image-preview-container">
+                                        {imageAccomodation.length > 0 ? (
+                                            <>
+                                                {imageAccomodation.map((item, index) =>
+                                                    <div className="image-item" key={index}>
+                                                        <Image src={item} className="image" />
+                                                        <button type="button" onClick={handleRemoveImagePreview} image-index={index}>×</button>
                                                     </div>
-                                                </label>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="empty">
+                                                <FaInbox className="font-30" />
                                             </div>
                                         )}
-                                    </> :
-                                    <>
-                                        <div className="empty d-flex items-center justify-center gap-x-3">
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="form-section">
+                                <h3>Thông Tin Xác Minh</h3>
+                                <div className="verification-group">
+                                    <div className="upload-header">
+                                        <label>Số đỏ / sổ hồng / Hợp đồng thuê / Hợp đồng uỷ quyền</label>
+                                        <label htmlFor="lisence" className="add-image-label">Thêm ảnh</label>
+                                    </div>
+                                    <input id="lisence" onChange={handlePreviewImage} type="file" name="lisence" accept="image/*" className="hidden-input" />
+                                    {imagePreviewLisence ? (
+                                        <div className="license-preview">
+                                            <Image src={imagePreviewLisence} />
+                                        </div>
+                                    ) : (
+                                        <div className="empty verification-empty">
                                             <FaInbox className="font-30" />
                                         </div>
-                                    </>}
+                                    )}
+                                </div>
+                            </div>
+                            <div className="verification-note">
+                                <strong>Lưu ý</strong>
+                                <p>Vui lòng cung cấp hình ảnh giấy tờ rõ nét, đầy đủ thông tin để quá trình xác minh được thực hiện nhanh chóng.</p>
                             </div>
                         </div>
-                        <div className="d-flex flex-column">
-                            <label>Mô Tả</label>
-                            <Editor
-                                apiKey="1a2hzecrr53ypadb7v095uo5i8u7xzhzy2a0al9uyn03q53h"
-                                value={dataUpToSever.description}
-                                onEditorChange={(newValue) => setDataUpToSever({ ...dataUpToSever, "description": newValue })}
-                            />
-                        </div>
-                        <div className="d-flex flex-column">
-                            <label>Giá</label>
-                            <input type="text" name="price" onChange={handleChange}></input>
-                        </div>
-                        <div className="d-flex flex-column">
-                            <div className="d-flex justify-between">
-                                <label>Ảnh Về Cơ Sở Lưu Trú</label>
-                                <label htmlFor="imageAccomodation" className="cursor-pointer">Thêm ảnh</label>
-                            </div>
-                            <input
-                                onChange={handlePreviewImage}
-                                id="imageAccomodation" type="file"
-                                name="image" accept="image/*"
-                                multiple
-                                className="d-none">
-                            </input>
-                            <div className="images d-flex flex-wrap items-center gap-x-3">
-                                {imageAccomodation.length > 0 ?
-                                    <>
-                                        {imageAccomodation.map((item, index) =>
-                                            <div className="vien" key={index}>
-                                                <Image width={150} src={item} className="image" />
-                                                <button
-
-                                                    className="font-bold"
-                                                    type="button"
-                                                    onClick={handleRemoveImagePreview}
-                                                    image-index={index}
-                                                >x</button>
-                                            </div>
-                                        )}
-                                    </> :
-                                    <>
-                                        <div className="empty d-flex items-center justify-center gap-x-3">
-                                            <FaInbox className="font-30" />
-                                        </div>
-                                    </>}
-                            </div>
-                        </div>
-                        <h3 className="m-0">Thông Tin Xác Minh</h3>
-                        <div className="d-flex flex-column">
-                            <div className="d-flex items-center justify-between">
-                                <label>Số đỏ / sổ hồng / Hợp đồng thuê / Hợp đồng uỷ quyền</label>
-                                <label htmlFor="lisence" className="cursor-pointer">Thêm ảnh</label>
-                            </div>
-                            <input
-                                id="lisence"
-                                onChange={handlePreviewImage}
-                                type="file"
-                                name="lisence"
-                                accept="image/*"
-                                className="d-none">
-                            </input>
-                            {imagePreviewLisence ? <Image src={imagePreviewLisence} /> : <></>}
-                        </div>
-                        <div className="buttons d-flex items-center gap-x-2">
-                            <button className="btn btn-save" type="submit">Lưu</button>
-                            <button className="btn btn-request">Yêu Cầu Xác Minh</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div className="form-buttons">
+                        <button className="btn-save" type="submit">Lưu</button>
+                        <button className="btn-request" type="button">Yêu Cầu Xác Minh</button>
+                    </div>
+                </form>
             </div>
         </>
     )
