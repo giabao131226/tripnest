@@ -17,7 +17,8 @@ export default function CreateAccommodation() {
     const [dataUpToSever, setDataUpToSever] = useState({});
     const [amenities, setAmenities] = useState([]);
     const [amenity, setAmenity] = useState([]);
-    const [roomCount, setRoomCount] = useState(1);
+    const [categories,setCategories] = useState([]);
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handlePreviewImage = useCallback((e) => {
         const files = e.target.files;
@@ -85,7 +86,9 @@ export default function CreateAccommodation() {
 
         const formData = new FormData();
         Object.keys(dataUpToSever).forEach((item) => {
-            formData.append(item, dataUpToSever[item]);
+            if(item === "rooms"){
+                formData.append(item,JSON.stringify(dataUpToSever[item]));
+            }else formData.append(item, dataUpToSever[item]);
         })
         formData.append("amenity", JSON.stringify(amenity));
 
@@ -98,13 +101,15 @@ export default function CreateAccommodation() {
                 formData.append("images", item);
             })
         }
-        fetch("http://localhost:5000/bds/save", {
+        console.log("đã fetch");
+        fetch(`${apiUrl}bds/save`, {
             method: "POST",
             credentials: "include",
             body: formData
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 if (data.success) {
                     Swal.fire({
                         icon: "success",
@@ -133,7 +138,6 @@ export default function CreateAccommodation() {
     };
     // Xử lý room
     const handleChangeRoomCount = useCallback((action, id) => {
-        console.log(id);
         if (action == "add") {
             const newRoom = dataUpToSever.rooms != undefined ? dataUpToSever.rooms : [];
             newRoom.push({ "id-tmp": generateCode() });
@@ -162,17 +166,27 @@ export default function CreateAccommodation() {
     }, [dataUpToSever])
 
     useEffect(() => {
-        fetch("http://localhost:5000/province")
+        fetch(`${apiUrl}province`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) setProvinces(data.data);
             })
-        fetch("http://localhost:5000/amenity")
+        fetch(`${apiUrl}amenity`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     setAmenities(data.amenities);
                 }
+            })
+        fetch(`${apiUrl}categories`)
+            .then(async res => {
+                const data = res.json();
+                if(!res.ok) throw new Error(data.message);
+                return data;
+            }).then(data => {
+                if(data.success) setCategories(data.categories);
+            }).catch(ex => {
+                console.log(ex);
             })
     }, [])
     return (
@@ -214,7 +228,8 @@ export default function CreateAccommodation() {
                                 <div className="form-group">
                                     <label>Loại Cơ Sở Lưu Trú</label>
                                     <select name="category_id" onChange={handleChange}>
-                                        <option></option>
+                                        <option>--Lựa chọn loại cơ sở lưu trú--</option>
+                                        {categories.length > 0 ? categories.map((item) => <option key = {item._id} value={item._id}>{item.title}</option>) :<></>}
                                     </select>
                                 </div>
                                 <div className="form-group">
@@ -333,14 +348,26 @@ export default function CreateAccommodation() {
                                                 </div>
                                                 <div className="form-group">
                                                     <label>Trạng thái</label>
-                                                    <select>
+                                                    <select name="status" onChange={(e) => {
+                                                        handleChangeDetailRoom(e, (room._id ? room._id : room["id-tmp"]))
+                                                    }}>
                                                         <option value="active">Đang hoạt động</option>
                                                         <option value="inactive">Ngừng hoạt động</option>
                                                     </select>
                                                 </div>
                                                 <div className="form-group room-description">
                                                     <label>Mô tả phòng</label>
-                                                    <textarea placeholder="Nhập mô tả về phòng..."></textarea>
+                                                    <Editor 
+                                                        apiKey="1a2hzecrr53ypadb7v095uo5i8u7xzhzy2a0al9uyn03q53h" 
+                                                        value={room.description} 
+                                                        onEditorChange={(newValue) => {
+                                                            const id = room._id ? room._id : room["id-tmp"];
+                                                            const index = dataUpToSever.rooms.findIndex((item) => item[room._id ? "_id" : "id-tmp"] == id);
+                                                            if(index <0) return;
+                                                            const newRoom = dataUpToSever.rooms;
+                                                            newRoom[index].description = newValue;
+                                                            setDataUpToSever({...dataUpToSever,"rooms": newRoom});
+                                                        }} />
                                                 </div>
                                             </div>
                                         </div>
