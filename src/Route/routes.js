@@ -20,6 +20,8 @@ import ManageUser from "../pages/admin/users/user-manage";
 import UserDetail from "../pages/admin/users/detail";
 import EditUser from "../pages/admin/users/edit";
 import CreateUser from "../pages/admin/users/create";
+import ProtectedLayoutHost from "../layouts/host/protected/protected-layout";
+import LayoutDefaultHost from "../layouts/host/default/default";
 
 export const routes = [{
     path: "/",
@@ -130,6 +132,26 @@ export const routes = [{
         {
             path: "login",
             element: <Login />
+        }
+    ]
+},
+{
+    path: "/host",
+    children: [
+        {
+            path: "",
+            element: <ProtectedLayoutHost />,
+            children: [
+                {
+                    path: "",
+                    element: <LayoutDefaultHost />,
+                    children: [
+                        {
+                            path: "accommodations"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

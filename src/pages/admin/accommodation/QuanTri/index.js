@@ -7,12 +7,25 @@ import "./index.css"
 import { IoMdTime } from "react-icons/io";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaToggleOff } from "react-icons/fa6";
+import { FaSearch } from "react-icons/fa";
+import useSelection from "antd/es/table/hooks/useSelection";
+import { useSelector } from "react-redux";
 
 export default function QuanTri() {
 
+    const user = useSelector(state => state.authAdmin);
     const [accommodations, setAccommodations] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
+    const [search,setSearch] = useState("");
+    const [category,setCategory] = useState("");
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
+
+    const handleChangeTool = useCallback((e) => {
+        const {name,value} = e.target;
+        if(name == "search") setSearch(value);
+        else setCategory(value);
+    },[])
 
     const getAccommodationAtt = useCallback((att) => {
         if (att === "active") {
@@ -35,7 +48,7 @@ export default function QuanTri() {
     }, [currentPage])
 
     useEffect(() => {
-        fetch(`http://localhost:5000/admin/accommodation/all?page=${currentPage}`, {
+        fetch(`${apiUrl}admin/accommodation/all?page=${currentPage}&search=${search}&category=${category}`, {
             "credentials": "include"
         })
             .then(res => res.json())
@@ -46,106 +59,125 @@ export default function QuanTri() {
                     setAccommodations(data.accommodations);
                 }
             })
-    }, [currentPage])
+    }, [currentPage,search])
 
     return (
         <>
-            <div className="container-fluid text-align-start">
-                <div className="container">
-
-                    <div className="accommodation-dashboard">
-                        <p>Số liệu</p>
-                        <hr></hr>
-                        <div className="d-flex items-center justify-between">
-                            <div className="accommodation-card col-3">
-                                <div className="active">
-                                    <FaCheck />
-                                </div>
-                                <div className="d-flex flex-column solieu">
-                                    <span>100</span>
-                                    <span>Đang Hoạt Động</span>
+            <div className="accommodation-manage container-fluid">
+                <div className="main">
+                    <div className="accommodation-overview">
+                        <div className="overview-header">
+                            <div>
+                                <p className="overview-title">Thông Tin Tổng Quan</p>
+                                <p className="overview-description">Tổng quan tình trạng các cơ sở lưu trú</p>
+                            </div>
+                        </div>
+                        <div className="overview-cards">
+                            <div className="overview-card">
+                                <div className="overview-icon active"><FaCheck /></div>
+                                <div className="overview-info">
+                                    <span className="overview-number">100</span>
+                                    <span className="overview-label">Đang Hoạt Động</span>
                                 </div>
                             </div>
-                            <div className="accommodation-card col-3">
-                                <div className="inactive">
-                                    <FaToggleOff />
-                                </div>
-                                <div className="d-flex flex-column solieu">
-                                    <span>100</span>
-
-                                    <span>Không Hoạt Động</span>
+                            <div className="overview-card">
+                                <div className="overview-icon inactive"><FaToggleOff /></div>
+                                <div className="overview-info">
+                                    <span className="overview-number">100</span>
+                                    <span className="overview-label">Không Hoạt Động</span>
                                 </div>
                             </div>
-                            <div className="accommodation-card col-3">
-                                <div className="pending">
-                                    <IoMdTime />
-                                </div>
-                                <div className="d-flex flex-column solieu">
-                                    <span>100</span>
-
-                                    <span>Chờ Kiểm Duyệt</span>
+                            <div className="overview-card">
+                                <div className="overview-icon pending"><IoMdTime /></div>
+                                <div className="overview-info">
+                                    <span className="overview-number">100</span>
+                                    <span className="overview-label">Chờ Kiểm Duyệt</span>
                                 </div>
                             </div>
-                            <div className="accommodation-card col-3">
-                                <div className="denided">
-                                    <FaTimesCircle />
-                                </div>
-                                <div className="d-flex flex-column">
-                                    <span>100</span>
-
-                                    <span>Bị Từ Chối</span>
+                            <div className="overview-card">
+                                <div className="overview-icon denied"><FaTimesCircle /></div>
+                                <div className="overview-info">
+                                    <span className="overview-number">100</span>
+                                    <span className="overview-label">Bị Từ Chối</span>
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
-                    <table className="accommodation-table">
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Tên Cơ Sở Lưu Trú</th>
-                                <th>Chủ Cơ Sở</th>
-                                <th>Trạng thái</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {accommodations.map((item, index) => (
-                                <tr key={item._id || index}>
-                                    <td>{index + 1}</td>
-
-                                    <td>{item.name}</td>
-
-                                    <td>{item.ownerId?.username}</td>
-
-                                    <td>
-                                        {getAccommodationAtt(item.status)}
-                                    </td>
-
-                                    <td className="accommodation-actions">
-                                        <button className="accommodation-btn accommodation-btn-view">
-                                            <FaHotel />
-                                        </button>
-
-                                        <button className="accommodation-btn accommodation-btn-flag">
-                                            <FaFlag />
-                                        </button>
-
-                                        <button className="accommodation-btn accommodation-btn-delete">
-                                            <MdDelete />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    <Pagination crcurrentPage={currentPage} totalPage={totalPage} onPageChange={onPageChange} />
+                    <div className="accommodation-list">
+                        <div className="list-header">
+                            <div className="d-flex items-center gap-x-3">
+                                <div>
+                                    <p className="list-title">Danh Sách Cơ Sở Lưu Trú</p>
+                                    <p className="list-description">Quản lý và theo dõi các cơ sở lưu trú</p>
+                                </div>
+                                <div className="list-total">
+                                    <span>Tổng số</span>
+                                    <strong>{accommodations.length}</strong>
+                                </div>
+                            </div>
+                            <div className="tool">
+                                <div className="tool-search d-flex items-center gap-x-3">
+                                    <FaSearch />
+                                    <input 
+                                    placeholder="Tìm theo tên, địa chỉ.."
+                                    name="search"
+                                    onChange={handleChangeTool}
+                                    ></input>
+                                </div>
+                                <select name="category" onChange={handleChangeTool}>
+                                    <option value={"all"}>Tất cả loại hình</option>
+                                </select>
+                                {user.role == "owner" ? <button>+ Thêm Mới Cơ Sở Lưu Trú</button> : <></>}
+                            </div>
+                        </div>
+                        <div className="table-wrapper">
+                            <table className="accommodation-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên Cơ Sở Lưu Trú</th>
+                                        <th>Loại hình</th>
+                                        <th>Chủ Cơ Sở</th>
+                                        <th>Trạng Thái</th>
+                                        <th className="action-column">Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {accommodations.map((item, index) => (
+                                        <tr key={item._id || index}>
+                                            <td>
+                                                <div className="accommodation-name">
+                                                    <div className="accommodation-name-icon"><FaHotel /></div>
+                                                    <span>{item.name}</span>
+                                                </div>
+                                            </td>
+                                            <td>{item.category_id ? item.category_id.title : "Chưa Cập Nhật"}</td>
+                                            <td>
+                                                <div className="owner-info">
+                                                    <div className="owner-avatar">{item.ownerId?.username?.charAt(0)?.toUpperCase()}</div>
+                                                    <span>{item.ownerId?.username || "Chưa cập nhật"}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="status-wrapper">{getAccommodationAtt(item.status)}</div>
+                                            </td>
+                                            <td>
+                                                <div className="accommodation-actions">
+                                                    <button type="button" className="accommodation-btn accommodation-btn-view" title="Xem chi tiết"><FaHotel /></button>
+                                                    <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaFlag /></button>
+                                                    <button type="button" className="accommodation-btn accommodation-btn-delete" title="Xóa"><MdDelete /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="accommodation-pagination">
+                            <Pagination crcurrentPage={currentPage} totalPage={totalPage} onPageChange={onPageChange} />
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </>
     )
 }

@@ -47,7 +47,7 @@ function Header({isOMSignIn,isOMRegister,openModalSI,handleCancel,openModalRegis
     }, [])
     const handleNavigateProperty = useCallback(() => {
         if(user && user._id){
-            if(user.role=="qtv" || user.role=="chuCoSo"){
+            if(user.role=="qtv" || user.role=="owner"){
                 navigate("/your-property");
             }
             else{
@@ -80,7 +80,7 @@ function Header({isOMSignIn,isOMRegister,openModalSI,handleCancel,openModalRegis
         },
         {
             key: '4',
-            // label: (<Link to = {"/kiem-duyet"}><button className={acc.vaiTro != "qtv" ? "display__none" : ""}>Kiểm duyệt thông tin phòng</button></Link>)
+            label: (<Link to = {"/host"}><button className={user?.role != "owner" ? "display__none" : ""}>Kênh chủ phòng</button></Link>)
         },
         {
             key: '5',

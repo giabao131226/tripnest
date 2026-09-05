@@ -1,41 +1,204 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Pacifico&family=Playwrite+DE+SAS:wght@100..400&family=Quintessential&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Varela+Round&display=swap');
-.sider{
+.sider {
+    width: 220px;
+    min-width: 220px;
     height: 100vh;
-    max-width: 20vw;
-    width: 20vw;
+    background: #ffffff;
+    box-sizing: border-box;
     position: sticky;
     left: 0;
     top: 0;
-}
-.header-admin-title{
-    font-family: "Pacifico", cursive;
-    font-size: 20px;
+    overflow-y: auto;
+    border-right: 1px solid #e5e7eb;
 }
 
-.nav-item-admin{
-    border-bottom: 3px solid gray;
-    padding: 5px;
-    
+.sider > div:first-child {
+    height: 60px;
+    min-height: 60px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    box-sizing: border-box;
 }
-.nav-item-admin::after{
-    content: "";
-    display: block;
-    height: 3px;
+
+.sider > div:first-child a {
+    text-decoration: none;
+}
+
+.header-admin-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-decoration: none;
+}
+
+.sider button {
+    color: #94a3b8;
+}
+
+.sider .body {
+    padding-top: 20px;
+}
+
+.sider .title {
+    margin: 20px 0 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #cbd5e1;
+    text-transform: uppercase;
+}
+
+.sider .title:first-child {
+    margin-top: 0;
+}
+
+.sider .main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sider .main a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     width: 100%;
-    background-color: white;
-    border-radius: 20px;
-    position: absolute;
-    bottom: -3px;
-    left: -1px;
+    min-height: 42px;
+    padding: 9px 12px;
+    box-sizing: border-box;
 
-    transition: all ease 600ms;
-    transform-origin: center;
-    transform: scaleX(0);
-} 
-.nav-item-admin:hover::after{
-    transform: scaleX(1);
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    border-radius: 7px;
+    transition: all 0.2s ease;
 }
 
-.nav-item-admin.active::after{
-    transform: scaleX(1);
+.sider .main a:hover {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.sider .main a svg {
+    flex-shrink: 0;
+    font-size: 19px;
+    color: #94a3b8;
+}
+
+.sider .main a:hover svg {
+    color: #64748b;
+}
+
+.sider .main a.active {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.sider .main a.active svg {
+    color: #64748b;
+}
+
+.sider::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sider::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sider::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.sider::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+}
+
+@media (max-width: 1024px) {
+    .sider {
+        width: 220px;
+        min-width: 220px;
+    }
+
+    .sider .main a {
+        font-size: 13px;
+        gap: 10px;
+    }
+
+    .sider .main a svg {
+        font-size: 18px;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .sider {
+        width: 70px;
+        min-width: 70px;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .sider > div:first-child {
+        justify-content: center !important;
+    }
+
+    .header-admin-title {
+        display: none;
+    }
+
+    .sider > div:first-child button {
+        margin: 0;
+    }
+
+    .sider .body {
+        padding-top: 20px;
+    }
+
+    .sider .title {
+        display: none;
+    }
+
+    .sider .main {
+        gap: 6px;
+    }
+
+    .sider .main a {
+        justify-content: center;
+        width: 50px;
+        height: 44px;
+        min-height: 44px;
+        padding: 9px;
+        margin: 0 auto;
+        gap: 0;
+    }
+
+    .sider .main a span {
+        display: none;
+    }
+
+    .sider .main a svg {
+        font-size: 20px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .sider {
+        width: 60px;
+        min-width: 60px;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+
+    .sider .main a {
+        width: 46px;
+        height: 42px;
+        min-height: 42px;
+    }
+
+    .sider .main a svg {
+        font-size: 19px;
+    }
 }
