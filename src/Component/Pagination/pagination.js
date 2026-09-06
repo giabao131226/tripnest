@@ -1,6 +1,7 @@
 import "./pagination.css";
 
 export default function Pagination({ currentPage, totalPage, onPageChange }) {
+    console.log(currentPage);
     return (
         <nav>
             <ul className="pagination">

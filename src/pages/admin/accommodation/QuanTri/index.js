@@ -8,8 +8,9 @@ import { IoMdTime } from "react-icons/io";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaToggleOff } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
-import useSelection from "antd/es/table/hooks/useSelection";
 import { useSelector } from "react-redux";
+import { FaRegEye } from "react-icons/fa";
+
 
 export default function QuanTri() {
 
@@ -17,15 +18,17 @@ export default function QuanTri() {
     const [accommodations, setAccommodations] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
-    const [search,setSearch] = useState("");
+    const [search, setSearch] = useState("");
     const [category,setCategory] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [overview,setOverview] = useState({});
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleChangeTool = useCallback((e) => {
-        const {name,value} = e.target;
-        if(name == "search") setSearch(value);
+        const { name, value } = e.target;
+        if (name == "search") setSearch(value);
         else setCategory(value);
-    },[])
+    }, [])
 
     const getAccommodationAtt = useCallback((att) => {
         if (att === "active") {
@@ -48,6 +51,23 @@ export default function QuanTri() {
     }, [currentPage])
 
     useEffect(() => {
+        fetch(`${apiUrl}categories`, {
+            "credentials": "include"
+        })
+            .then(async res => {
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.message);
+                return data;
+            })
+            .then(data => {
+                if(data.success) setCategories(data.categories);
+            })
+            .catch(ex => {
+                console.log(ex);
+            })
+    }, [])
+
+    useEffect(() => {
         fetch(`${apiUrl}admin/accommodation/all?page=${currentPage}&search=${search}&category=${category}`, {
             "credentials": "include"
         })
@@ -57,9 +77,10 @@ export default function QuanTri() {
                     setCurrentPage(data.currentPage);
                     setTotalPage(data.totalPage);
                     setAccommodations(data.accommodations);
+                    setOverview(data.overview);
                 }
             })
-    }, [currentPage,search])
+    }, [currentPage, search,category])
 
     return (
         <>
@@ -76,28 +97,28 @@ export default function QuanTri() {
                             <div className="overview-card">
                                 <div className="overview-icon active"><FaCheck /></div>
                                 <div className="overview-info">
-                                    <span className="overview-number">100</span>
+                                    <span className="overview-number">{overview.totalActive}</span>
                                     <span className="overview-label">Đang Hoạt Động</span>
                                 </div>
                             </div>
                             <div className="overview-card">
                                 <div className="overview-icon inactive"><FaToggleOff /></div>
                                 <div className="overview-info">
-                                    <span className="overview-number">100</span>
+                                    <span className="overview-number">{overview.totalInActive}</span>
                                     <span className="overview-label">Không Hoạt Động</span>
                                 </div>
                             </div>
                             <div className="overview-card">
                                 <div className="overview-icon pending"><IoMdTime /></div>
                                 <div className="overview-info">
-                                    <span className="overview-number">100</span>
+                                    <span className="overview-number">{overview.totalPending}</span>
                                     <span className="overview-label">Chờ Kiểm Duyệt</span>
                                 </div>
                             </div>
                             <div className="overview-card">
                                 <div className="overview-icon denied"><FaTimesCircle /></div>
                                 <div className="overview-info">
-                                    <span className="overview-number">100</span>
+                                    <span className="overview-number">{overview.totalDenided}</span>
                                     <span className="overview-label">Bị Từ Chối</span>
                                 </div>
                             </div>
@@ -112,20 +133,23 @@ export default function QuanTri() {
                                 </div>
                                 <div className="list-total">
                                     <span>Tổng số</span>
-                                    <strong>{accommodations.length}</strong>
+                                    <strong>{overview.total}</strong>
                                 </div>
                             </div>
                             <div className="tool">
                                 <div className="tool-search d-flex items-center gap-x-3">
                                     <FaSearch />
-                                    <input 
-                                    placeholder="Tìm theo tên, địa chỉ.."
-                                    name="search"
-                                    onChange={handleChangeTool}
+                                    <input
+                                        placeholder="Tìm theo tên, địa chỉ.."
+                                        name="search"
+                                        onChange={handleChangeTool}
                                     ></input>
                                 </div>
                                 <select name="category" onChange={handleChangeTool}>
                                     <option value={"all"}>Tất cả loại hình</option>
+                                    {categories?.length > 0 ? categories.map((item) => 
+                                        <option value = {item._id}>{item.title}</option>
+                                    ) : <></>}
                                 </select>
                                 {user.role == "owner" ? <button>+ Thêm Mới Cơ Sở Lưu Trú</button> : <></>}
                             </div>
@@ -162,7 +186,7 @@ export default function QuanTri() {
                                             </td>
                                             <td>
                                                 <div className="accommodation-actions">
-                                                    <button type="button" className="accommodation-btn accommodation-btn-view" title="Xem chi tiết"><FaHotel /></button>
+                                                    <button type="button" className="accommodation-btn accommodation-btn-view" title="Xem chi tiết"><FaRegEye /></button>
                                                     <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaFlag /></button>
                                                     <button type="button" className="accommodation-btn accommodation-btn-delete" title="Xóa"><MdDelete /></button>
                                                 </div>
@@ -173,7 +197,7 @@ export default function QuanTri() {
                             </table>
                         </div>
                         <div className="accommodation-pagination">
-                            <Pagination crcurrentPage={currentPage} totalPage={totalPage} onPageChange={onPageChange} />
+                            <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={onPageChange} />
                         </div>
                     </div>
                 </div>
