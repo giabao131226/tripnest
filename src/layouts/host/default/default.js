@@ -16,13 +16,13 @@ export default function LayoutDefaultHost(){
                         <span>Host</span>
                         <div className="d-flex items-center gap-x-3">
                             <div className="avatar">
-                                <img src = {user.avatar ? user.avatar : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kl56iqHHrBNGF1MuPsfn2CoJ8GGhzeAvxEsCEZE0ks8FyzHmdowZQqPY&s=10"}></img>
+                                <img src = {user?.avatar ? user.avatar : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kl56iqHHrBNGF1MuPsfn2CoJ8GGhzeAvxEsCEZE0ks8FyzHmdowZQqPY&s=10"}></img>
                             </div>
-                            <span className="adminName font-bold">Xin chào {user.userName}!!</span>
+                            <span className="adminName font-bold">Xin chào {user?.userName}!!</span>
                             <button className="bg-red text-white font-bold px-2 py-2 border-none rounded">Đăng xuất</button>
                         </div>
                     </header>
-                    <Outlet />
+                    <Outlet context = {{user}} />
                 </div>
             </div>
         </>

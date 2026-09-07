@@ -24,7 +24,7 @@ export default function LayoutDefault(){
                             <button className="bg-red text-white font-bold px-2 py-2 border-none rounded">Đăng xuất</button>
                         </div>
                     </header>
-                    <Outlet />
+                    <Outlet context={{user}} />
                 </div>
             </div>
         </>

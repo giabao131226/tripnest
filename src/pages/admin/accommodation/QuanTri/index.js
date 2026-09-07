@@ -8,13 +8,12 @@ import { IoMdTime } from "react-icons/io";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaToggleOff } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
-import { useSelector } from "react-redux";
 import { FaRegEye } from "react-icons/fa";
+import { useOutletContext } from "react-router-dom";
 
 
 export default function QuanTri() {
-
-    const user = useSelector(state => state.authAdmin);
+    const {user} = useOutletContext();
     const [accommodations, setAccommodations] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
@@ -68,7 +67,7 @@ export default function QuanTri() {
     }, [])
 
     useEffect(() => {
-        fetch(`${apiUrl}admin/accommodation/all?page=${currentPage}&search=${search}&category=${category}`, {
+        fetch(`${apiUrl + (user.role === "admin" ? user.role : "host")}/accommodation/all?page=${currentPage}&search=${search}&category=${category}`, {
             "credentials": "include"
         })
             .then(res => res.json())

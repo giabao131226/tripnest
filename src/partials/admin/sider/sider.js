@@ -49,7 +49,7 @@ export default function Sider({user}) {
 
                 <div className="main">
 
-                    <Link to="accommodations">
+                    <Link to="accommodation">
                         <FaHotel />
                         <span>Quản trị</span>
                     </Link>

@@ -147,7 +147,8 @@ export const routes = [{
                     element: <LayoutDefaultHost />,
                     children: [
                         {
-                            path: "accommodations"
+                            path: "accommodation",
+                            element: <QuanTri />
                         }
                     ]
                 }
