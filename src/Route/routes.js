@@ -86,45 +86,54 @@ export const routes = [{
 }
     ,
 {
-    "path": "/admin",
-    "element": <ProtectedLayoutAdmin />,
-    "children": [
+    path: "/admin",
+    element: <ProtectedLayoutAdmin />,
+    children: [
         {
-            "path": "",
-            "element": <LayoutDefault />,
-            "children": [
+            path: "",
+            element: <LayoutDefault />,
+            children: [
                 {
-                    "path": "accommodation",
-                    "element": <QuanTri />
-                },
-                {
-                    "path": "accommodation/kiem-duyet",
-                    "element": <Check />
-                },
-                {
-                    "path": "user",
-                    "children": [
+                    path: "accommodation",
+                    children: [
                         {
-                            "path": "",
-                            "element": <ManageUser />
+                            path: "",
+                            element: <QuanTri />, // Trang danh sách: /admin/accommodation
                         },
                         {
-                            "path": "detail/:id",
-                            "element": <UserDetail />
-                        },{
-                            "path": "edit/:id",
-                            "element": <EditUser />
+                            path: "detail/:id",
+                            element: <ChiTiet />, // Trang chi tiết: /admin/accommodation/detail/:id
                         },
                         {
-                            "path": "create",
-                            "element": <CreateUser />
-                        }
-                    ]
-                    
-                }
-            ]
-        }
-    ]
+                            path: "kiem-duyet",
+                            element: <Check />, // Trang kiểm duyệt: /admin/accommodation/kiem-duyet
+                        },
+                    ],
+                },
+                {
+                    path: "user",
+                    children: [
+                        {
+                            path: "",
+                            element: <ManageUser />, // /admin/user
+                        },
+                        {
+                            path: "detail/:id",
+                            element: <UserDetail />, // /admin/user/detail/:id
+                        },
+                        {
+                            path: "edit/:id",
+                            element: <EditUser />, // /admin/user/edit/:id
+                        },
+                        {
+                            path: "create",
+                            element: <CreateUser />, // /admin/user/create
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
 },
 {
     "path": "/admin/auth",
@@ -137,23 +146,31 @@ export const routes = [{
 },
 {
     path: "/host",
+    element: <ProtectedLayoutHost />,
     children: [
         {
             path: "",
-            element: <ProtectedLayoutHost />,
+            element: <LayoutDefaultHost />,
             children: [
                 {
-                    path: "",
-                    element: <LayoutDefaultHost />,
+                    path: "accommodation",
                     children: [
                         {
-                            path: "accommodation",
-                            element: <QuanTri />
+                            path: "",
+                            element: <QuanTri />, // URL: /host/accommodation
+                        },
+                        {
+                            path: "create",
+                            element: <CreateAccommodation />, // URL: /host/accommodation/create
+                        },
+                        {
+                            path: "edit/:id",
+                            element: <EditProperty />
                         }
-                    ]
-                }
-            ]
-        }
-    ]
+                    ],
+                },
+            ],
+        },
+    ],
 }
 ]

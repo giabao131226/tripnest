@@ -9,7 +9,8 @@ import { FaTimesCircle } from "react-icons/fa";
 import { FaToggleOff } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
-import { useOutletContext } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
+import { FaEdit } from "react-icons/fa";
 
 
 export default function QuanTri() {
@@ -185,8 +186,14 @@ export default function QuanTri() {
                                             </td>
                                             <td>
                                                 <div className="accommodation-actions">
-                                                    <button type="button" className="accommodation-btn accommodation-btn-view" title="Xem chi tiết"><FaRegEye /></button>
-                                                    <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaFlag /></button>
+                                                    <Link to = {`detail/${item._id}`}>
+                                                        <button type="button" className="accommodation-btn accommodation-btn-view" title="Xem chi tiết"><FaRegEye /></button>
+                                                    </Link>
+                                                    {user?.role == "admin" ? <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaFlag /></button> : <></>}
+                                                    {user?.role == "owner" ? 
+                                                    <Link to = {`edit/${item._id}`}>
+                                                        <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaEdit /></button>
+                                                    </Link> : <></>}                  
                                                     <button type="button" className="accommodation-btn accommodation-btn-delete" title="Xóa"><MdDelete /></button>
                                                 </div>
                                             </td>
