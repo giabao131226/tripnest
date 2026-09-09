@@ -10,7 +10,6 @@ import { FaCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
 
-
 export default function Check() {
     const acc = useSelector(state => state.auth).payload;
     const navigate = useNavigate();

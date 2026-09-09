@@ -1,111 +1,324 @@
+.bdslist {
+    width: 100%;
+    min-height: 100vh;
+    background: #f5f7fa;
+}
 
-.bds__container{
-    position: relative;
+.bdslist__container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-bottom: 50px;
 }
-.banner{
-    height: 70vh;
+
+.banner {
+    width: 100%;
+    height: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.banner__container {
+    width: 100%;
+    height: 100%;
     position: relative;
-    background-image: url("https://ezcloud.vn/wp-content/uploads/2019/03/thiet-ke-homestay-don-gian.webp");
-    background-repeat: no-repeat;
+    overflow: hidden;
+    border-radius: 18px;
+    background-image: url("https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1800&q=80");
     background-size: cover;
-    background-position: 20%;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.banner__container{
-    height: 100%;
-    padding: 0px 20px;
-}
-.banner__opacity{
-    height: 100%;
-    background-color: black;
-    opacity: 0.2;
-}
-.banner__title{
-    color: white;
+
+.banner__opacity {
     position: absolute;
-    bottom: 70px;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
 }
-.search{
-    position: absolute;
-    top: 63vh;
-    left: calc(50% - 70vw / 2);
-    background-color: white;
-    width: 70vw;
+
+.banner__title {
+    position: relative;
+    z-index: 2;
+    width: 80%;
+    max-width: 850px;
+    text-align: center;
+    color: #fff;
+}
+
+.banner__title h1 {
+    margin: 0 0 18px;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.banner__title p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+.search {
+    width: 100%;
+    padding: 0 30px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10;
+    margin-top: -35px;
+    margin-bottom: 35px;
+}
+
+.search__container {
+    width: 100%;
+    max-width: 1050px;
+    min-height: 70px;
+    margin: 0 auto;
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.search__box {
     height: 70px;
-    border-radius: 20px;
+    flex: 1;
+    min-width: 0;
+    border-right: 1px solid #e5e7eb;
 }
-.search__container{
-    display: flex;
-    justify-content: center;
-    align-content: center;
+
+.search__box .ant-select {
+    width: 100% !important;
+    height: 70px !important;
 }
-.search__container button{
-    background-color: #E67048;
-    border: none;
-    color: white;
-    font-size: 28px;
-    padding: 18px 18px;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    cursor: pointer;
+
+.search__box .ant-select-selector {
+    height: 70px !important;
+    display: flex !important;
+    align-items: center !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 18px !important;
 }
-.bdsList a{
-    color: black;
-    text-decoration: none;
-}
-.bdsList{
-    margin-top: 40px;
-}
-.bdsbox__container{
-    display: flex;
-    flex-direction: row;
-}
-.bds__image{
-    width: 250px;
-    height: auto;
-}
-.bds__image img{
-    width: 200px;
-    height: auto;
-    object-fit: cover;
-}
-.bds__about{
-    width: 40vw;
-    padding: 0px 20px;
-}
-.bds__nameAndRate{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 700;
-}
-.bds__nameAndRate span:last-child{
-    color: #0071CE;
-}
-.bds__danhGia{
-    background-color: #FAFCFF;
-    font-size: 14px;
+
+.search__box .ant-select-selection-item {
+    font-size: 16px;
     font-weight: 600;
-    padding: 0px 5px;
+    line-height: 70px !important;
 }
-.bds__price{
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    width: 15vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+
+.search__box .ant-select-selection-placeholder {
+    line-height: 70px !important;
 }
-.bds__price p{
-    color: #FD5D1C;
-    font-weight: 700;
+
+.search__box .ant-picker {
+    width: 100% !important;
+    height: 70px !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 18px !important;
+}
+
+.search__box .ant-picker-input > input {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.search__box .ant-picker-suffix,
+.search__box .ant-picker-prefix {
     font-size: 20px;
 }
-.bds__price button{
-    color: white;
-    font-weight: 700;
-    font-size: 18px;
-    background-color: #56B7F7;
+
+.search > .search__container > button {
+    width: 75px;
+    min-width: 75px;
     border: none;
-    border-radius: 20px;
-    padding: 8px 15px;
+    background: #0294f3;
+    color: #fff;
+    font-size: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.search > .search__container > button:hover {
+    background: #007dcc;
+}
+
+.bdslist__container > :not(.banner):not(.search) {
+    width: 100%;
+}
+
+@media screen and (max-width: 1100px) {
+    .bdslist__container {
+        padding-bottom: 30px;
+    }
+
+    .banner {
+        height: 350px;
+        padding: 15px;
+    }
+
+    .banner__title h1 {
+        font-size: 35px;
+    }
+
+    .banner__title p {
+        font-size: 15px;
+    }
+
+    .search {
+        padding: 0 20px;
+    }
+
+    .search__container {
+        max-width: 900px;
+    }
+
+    .search__box .ant-select-selection-item,
+    .search__box .ant-picker-input > input {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .banner {
+        height: 320px;
+    }
+
+    .banner__title {
+        width: 90%;
+    }
+
+    .banner__title h1 {
+        font-size: 30px;
+    }
+
+    .banner__title p {
+        font-size: 14px;
+    }
+
+    .search {
+        margin-top: -25px;
+        padding: 0 15px;
+    }
+
+    .search__container {
+        flex-wrap: wrap;
+        overflow: visible;
+        border-radius: 12px;
+    }
+
+    .search__box {
+        flex: 1 1 50%;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .search > .search__container > button {
+        width: 100%;
+        height: 55px;
+        border-radius: 0 0 12px 12px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .banner {
+        height: 280px;
+        padding: 10px;
+    }
+
+    .banner__container {
+        border-radius: 12px;
+    }
+
+    .banner__title {
+        width: 90%;
+    }
+
+    .banner__title h1 {
+        font-size: 25px;
+        margin-bottom: 12px;
+    }
+
+    .banner__title p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .search {
+        padding: 0 12px;
+        margin-top: -20px;
+        margin-bottom: 25px;
+    }
+
+    .search__container {
+        display: flex;
+        flex-direction: column;
+        min-height: auto;
+        border-radius: 12px;
+    }
+
+    .search__box {
+        width: 100%;
+        height: 60px;
+        flex: none;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .search__box .ant-select {
+        height: 60px !important;
+    }
+
+    .search__box .ant-select-selector {
+        height: 60px !important;
+    }
+
+    .search__box .ant-select-selection-item,
+    .search__box .ant-select-selection-placeholder {
+        line-height: 60px !important;
+    }
+
+    .search__box .ant-picker {
+        height: 60px !important;
+    }
+
+    .search__box .ant-picker-input > input {
+        font-size: 14px;
+    }
+
+    .search__box .ant-picker-prefix {
+        font-size: 18px;
+    }
+
+    .search > .search__container > button {
+        width: 100%;
+        min-width: 0;
+        height: 55px;
+        border-radius: 0 0 12px 12px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .banner {
+        height: 250px;
+    }
+
+    .banner__title h1 {
+        font-size: 22px;
+    }
+
+    .banner__title p {
+        font-size: 12px;
+    }
+
+    .search {
+        padding: 0 10px;
+    }
 }

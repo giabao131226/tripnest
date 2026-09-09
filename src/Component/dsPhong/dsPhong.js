@@ -6,11 +6,24 @@ import { MdDateRange } from "react-icons/md";
 import "./dsPhong.css"
 import SlideUuDai from "../slideUuDai/SlideUuDai";
 import { Outlet, useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2';
+import Pagination from "../Pagination/pagination";
 const { RangePicker } = DatePicker;
 
 function BDSList() {
-    const [url, setUrl] = useState("https://servertripnest-4.onrender.com/api/bdsDuLich")
-    const [diadiem, setDiaDiem] = useState([])
+    const [accommodations, setAccommodations] = useState([]);
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("");
+    const [provinceFilter, setProvinceFilter] = useState([])
+
+
+    const onPageChange = useCallback((page) => {
+        setCurrentPage(page);
+    }, [currentPage])
+
     const [loaiPhong, setLoaiP] = useState([])
     const [queryDiaDiem, setQDD] = useState("HaNoi")
     const [queryTypeRoom, setTR] = useState("Villa")
@@ -19,7 +32,7 @@ function BDSList() {
     const getSoNgay = useCallback((start, end) => {
         let ans = 0;
         const day = [
-            0,31,28,31,30,31,30,31,31,30,31,30,31
+            0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
         ];
         if ((start[0] % 400 == 0) || (start[0] % 4 == 0 && start[0] % 100 != 0)) {
             day[2] = 29;
@@ -61,21 +74,68 @@ function BDSList() {
         if (querryTime > 0) {
             urlNew += "&thoiGianChoThue=" + querryTime;
         }
-        console.log(urlNew)
-        setUrl(urlNew)
+        // setUrl(urlNew)
         navigate("/list-bds")
     })
+
     useEffect(() => {
-        fetch("https://servertripnest-4.onrender.com/api/diadiem")
-            .then(res => res.json())
-            .then(data => {
-                setDiaDiem(data)
+        fetch(`${apiUrl}bds?page=${currentPage}`)
+            .then(async res => {
+                const data = res.json();
+                if (!res.ok) throw new Error(data.message);
+                return data;
             })
-        fetch("https://servertripnest-4.onrender.com/api/loaiPhong")
-            .then(res => res.json())
-            .then(data => {
-                setLoaiP(data)
+            .then((responeFromServer) => {
+                if (responeFromServer.success) {
+                    setAccommodations(responeFromServer.data);
+                    setCurrentPage(responeFromServer.currentPage);
+                    setTotalPage(responeFromServer.totalPage);
+                }
+            }).catch(ex => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops!!",
+                    text: ex,
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 2500,
+                    timerProgressBar: true,
+                    background: "#ffffff",
+                    color: "#333",
+                    iconColor: "#22c55e"
+                });
             })
+    }, [currentPage])
+
+    useEffect(() => {
+        fetch(`${apiUrl}province/only-province`)
+            .then(async res => {
+                const data = res.json();
+                if (!res.ok) throw new Error(data.message);
+                return data;
+            }).then(data => {
+                setProvinceFilter(data)
+            }).catch(ex => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops!!",
+                    text: ex,
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 2500,
+                    timerProgressBar: true,
+                    background: "#ffffff",
+                    color: "#333",
+                    iconColor: "#22c55e"
+                });
+            })
+        // fetch("https://servertripnest-4.onrender.com/api/loaiPhong")
+        //     .then(res => res.json())
+        //     .then(data => {
+        //         setLoaiP(data)
+        //     })
     }, [])
     return (
         <>
@@ -96,10 +156,10 @@ function BDSList() {
                             <div className="search__box">
                                 <Select
                                     prefix={<IoLocation style={{ color: '#0294F3' }} />}
-                                    defaultValue="Hà Nội"
+                                    defaultValue="Lọc Theo Tỉnh/Thành Phố"
                                     style={{ width: 298, height: 70, fontSize: 18, fontWeight: 700, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                                     onChange={handleChange}
-                                    options={diadiem}
+                                    options={provinceFilter}
                                 />
                             </div>
                             <div className="search__box">
@@ -122,7 +182,7 @@ function BDSList() {
                             <button onClick={handleClick}><IoSearch /></button>
                         </div>
                     </div>
-                    <Outlet context={{ url }} />
+                    <Outlet context={{ accommodations, currentPage, totalPage, onPageChange }} />
                 </div>
             </div >
         </>

@@ -6,7 +6,6 @@ import AboutRoom from "../AboutRoom/AboutRoom";
 function ChiTiet(){
     const {user} = useOutletContext();
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
-    console.log(user);
     const params = useParams()
     const [detail,setDetail] = useState({})
     const [disableButton,setDisable] = useState(false)

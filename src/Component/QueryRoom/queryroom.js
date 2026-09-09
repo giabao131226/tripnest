@@ -1,42 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import { Carousel, Tag, Rate } from 'antd';
-import { FaHotel} from "react-icons/fa6";
-import { Link} from 'react-router-dom'
+import { FaHotel } from "react-icons/fa6";
+import { Link } from 'react-router-dom'
 import { useOutletContext } from "react-router-dom";
 import "./queryroom.css"
-import "../dsPhong/dsPhong.css"
 import { TbMoodEmptyFilled } from "react-icons/tb";
-
+import Swal from 'sweetalert2';
+import Pagination from "../Pagination/pagination";
 
 function QueryRoom() {
-    let { url } = useOutletContext();
-    const [data, setData] = useState([])
-    useEffect(() => {
-            fetch("http://localhost:5000/bds")
-                .then(res => res.json())
-                .then((responeFromServer) => {
-                    if(responeFromServer.success){
-                        setData(responeFromServer.data);
-                    }
-                })
-
-    },[])
+    const {accommodations,currentPage,totalPage,onPageChange} = useOutletContext(); 
+    
     return (
         <>
             <div className="bdsList">
                 <div className="bdsList__container">
                     <div className="quangcao">
-                        <img src="https://stc.shopiness.vn/deal/2018/10/16/d/f/3/c/1539673384912_540.png"></img>
-                        <img src="https://img.pikbest.com/01/59/62/86jpIkbEsT2gA.jpg!f305cw"></img>
+                        <img src="https://stc.shopiness.vn/deal/2018/10/16/d/f/3/c/1539673384912_540.png" loading="lazy"></img>
+                        <img src="https://img.pikbest.com/01/59/62/86jpIkbEsT2gA.jpg!f305cw" loading="lazy"></img>
                     </div>
-                    {data.length!=0 ? <div className="bdsList__main">
-                        {data.map((item,index) => (
-                            <div className="bdsbox" key = {index}>
+                    {accommodations.length > 0 ? <div className="bdsList__main">
+                        {accommodations.map((item, index) => (
+                            <div className="bdsbox" key={item._id}>
                                 <div className="bdsbox__container">
                                     <Carousel style={{ width: 200 }} autoplay arrows>
-                                        {item.images.map((image,index) => (
+                                        {item.images.map((image, index) => (
                                             <div className="bds__image" key={index}>
-                                                <img src={image}></img>
+                                                <img src={image} loading = "lazy"></img>
                                             </div>
                                         ))}
                                     </Carousel>
@@ -53,26 +43,28 @@ function QueryRoom() {
                                                 <Rate defaultValue={item.rate} allowHalf />
                                             </div>
                                             <div className="bds__tienIch">
-                                                {/* {item.tienIch.map((dv,index) => (
-                                                    <Tag color="cyan" key = {index}>{dv.tienich}</Tag>
-                                                ))} */}
+                                                {item.amenityIds.map((dv) => (
+                                                    <Tag color="cyan" key={dv._id}>{dv.tienich}</Tag>
+                                                ))}
                                             </div>
                                             <div className="bds__danhGia">
-                                                <p dangerouslySetInnerHTML={{__html:item.description}}></p>
+                                                <p dangerouslySetInnerHTML={{ __html: item.description }}></p>
                                             </div>
                                         </div>
                                     </Link>
-                                    <div className="bds__price">
+                                    <div className="bds__right">
                                         <p>{item.price}VND</p>
-                                        <Link to = {`/list-bds/detail/${item._id}`}><button>Xem Phòng</button></Link>
+                                        <Link to={`/list-bds/detail/${item._id}`}><button>Xem Phòng</button></Link>
                                     </div>
                                 </div>
                             </div>
                         ))}
+                        <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={onPageChange} />
                     </div> : <div className="bdsList__main">
                         <div className="icon__empty"><TbMoodEmptyFilled /></div>
                         <p className="text__empty">Dữ liệu sẽ được cập nhật sau....</p>
                     </div>}
+                    
                 </div>
             </div>
         </>

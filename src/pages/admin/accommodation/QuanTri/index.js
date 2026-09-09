@@ -24,6 +24,10 @@ export default function QuanTri() {
     const [overview,setOverview] = useState({});
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
+    const onPageChange = useCallback((page) => {
+        setCurrentPage(page);
+    }, [currentPage])
+
     const handleChangeTool = useCallback((e) => {
         const { name, value } = e.target;
         if (name == "search") setSearch(value);
@@ -45,10 +49,6 @@ export default function QuanTri() {
 
         return <span className="accommodation-status status-rejected">Bị Từ Chối</span>;
     }, []);
-
-    const onPageChange = useCallback((page) => {
-        setCurrentPage(page);
-    }, [currentPage])
 
     useEffect(() => {
         fetch(`${apiUrl}categories`, {
@@ -151,7 +151,7 @@ export default function QuanTri() {
                                         <option value = {item._id}>{item.title}</option>
                                     ) : <></>}
                                 </select>
-                                {user.role == "owner" ? <button>+ Thêm Mới Cơ Sở Lưu Trú</button> : <></>}
+                                {user.role == "owner" ? <Link to = {"create"}><button>+ Thêm Mới Cơ Sở Lưu Trú</button></Link> : <></>}
                             </div>
                         </div>
                         <div className="table-wrapper">
