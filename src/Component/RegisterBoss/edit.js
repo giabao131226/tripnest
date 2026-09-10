@@ -129,6 +129,8 @@ export default function EditProperty() {
             });
         }
 
+        console.log("Cập nhật");
+
         fetch(`${apiUrl}bds/update/${params.id}`, {
             method: "POST",
             credentials: "include",

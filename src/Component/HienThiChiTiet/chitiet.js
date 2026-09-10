@@ -4,11 +4,11 @@ import XemAnh from "../XemAnh/xemanh";
 import AboutRoom from "../AboutRoom/AboutRoom";
 
 function ChiTiet(){
-    const {user} = useOutletContext();
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const params = useParams()
     const [detail,setDetail] = useState({})
     const [disableButton,setDisable] = useState(false)
+
     useEffect(() => {
         fetch(`${apiUrl}bds/detail/`+params.id)
             .then(async res => {
@@ -17,7 +17,6 @@ function ChiTiet(){
                 return data;
             })
             .then( async (data) => {
-                console.log(data);
                 if(data.success) setDetail(data.detail);
             }).catch(ex => {
                 console.log(ex);

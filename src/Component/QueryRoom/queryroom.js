@@ -10,7 +10,7 @@ import Pagination from "../Pagination/pagination";
 
 function QueryRoom() {
     const {accommodations,currentPage,totalPage,onPageChange} = useOutletContext(); 
-    
+    console.log(accommodations);
     return (
         <>
             <div className="bdsList">
@@ -20,7 +20,7 @@ function QueryRoom() {
                         <img src="https://img.pikbest.com/01/59/62/86jpIkbEsT2gA.jpg!f305cw" loading="lazy"></img>
                     </div>
                     {accommodations.length > 0 ? <div className="bdsList__main">
-                        {accommodations.map((item, index) => (
+                        {accommodations.map((item) => (
                             <div className="bdsbox" key={item._id}>
                                 <div className="bdsbox__container">
                                     <Carousel style={{ width: 200 }} autoplay arrows>
@@ -38,7 +38,7 @@ function QueryRoom() {
                                             </div>
                                             <div className="bds__typeAndRate">
                                                 <Tag icon={<FaHotel />} color="#55acee">
-                                                    {item.category_id}
+                                                    {item.category_id?.title}
                                                 </Tag>
                                                 <Rate defaultValue={item.rate} allowHalf />
                                             </div>
