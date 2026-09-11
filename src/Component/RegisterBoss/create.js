@@ -17,27 +17,70 @@ export default function CreateAccommodation() {
     const [dataUpToSever, setDataUpToSever] = useState({});
     const [amenities, setAmenities] = useState([]);
     const [amenity, setAmenity] = useState([]);
-    const [categories,setCategories] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [previewRoomImage, setPreviewRoomImage] = useState({});  
+    const [roomImages, setRoomImages] = useState([]);
+    const [roomImageRoomIds, setRoomImageRoomIds] = useState([]);
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handlePreviewImage = useCallback((e) => {
         const files = e.target.files;
         const name = e.target.name;
+
         if (name == "lisence") {
-            const urlLinsence = URL.createObjectURL(files[0]);
-            setImagePreviewLisence(urlLinsence);
+            if (files.length > 0) {
+                const urlLinsence = URL.createObjectURL(files[0]);
+                setImagePreviewLisence(urlLinsence);
+            }
             return;
         }
+
+        if (name == "room-images") {
+            const room_id = e.target.getAttribute("room-id");
+
+            if (files.length <= 0) return;
+
+            const newPreviewRoomImage = {
+                ...previewRoomImage,
+                [room_id]: [...(previewRoomImage[room_id] || [])]
+            };
+
+            const newRoomImages = [...roomImages];
+            const newRoomImageRoomIds = [...roomImageRoomIds];
+
+            Array.from(files).forEach((file) => {
+                const url = URL.createObjectURL(file);
+
+                newPreviewRoomImage[room_id].push(url);
+                newRoomImages.push(file);
+                newRoomImageRoomIds.push(room_id);
+            });
+
+            setPreviewRoomImage(newPreviewRoomImage);
+            setRoomImages(newRoomImages);
+            setRoomImageRoomIds(newRoomImageRoomIds);
+
+            return;
+        }
+
         const arrayImage = [...imageAccomodation];
         const images = [...imagesUpToSever];
+
         Array.from(files).forEach((item) => {
             const url = URL.createObjectURL(item);
             arrayImage.push(url);
             images.push(item);
-        })
+        });
+
         setImageAccomodation(arrayImage);
         setImagesUpToSever(images);
-    }, [imageAccomodation, imagesUpToSever]);
+    }, [
+        imageAccomodation,
+        imagesUpToSever,
+        previewRoomImage,
+        roomImages,
+        roomImageRoomIds
+    ]);
 
     const handleRemoveImagePreview = useCallback((e) => {
         const indexImage = e.target.getAttribute("image-index");
@@ -82,26 +125,36 @@ export default function CreateAccommodation() {
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
+
         const imageLisence = document.querySelector("input#lisence");
 
         const formData = new FormData();
+
         Object.keys(dataUpToSever).forEach((item) => {
-            if(item === "rooms"){
-                formData.append(item,JSON.stringify(dataUpToSever[item]));
-            }else formData.append(item, dataUpToSever[item]);
-        })
+            if (item !== "rooms") {
+                formData.append(item, dataUpToSever[item]);
+            }
+        });
+
+        formData.append("rooms", JSON.stringify(dataUpToSever.rooms || []));
         formData.append("amenity", JSON.stringify(amenity));
 
-        if (imageLisence) {
+        if (imageLisence?.files[0]) {
             formData.append("lisence", imageLisence.files[0]);
         }
 
-        if (imagesUpToSever.length > 0) {
-            imagesUpToSever.forEach((item) => {
-                formData.append("images", item);
-            })
-        }
-        console.log("đã fetch");
+        imagesUpToSever.forEach((item) => {
+            formData.append("images", item);
+        });
+
+        roomImages.forEach((item) => {
+            formData.append("roomImages", item);
+        });
+
+        roomImageRoomIds.forEach((item) => {
+            formData.append("roomImageRoomIds", item);
+        });
+
         fetch(`${apiUrl}bds/save`, {
             method: "POST",
             credentials: "include",
@@ -109,7 +162,6 @@ export default function CreateAccommodation() {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 if (data.success) {
                     Swal.fire({
                         icon: "success",
@@ -124,14 +176,19 @@ export default function CreateAccommodation() {
                         color: "#333",
                         iconColor: "#22c55e"
                     });
+
                     e.target.reset();
                     setDataUpToSever({});
                     setImageAccomodation([]);
+                    setImagesUpToSever([]);
                     setImagePreviewLisence("");
                     setAmenity([]);
+                    setPreviewRoomImage({});                    
+                    setRoomImages([]);
+                    setRoomImageRoomIds([]);
                 }
-            })
-    }, [dataUpToSever, amenity, imagesUpToSever])
+            });
+    }, [dataUpToSever, amenity, imagesUpToSever, roomImages, roomImageRoomIds]);
 
     const generateCode = () => {
         return Math.floor(100000 + Math.random() * 900000);
@@ -181,10 +238,10 @@ export default function CreateAccommodation() {
         fetch(`${apiUrl}categories`)
             .then(async res => {
                 const data = res.json();
-                if(!res.ok) throw new Error(data.message);
+                if (!res.ok) throw new Error(data.message);
                 return data;
             }).then(data => {
-                if(data.success) setCategories(data.categories);
+                if (data.success) setCategories(data.categories);
             }).catch(ex => {
                 console.log(ex);
             })
@@ -229,7 +286,7 @@ export default function CreateAccommodation() {
                                     <label>Loại Cơ Sở Lưu Trú</label>
                                     <select name="category_id" onChange={handleChange}>
                                         <option>--Lựa chọn loại cơ sở lưu trú--</option>
-                                        {categories.length > 0 ? categories.map((item) => <option key = {item._id} value={item._id}>{item.title}</option>) :<></>}
+                                        {categories.length > 0 ? categories.map((item) => <option key={item._id} value={item._id}>{item.title}</option>) : <></>}
                                     </select>
                                 </div>
                                 <div className="form-group">
@@ -357,17 +414,46 @@ export default function CreateAccommodation() {
                                                 </div>
                                                 <div className="form-group room-description">
                                                     <label>Mô tả phòng</label>
-                                                    <Editor 
-                                                        apiKey="1a2hzecrr53ypadb7v095uo5i8u7xzhzy2a0al9uyn03q53h" 
-                                                        value={room.description} 
+                                                    <Editor
+                                                        apiKey="1a2hzecrr53ypadb7v095uo5i8u7xzhzy2a0al9uyn03q53h"
+                                                        value={room.description}
                                                         onEditorChange={(newValue) => {
                                                             const id = room._id ? room._id : room["id-tmp"];
                                                             const index = dataUpToSever.rooms.findIndex((item) => item[room._id ? "_id" : "id-tmp"] == id);
-                                                            if(index <0) return;
+                                                            if (index < 0) return;
                                                             const newRoom = dataUpToSever.rooms;
                                                             newRoom[index].description = newValue;
-                                                            setDataUpToSever({...dataUpToSever,"rooms": newRoom});
+                                                            setDataUpToSever({ ...dataUpToSever, "rooms": newRoom });
                                                         }} />
+                                                </div>
+
+                                                <div className="form-group room-images">
+                                                    <label
+                                                        className="btn-upload-images"
+                                                        htmlFor={`room-images-${room["id-tmp"]}`}
+                                                    >
+                                                        + Thêm ảnh
+                                                    </label>
+
+                                                    <input
+                                                        id={`room-images-${room["id-tmp"]}`}
+                                                        type="file"
+                                                        name="room-images"
+                                                        room-id={room["id-tmp"]}
+                                                        accept="image/*"
+                                                        multiple
+                                                        hidden
+                                                        onChange={handlePreviewImage}
+                                                    />
+
+                                                    <div className="room-image-preview">
+                                                        {previewRoomImage[room["id-tmp"]]?.map((item, index) => (
+                                                            <Image
+                                                                src={item}
+                                                                key={index}
+                                                            />
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -390,7 +476,7 @@ export default function CreateAccommodation() {
                                                 {imageAccomodation.map((item, index) =>
                                                     <div className="image-item" key={index}>
                                                         <Image src={item} className="image" />
-                                                        <button type="button" onClick={handleRemoveImagePreview} image-index={index}>×</button>
+                                                        <button type="button" onClick={handleRemoveImagePreview} input-name="images" image-index={index}>×</button>
                                                     </div>
                                                 )}
                                             </>

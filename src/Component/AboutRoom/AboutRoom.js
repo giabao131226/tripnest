@@ -1,4 +1,4 @@
-import { Rate, Tag, Button, Modal, Form, Input, DatePicker, message, Select, QRCode } from "antd";
+import { Rate, Tag, Button, Modal, Form, Input, DatePicker, message, Select, QRCode, Image } from "antd";
 import "./AboutRoom.css"
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -21,50 +21,7 @@ function AboutRoom({ data, disableButton, setDisable }) {
             })
         }
     }
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
-    const handleSubmit = (values) => {
-        setIsModalOpen(false);
-        const ngayNhan = values.ngaynhantra[0].format("YYYY-MM-DD");
-        const ngayTra = values.ngaynhantra[1].format("YYYY-MM-DD");
-        const newDatPhong = {
-            "idNguoiDat": acc.id,
-            "idPhong": params.id,
-            "ngayDat": ngayNhan,
-            "ngayTra": ngayTra,
-            "daHoanTat": (values.pttt == "qr" ? true : false),
-            "pttt": values.pttt
-        }
-        fetch("https://servertripnest-4.onrender.com/api/bdsDuLich/" + params.id, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "trangThai": true
-            })
-        })
-            .then(res => res.json())
-            .then(data => { setDisable(true) });
-        fetch("https://servertripnest-4.onrender.com/api/datPhong", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(newDatPhong)
-        })
-            .then(res => res.json())
-            .then(data => {
-                messageApi.open({
-                    "type": "success",
-                    "content": "Chúc mừng bạn đã đặt phòng thành công"
-                })
-            })
-    };
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
+
     useEffect(() => {
         setDisable(data.trangThai)
         fetch("https://servertripnest-4.onrender.com/api/taiKhoan?" + document.cookie)
@@ -81,9 +38,6 @@ function AboutRoom({ data, disableButton, setDisable }) {
             });
         }
     }, [acc, form]);
-    const handleChange = useCallback((e) => {
-        setPTTT(e)
-    }, [])
     return (
         <>
             {contextHolder}
@@ -95,24 +49,29 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                 {data.category_id?.title && (
                                     <Tag>{data.category_id.title}</Tag>
                                 )}
+
                                 {data.is_guest_favorite && (
                                     <span className="aboutroom__favorite">
                                         Được khách yêu thích
                                     </span>
                                 )}
                             </div>
+
                             <h1>{data.name}</h1>
+
                             <div className="aboutroom__location">
                                 <span>📍</span>
                                 <span>{data.address}</span>
                             </div>
                         </div>
+
                         <div className="aboutroom__header-right">
                             <div className="aboutroom__rating">
                                 <div>
                                     <strong>{data.rateper10}/10</strong>
                                     <span>Tuyệt vời</span>
                                 </div>
+
                                 <div className="aboutroom__rating-box">
                                     <span>{data.rate}</span>
                                 </div>
@@ -124,14 +83,26 @@ function AboutRoom({ data, disableButton, setDisable }) {
                         <div className="aboutroom__main">
                             <section className="aboutroom__section">
                                 <h2>Giới thiệu</h2>
-                                <p>{data.description}</p>
+
+                                {data.description && (
+                                    <div
+                                        className="aboutroom__description"
+                                        dangerouslySetInnerHTML={{
+                                            __html: data.description
+                                        }}
+                                    />
+                                )}
                             </section>
 
                             <section className="aboutroom__section">
                                 <h2>Tiện nghi</h2>
+
                                 <div className="aboutroom__amenities">
                                     {data.amenityIds?.map((item) => (
-                                        <div className="aboutroom__amenity" key={item._id}>
+                                        <div
+                                            className="aboutroom__amenity"
+                                            key={item._id}
+                                        >
                                             <i className={item.icon}></i>
                                             <span>{item.name}</span>
                                         </div>
@@ -143,6 +114,7 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                 <div className="aboutroom__section-title">
                                     <div>
                                         <h2>Các đơn vị lưu trú</h2>
+
                                         <p>
                                             Lựa chọn phòng hoặc căn lưu trú phù hợp với nhu cầu của bạn
                                         </p>
@@ -155,10 +127,34 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                             className="accommodation-card"
                                             key={item._id}
                                         >
+                                            {item.images?.length > 0 && (
+                                                <div className="accommodation-card__images">
+                                                    <div className="accommodation-card__image-list">
+                                                        {item.images.map((image, index) => (
+                                                            <div
+                                                                className="accommodation-card__image"
+                                                                key={index}
+                                                            >
+                                                                <Image
+                                                                    src={
+                                                                        typeof image === "string"
+                                                                            ? image
+                                                                            : image.url
+                                                                    }
+                                                                    alt={item.title}
+                                                                    preview
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             <div className="accommodation-card__top">
                                                 <div className="accommodation-card__info">
                                                     <div className="accommodation-card__title-row">
                                                         <h3>{item.title}</h3>
+
                                                         {item.is_guest_favorite && (
                                                             <span className="accommodation-card__favorite">
                                                                 Được khách yêu thích
@@ -166,31 +162,103 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                                         )}
                                                     </div>
 
-                                                    <p className="accommodation-card__description">
-                                                        {item.description}
-                                                    </p>
+                                                    {item.description && (
+                                                        <div
+                                                            className="accommodation-card__description"
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: item.description
+                                                            }}
+                                                        />
+                                                    )}
 
                                                     <div className="accommodation-card__details">
                                                         <span>
                                                             <i className="fa-solid fa-ruler-combined"></i>
-                                                            {item.room_size} m²
+                                                            {item.room_size || 0} m²
                                                         </span>
+
                                                         <span>
                                                             <i className="fa-solid fa-user-group"></i>
-                                                            Tối đa {item.max_guests} khách
+                                                            Tối đa {item.max_guests || 0} khách
                                                         </span>
+
                                                         <span>
                                                             <i className="fa-solid fa-bed"></i>
-                                                            {item.beds_count} giường
+                                                            {item.beds_count || 0} giường
                                                         </span>
+
                                                         <span>
                                                             <i className="fa-solid fa-door-open"></i>
-                                                            {item.bedrooms_count} phòng ngủ
+                                                            {item.bedrooms_count || 0} phòng ngủ
                                                         </span>
+
                                                         <span>
                                                             <i className="fa-solid fa-bath"></i>
-                                                            {item.bathrooms_count} phòng tắm
+                                                            {item.bathrooms_count || 0} phòng tắm
                                                         </span>
+                                                    </div>
+
+                                                    <div className="accommodation-card__extra-info">
+                                                        <div>
+                                                            <span className="extra-info-label">
+                                                                Tổng số phòng
+                                                            </span>
+
+                                                            <strong>
+                                                                {item.total_room || 0}
+                                                            </strong>
+                                                        </div>
+
+                                                        <div>
+                                                            <span className="extra-info-label">
+                                                                Số lượng phòng
+                                                            </span>
+
+                                                            <strong>
+                                                                {item.total_quantity || 0}
+                                                            </strong>
+                                                        </div>
+
+                                                        <div>
+                                                            <span className="extra-info-label">
+                                                                Trạng thái
+                                                            </span>
+
+                                                            <strong>
+                                                                {item.status === "active"
+                                                                    ? "Đang hoạt động"
+                                                                    : "Ngừng hoạt động"}
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="accommodation-card__fees">
+                                                        {item.cleaning_fee > 0 && (
+                                                            <span>
+                                                                <i className="fa-solid fa-broom"></i>
+
+                                                                Phí vệ sinh:{" "}
+
+                                                                <strong>
+                                                                    {Number(
+                                                                        item.cleaning_fee
+                                                                    ).toLocaleString("vi-VN")}{" "}
+                                                                    VND
+                                                                </strong>
+                                                            </span>
+                                                        )}
+
+                                                        {item.service_fee_percent > 0 && (
+                                                            <span>
+                                                                <i className="fa-solid fa-percent"></i>
+
+                                                                Phí dịch vụ:{" "}
+
+                                                                <strong>
+                                                                    {item.service_fee_percent}%
+                                                                </strong>
+                                                            </span>
+                                                        )}
                                                     </div>
 
                                                     <div className="accommodation-card__availability">
@@ -206,12 +274,19 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                                     </span>
 
                                                     <strong>
-                                                        {Number(item.price_per_night).toLocaleString("vi-VN")} VND
+                                                        {Number(
+                                                            item.price_per_night || 0
+                                                        ).toLocaleString("vi-VN")}{" "}
+                                                        VND
                                                     </strong>
 
                                                     {item.cleaning_fee > 0 && (
                                                         <small>
-                                                            + {Number(item.cleaning_fee).toLocaleString("vi-VN")} VND phí vệ sinh
+                                                            +{" "}
+                                                            {Number(
+                                                                item.cleaning_fee
+                                                            ).toLocaleString("vi-VN")}{" "}
+                                                            VND phí vệ sinh
                                                         </small>
                                                     )}
 
@@ -223,11 +298,16 @@ function AboutRoom({ data, disableButton, setDisable }) {
 
                                                     <Button
                                                         onClick={() => checkModal(item)}
-                                                        disabled={disableButton}
+                                                        disabled={
+                                                            disableButton ||
+                                                            item.status !== "active"
+                                                        }
                                                     >
-                                                        {disableButton
-                                                            ? "Đã có người đặt"
-                                                            : "Đặt phòng"}
+                                                        {item.status !== "active"
+                                                            ? "Ngừng hoạt động"
+                                                            : disableButton
+                                                                ? "Đã có người đặt"
+                                                                : "Đặt phòng"}
                                                     </Button>
                                                 </div>
                                             </div>
@@ -261,7 +341,9 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                     <span>/10</span>
                                 </div>
 
-                                <h3>Khách nói gì về kỳ nghỉ của họ</h3>
+                                <h3>
+                                    Khách nói gì về kỳ nghỉ của họ
+                                </h3>
 
                                 <p>
                                     Đánh giá từ những khách đã từng lưu trú tại cơ sở này.
@@ -282,7 +364,8 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                                 )
                                             )
                                         ).toLocaleString("vi-VN")
-                                        : 0} VND
+                                        : 0}{" "}
+                                    VND
                                 </strong>
 
                                 <small>
@@ -305,6 +388,7 @@ function AboutRoom({ data, disableButton, setDisable }) {
                     </div>
                 </div>
             </div>
+
         </>
     )
 }
