@@ -11,17 +11,19 @@ import { FaSearch } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { Link, useOutletContext } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
+import Swal from 'sweetalert2';
 
 
 export default function QuanTri() {
-    const {user} = useOutletContext();
+    const { user } = useOutletContext();
     const [accommodations, setAccommodations] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [search, setSearch] = useState("");
-    const [category,setCategory] = useState("");
+    const [category, setCategory] = useState("");
     const [categories, setCategories] = useState([]);
-    const [overview,setOverview] = useState({});
+    const [overview, setOverview] = useState({});
+    const [reload, setReload] = useState(false);
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const onPageChange = useCallback((page) => {
@@ -50,17 +52,60 @@ export default function QuanTri() {
         return <span className="accommodation-status status-rejected">Bị Từ Chối</span>;
     }, []);
 
+    const handleRemoveAccommodation = useCallback((id) => {
+        fetch(`${apiUrl}host/accommodation/delete/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        })
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message);
+                return data;
+            }).then(data => {
+                if (data.success) {
+                    setReload(reload => !reload);
+                    Swal.fire({
+                        icon: "success",
+                        title: "🎉 Thành công!",
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        background: "#ffffff",
+                        color: "#333",
+                        iconColor: "#22c55e",
+                        toast: true,
+                        position: "top-end"
+                    });
+                }
+            }).catch(ex => {
+                Swal.fire({
+                    icon: "success",
+                    title: "🎉 Thành công!",
+                    text: ex,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    background: "#ffffff",
+                    color: "#333",
+                    iconColor: "#22c55e",
+                    toast: true,
+                    position: "top-end"
+                });
+            })
+    }, [])
+
     useEffect(() => {
         fetch(`${apiUrl}categories`, {
             "credentials": "include"
         })
             .then(async res => {
                 const data = await res.json();
-                if(!res.ok) throw new Error(data.message);
+                if (!res.ok) throw new Error(data.message);
                 return data;
             })
             .then(data => {
-                if(data.success) setCategories(data.categories);
+                if (data.success) setCategories(data.categories);
             })
             .catch(ex => {
                 console.log(ex);
@@ -80,7 +125,7 @@ export default function QuanTri() {
                     setOverview(data.overview);
                 }
             })
-    }, [currentPage, search,category])
+    }, [currentPage, search, category, reload])
 
     return (
         <>
@@ -147,11 +192,11 @@ export default function QuanTri() {
                                 </div>
                                 <select name="category" onChange={handleChangeTool}>
                                     <option value={"all"}>Tất cả loại hình</option>
-                                    {categories?.length > 0 ? categories.map((item) => 
-                                        <option value = {item._id}>{item.title}</option>
+                                    {categories?.length > 0 ? categories.map((item) =>
+                                        <option value={item._id}>{item.title}</option>
                                     ) : <></>}
                                 </select>
-                                {user.role == "owner" ? <Link to = {"create"}><button>+ Thêm Mới Cơ Sở Lưu Trú</button></Link> : <></>}
+                                {user.role == "owner" ? <Link to={"create"}><button>+ Thêm Mới Cơ Sở Lưu Trú</button></Link> : <></>}
                             </div>
                         </div>
                         <div className="table-wrapper">
@@ -186,15 +231,15 @@ export default function QuanTri() {
                                             </td>
                                             <td>
                                                 <div className="accommodation-actions">
-                                                    <Link to = {`detail/${item._id}`}>
+                                                    <Link to={`detail/${item._id}`}>
                                                         <button type="button" className="accommodation-btn accommodation-btn-view" title="Xem chi tiết"><FaRegEye /></button>
                                                     </Link>
                                                     {user?.role == "admin" ? <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaFlag /></button> : <></>}
-                                                    {user?.role == "owner" ? 
-                                                    <Link to = {`edit/${item._id}`}>
-                                                        <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaEdit /></button>
-                                                    </Link> : <></>}                  
-                                                    <button type="button" className="accommodation-btn accommodation-btn-delete" title="Xóa"><MdDelete /></button>
+                                                    {user?.role == "owner" ?
+                                                        <Link to={`edit/${item._id}`}>
+                                                            <button type="button" className="accommodation-btn accommodation-btn-flag" title="Kiểm duyệt"><FaEdit /></button>
+                                                        </Link> : <></>}
+                                                    {user?.role == "owner" ? <button type="button" className="accommodation-btn accommodation-btn-delete" title="Xóa" onClick={() => { handleRemoveAccommodation(item._id) }}><MdDelete /></button> : <></>}
                                                 </div>
                                             </td>
                                         </tr>
