@@ -3,6 +3,7 @@ import "../../../assets/css/admin/users/edit-user.css";
 import { Image } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import SwalAlert from "../../../Component/SwalAlert/swal-alert";
 
 export default function CreateUser() {
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
@@ -82,35 +83,11 @@ export default function CreateUser() {
             })
             .then(data => {
                 if (data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "🎉 Thành công!",
-                        text: "Tạo mới tài khoản người dùng thành công",
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#22c55e",
-                        toast: true,
-                        position: "top-end"
-                    });
+                    SwalAlert("success",2000,"Tạo mới tài khoản người dùng thành công");
                     navigate("/admin/user");
                 }
             }).catch(ex => {
-                Swal.fire({
-                    icon: "error",
-                    title: "❌ Có lỗi xảy ra!",
-                    text: `${ex.message}`,
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    background: "#ffffff",
-                    color: "#333",
-                    iconColor: "#ef4444",
-                    toast: true,
-                    position: "top-end"
-                });
+                SwalAlert("error",2000,ex);
             })
     }, [user])
 

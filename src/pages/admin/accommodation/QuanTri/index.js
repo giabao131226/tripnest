@@ -12,6 +12,7 @@ import { FaRegEye } from "react-icons/fa";
 import { Link, useOutletContext } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import Swal from 'sweetalert2';
+import SwalAlert from "../../../../Component/SwalAlert/swal-alert";
 
 
 export default function QuanTri() {
@@ -64,34 +65,10 @@ export default function QuanTri() {
             }).then(data => {
                 if (data.success) {
                     setReload(reload => !reload);
-                    Swal.fire({
-                        icon: "success",
-                        title: "🎉 Thành công!",
-                        text: data.message,
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#22c55e",
-                        toast: true,
-                        position: "top-end"
-                    });
+                    SwalAlert("success",2000,data.message);
                 }
             }).catch(ex => {
-                Swal.fire({
-                    icon: "success",
-                    title: "🎉 Thành công!",
-                    text: ex,
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    background: "#ffffff",
-                    color: "#333",
-                    iconColor: "#22c55e",
-                    toast: true,
-                    position: "top-end"
-                });
+                SwalAlert("error",2000,ex);
             })
     }, [])
 

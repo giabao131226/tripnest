@@ -6,6 +6,7 @@ import "../../assets/css/client/manage-accommodation/create.css"
 import { FaInbox } from "react-icons/fa6";
 import { data, useAsyncError } from "react-router-dom";
 import Swal from 'sweetalert2'
+import SwalAlert from "../SwalAlert/swal-alert";
 
 export default function CreateAccommodation() {
     const [content, setContent] = useState("");
@@ -163,20 +164,8 @@ export default function CreateAccommodation() {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Đã lưu thành công!",
-                        text: "Thông tin cơ sở lưu trú đã được cập nhật.",
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 2500,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#22c55e"
-                    });
-
+                    SwalAlert("success",2000,"Thông tin cơ sở lưu trú đã được cập nhật.");
+                    
                     e.target.reset();
                     setDataUpToSever({});
                     setImageAccomodation([]);
