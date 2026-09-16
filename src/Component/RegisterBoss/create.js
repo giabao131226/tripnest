@@ -19,7 +19,7 @@ export default function CreateAccommodation() {
     const [amenities, setAmenities] = useState([]);
     const [amenity, setAmenity] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [previewRoomImage, setPreviewRoomImage] = useState({});  
+    const [previewRoomImage, setPreviewRoomImage] = useState({});
     const [roomImages, setRoomImages] = useState([]);
     const [roomImageRoomIds, setRoomImageRoomIds] = useState([]);
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
@@ -164,15 +164,18 @@ export default function CreateAccommodation() {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    SwalAlert("success",2000,"Thông tin cơ sở lưu trú đã được cập nhật.");
-                    
+                    SwalAlert({
+                        "status": "success",
+                        "time": 2000,
+                        "message": "Thông tin cơ sở lưu trú đã được cập nhật."
+                    });
                     e.target.reset();
                     setDataUpToSever({});
                     setImageAccomodation([]);
                     setImagesUpToSever([]);
                     setImagePreviewLisence("");
                     setAmenity([]);
-                    setPreviewRoomImage({});                    
+                    setPreviewRoomImage({});
                     setRoomImages([]);
                     setRoomImageRoomIds([]);
                 }

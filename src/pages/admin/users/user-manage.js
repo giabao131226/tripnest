@@ -3,7 +3,8 @@ import "./user.css";
 import Pagination from "../../../Component/Pagination/pagination";
 import { Link, useParams } from "react-router-dom";
 import Swal from 'sweetalert2';
-
+import { FaEye, FaEdit, FaLock, FaUnlock, FaTrash } from "react-icons/fa";
+import SwalAlert from "../../../Component/SwalAlert/swal-alert";
 
 export default function ManageUser() {
     const [users, setUsers] = useState([]);
@@ -14,7 +15,7 @@ export default function ManageUser() {
     const [filterRole, setFilterRole] = useState("");
     const [filterStatus, setFilterStatus] = useState("");
     const [search, setSearch] = useState("");
-    const [reload,setReload] = useState(false);
+    const [reload, setReload] = useState(false);
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleChange = (e) => {
@@ -75,44 +76,24 @@ export default function ManageUser() {
             method: "PATCH",
             credentials: "include"
         })
-            .then(res => res.json())
+            .then(async res => {
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.message);
+                return data;
+            })
             .then(data => {
                 if (data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "🎉 Thành công!",
-                        text: "Cập nhật tài khoản thành công.",
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#22c55e",
-                        toast: true,
-                        position: "top-end"
-                    });
+                    SwalAlert("success",2000,"Cập nhật tài khoản thành công.");
                     const newUsers = users.map((item) => {
                         if (item._id == id) item.status = status;
                         return { ...item };
                     })
                     setUsers(newUsers);
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "❌ Có lỗi xảy ra!",
-                        text: data.message,
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#ef4444",
-                        toast: true,
-                        position: "top-end"
-                    });
-                }
+                } 
+            }).catch(ex => {
+                SwalAlert("success",2000,ex);
             })
-    }, [reload,users])
+    }, [reload, users])
 
     const onPageChange = useCallback((page) => {
         setCurrentPage(page);
@@ -132,7 +113,7 @@ export default function ManageUser() {
                     setTotalPage(data.totalPage);
                 }
             })
-    }, [reload,currentPage, filterRole, filterStatus, search])
+    }, [reload, currentPage, filterRole, filterStatus, search])
 
     return (
         <>
@@ -285,22 +266,37 @@ export default function ManageUser() {
                                         <div className="user-actions">
                                             <Link to={`/admin/user/detail/${user._id}`} className="text-decoration-none">
                                                 <button title="Xem">
-                                                    👁
-                                                </button>
-                                            </Link>
-                                            <Link to={`/admin/user/edit/${user._id}`} className="text-decoration-none">
-                                                <button title="Chỉnh sửa">
-                                                    ✏️
+                                                    <FaEye />
                                                 </button>
                                             </Link>
 
-                                            {user?.status == "banned" ? <><button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id, "active") }}>
-                                                🔓
-                                            </button></> : <button title="Khóa tài khoản" onClick={() => { handleChangeStatus(user._id, "banned") }}>
-                                                🔒
-                                            </button>}
-                                            <button title="Xoá" onClick={() => handleRemove(user._id)}>
-                                                🗑️
+                                            <Link to={`/admin/user/edit/${user._id}`} className="text-decoration-none">
+                                                <button title="Chỉnh sửa">
+                                                    <FaEdit />
+                                                </button>
+                                            </Link>
+
+                                            {user?.status === "banned" ? (
+                                                <button
+                                                    title="Mở khóa tài khoản"
+                                                    onClick={() => handleChangeStatus(user._id, "active")}
+                                                >
+                                                    <FaUnlock />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    title="Khóa tài khoản"
+                                                    onClick={() => handleChangeStatus(user._id, "banned")}
+                                                >
+                                                    <FaLock />
+                                                </button>
+                                            )}
+
+                                            <button
+                                                title="Xóa"
+                                                onClick={() => handleRemove(user._id)}
+                                            >
+                                                <FaTrash />
                                             </button>
                                         </div>
                                     </td>

@@ -22,6 +22,7 @@ import EditUser from "../pages/admin/users/edit";
 import CreateUser from "../pages/admin/users/create";
 import ProtectedLayoutHost from "../layouts/host/protected/protected-layout";
 import LayoutDefaultHost from "../layouts/host/default/default";
+import ManageCategory from "../pages/admin/category/category";
 
 export const routes = [{
     path: "/",
@@ -131,6 +132,15 @@ export const routes = [{
                         },
                     ],
                 },
+                {
+                    path: "categories",
+                    children: [
+                        {
+                            path: "",
+                            element: <ManageCategory />
+                        }
+                    ]
+                }
             ],
         },
     ],

@@ -8,14 +8,16 @@ import { MdLibraryAdd } from "react-icons/md";
 import { FaHotel } from "react-icons/fa";
 import { FaBuildingCircleCheck } from "react-icons/fa6";
 import { FaUserGroup } from "react-icons/fa6";
+import { TbCategoryFilled } from "react-icons/tb";
 
-export default function Sider({user}) {
-    return (   
+
+export default function Sider({ user }) {
+    return (
         <div className="sider bg-black bg-white d-flex flex-column justify-start px-4 py-2">
 
             <div className="d-flex items-center justify-between text-white">
                 <Link to={"/admin"}>
-                    <span className="header-admin-title">{user?.role =="owner" ? "HOST" : "Admin" }</span>
+                    <span className="header-admin-title">{user?.role == "owner" ? "HOST" : "Admin"}</span>
                 </Link>
 
                 <button className="cursor-pointer bg-transparent border-none font-20 text-white">
@@ -37,13 +39,13 @@ export default function Sider({user}) {
 
                 {user?.role == "admin" ? <><p className="title">Người dùng</p>
 
-                <div className="main">
+                    <div className="main">
 
-                    <Link to="/admin/user">
-                        <FaUserGroup />
-                        <span>Quản lý người dùng</span>
-                    </Link>
-                </div></> : <></>}
+                        <Link to="/admin/user">
+                            <FaUserGroup />
+                            <span>Quản lý người dùng</span>
+                        </Link>
+                    </div></> : <></>}
 
                 <p className="title">QUẢN LÝ CƠ SỞ LƯU TRÚ</p>
 
@@ -63,17 +65,34 @@ export default function Sider({user}) {
 
                 {user?.role == "admin" ? <><p className="title">PHÂN QUYỀN</p>
 
-                <div className="main">
+                    <div className="main">
 
-                    <Link to="/admin/roles">
-                        <span>Nhóm quyền</span>
-                    </Link>
+                        <Link to="/admin/roles">
+                            <span>Nhóm quyền</span>
+                        </Link>
 
-                    <Link to="/admin/permissions">
-                        <span>Phân quyền</span>
-                    </Link>
+                        <Link to="/admin/permissions">
+                            <span>Phân quyền</span>
+                        </Link>
 
-                </div></> : <></>}
+                    </div></> : <></>}
+
+
+                {user?.role == "admin" ? <>
+                    <p className="title">Khác</p>
+                    <div className="main">
+
+                        <Link to="/admin/categories">
+                            <TbCategoryFilled />
+                            <span>Loại Hình</span>
+                        </Link>
+
+                        <Link to="/admin/amenities">
+                            <span>Tiện Ích</span>
+                        </Link>
+
+                    </div></> : <></>
+                }
 
             </div>
         </div>
