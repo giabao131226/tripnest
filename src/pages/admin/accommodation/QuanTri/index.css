@@ -39,12 +39,26 @@
 }
 
 .overview-cards {
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
 }
 
+.overview-cards--category {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.overview-cards--category .overview-card {
+    flex: 1;
+    max-width: 420px;
+}
+
 .overview-card {
+    width: 100%;
+    min-width: 0;
     min-height: 78px;
     padding: 14px 16px;
     display: flex;
@@ -109,9 +123,12 @@
 }
 
 .overview-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 12px;
     color: #6b7280;
-    white-space: nowrap;
 }
 
 .accommodation-list {
@@ -124,40 +141,38 @@
     overflow: hidden;
 }
 
-.accommodation-list .tool{
+.accommodation-list .tool {
     display: flex;
     column-gap: 4px;
 }
 
-
-.accommodation-list .tool .tool-search{
+.accommodation-list .tool .tool-search {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 8px;
 }
 
-.accommodation-list .tool select{
+.accommodation-list .tool select {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 8px;
 }
 
-.accommodation-list .tool button{
+.accommodation-list .tool button {
     border: none;
     font-weight: bold;
     border-radius: 8px;
-    
     color: white;
     background-color: red;
 }
-.accommodation-list .tool button:hover{
+
+.accommodation-list .tool button:hover {
     opacity: 0.8;
 }
 
-.accommodation-list .tool input{
+.accommodation-list .tool input {
     border: none;
     outline: none;
-
 }
 
 .list-header {
@@ -410,43 +425,47 @@
 }
 
 .accommodation-status {
-  display: inline-block;
-  padding: 4px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 20px;
-  text-align: center;
-  line-height: 1.4;
-  white-space: nowrap;
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 20px;
+    text-align: center;
+    line-height: 1.4;
+    white-space: nowrap;
 }
 
 .accommodation-status.status-active {
-  color: #15803d;
-  background-color: #dcfce7;
-  border: 1px solid #bbf7d0;
+    color: #15803d;
+    background-color: #dcfce7;
+    border: 1px solid #bbf7d0;
 }
 
 .accommodation-status.status-inactive {
-  color: #4b5563;
-  background-color: #f3f4f6;
-  border: 1px solid #e5e7eb;
+    color: #4b5563;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
 }
 
 .accommodation-status.status-pending {
-  color: #b45309;
-  background-color: #fef3c7;
-  border: 1px solid #fde68a;
+    color: #b45309;
+    background-color: #fef3c7;
+    border: 1px solid #fde68a;
 }
 
 .accommodation-status.status-rejected {
-  color: #b91c1c;
-  background-color: #fee2e2;
-  border: 1px solid #fecaca;
+    color: #b91c1c;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
 }
 
 @media (max-width: 1100px) {
     .overview-cards {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .overview-cards--category {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -462,6 +481,10 @@
     .overview-cards {
         grid-template-columns: 1fr;
         gap: 10px;
+    }
+
+    .overview-cards--category {
+        grid-template-columns: 1fr;
     }
 
     .overview-card {

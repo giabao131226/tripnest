@@ -14,7 +14,7 @@ import SwalAlert from "../../Component/SwalAlert/swal-alert";
 import { MdCategory } from "react-icons/md";
 import "./TableManagement.css"
 
-export default function TableManagement({ data, page, currentPage, totalPage, user, overview, onPageChange, categories, setSearch, setReload, setCategory, handleRemove }) {
+export default function TableManagement({ data, page, currentPage, totalPage, user, overview, onPageChange, categories, setSearch, setReload, setStatus, setCategory, handleRemove }) {
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const titleAccommodationPage = [
         {
@@ -86,6 +86,7 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
     const handleChangeTool = useCallback((e) => {
         const { name, value } = e.target;
         if (name == "search") setSearch(value);
+        else if (name == "status") setStatus(value);
         else setCategory(value);
     }, [])
 
@@ -93,44 +94,116 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
         <>
             <div className="accommodation-manage container-fluid">
                 <div className="main">
-                    {page == "accommodation-manage" ? <div className="accommodation-overview">
-                        <div className="overview-header">
-                            <div>
-                                <p className="overview-title">Thông Tin Tổng Quan</p>
-                                <p className="overview-description">Tổng quan tình trạng các cơ sở lưu trú</p>
+                    {(page === "accommodation-manage" || page === "category-manage") && (
+                        <div className="accommodation-overview">
+                            <div className="overview-header">
+                                <div>
+                                    <p className="overview-title">
+                                        {page === "accommodation-manage"
+                                            ? "Thông Tin Tổng Quan"
+                                            : "Thông Tin Danh Mục"}
+                                    </p>
+                                    <p className="overview-description">
+                                        {page === "accommodation-manage"
+                                            ? "Tổng quan tình trạng các cơ sở lưu trú"
+                                            : "Tổng quan tình trạng các danh mục"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className={`overview-cards ${page === "category-manage" ? "overview-cards--category" : ""}`}>
+                                {page === "accommodation-manage" ? (
+                                    <>
+                                        <div className="overview-card">
+                                            <div className="overview-icon active">
+                                                <FaCheck />
+                                            </div>
+                                            <div className="overview-info">
+                                                <span className="overview-number">
+                                                    {overview?.totalActive}
+                                                </span>
+                                                <span className="overview-label">
+                                                    Đang Hoạt Động
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="overview-card">
+                                            <div className="overview-icon inactive">
+                                                <FaToggleOff />
+                                            </div>
+                                            <div className="overview-info">
+                                                <span className="overview-number">
+                                                    {overview?.totalInActive}
+                                                </span>
+                                                <span className="overview-label">
+                                                    Không Hoạt Động
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="overview-card">
+                                            <div className="overview-icon pending">
+                                                <IoMdTime />
+                                            </div>
+                                            <div className="overview-info">
+                                                <span className="overview-number">
+                                                    {overview?.totalPending}
+                                                </span>
+                                                <span className="overview-label">
+                                                    Chờ Kiểm Duyệt
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="overview-card">
+                                            <div className="overview-icon denied">
+                                                <FaTimesCircle />
+                                            </div>
+                                            <div className="overview-info">
+                                                <span className="overview-number">
+                                                    {overview?.totalDenided}
+                                                </span>
+                                                <span className="overview-label">
+                                                    Bị Từ Chối
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="overview-card">
+                                            <div className="overview-icon active">
+                                                <FaCheck />
+                                            </div>
+                                            <div className="overview-info">
+                                                <span className="overview-number">
+                                                    {overview?.totalActive}
+                                                </span>
+                                                <span className="overview-label">
+                                                    Đang Hoạt Động
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="overview-card">
+                                            <div className="overview-icon inactive">
+                                                <FaToggleOff />
+                                            </div>
+                                            <div className="overview-info">
+                                                <span className="overview-number">
+                                                    {overview?.totalInActive}
+                                                </span>
+                                                <span className="overview-label">
+                                                    Bị Khóa
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
-                        <div className="overview-cards">
-                            <div className="overview-card">
-                                <div className="overview-icon active"><FaCheck /></div>
-                                <div className="overview-info">
-                                    <span className="overview-number">{overview?.totalActive}</span>
-                                    <span className="overview-label">Đang Hoạt Động</span>
-                                </div>
-                            </div>
-                            <div className="overview-card">
-                                <div className="overview-icon inactive"><FaToggleOff /></div>
-                                <div className="overview-info">
-                                    <span className="overview-number">{overview?.totalInActive}</span>
-                                    <span className="overview-label">Không Hoạt Động</span>
-                                </div>
-                            </div>
-                            <div className="overview-card">
-                                <div className="overview-icon pending"><IoMdTime /></div>
-                                <div className="overview-info">
-                                    <span className="overview-number">{overview?.totalPending}</span>
-                                    <span className="overview-label">Chờ Kiểm Duyệt</span>
-                                </div>
-                            </div>
-                            <div className="overview-card">
-                                <div className="overview-icon denied"><FaTimesCircle /></div>
-                                <div className="overview-info">
-                                    <span className="overview-number">{overview?.totalDenided}</span>
-                                    <span className="overview-label">Bị Từ Chối</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> : <></>}
+                    )}
                     <div className="accommodation-list">
                         <div className="list-header">
                             <div className="d-flex items-center gap-x-3">
@@ -171,13 +244,24 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
                                 {page === "accommodation-manage" && (
                                     <select name="category" onChange={handleChangeTool}>
                                         <option value="all">Tất cả loại hình</option>
-
                                         {categories?.length > 0 &&
                                             categories.map(item => (
                                                 <option key={item._id} value={item._id}>
                                                     {item.title}
                                                 </option>
                                             ))}
+                                    </select>
+                                )}
+
+                                {page === "category-manage" && (
+                                    <select
+                                        name="status"
+                                        className="category-status-filter"
+                                        onChange={handleChangeTool}
+                                    >
+                                        <option value="all">Tất cả trạng thái</option>
+                                        <option value="active">Hoạt động</option>
+                                        <option value="inactive">Bị khóa</option>
                                     </select>
                                 )}
 
@@ -196,95 +280,93 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
                         </div>
                         <div className="table-wrapper">
                             {page === "accommodation-manage" ? (
-                                <table className="accommodation-table category-table">
+                                <table className="accommodation-table">
                                     <thead>
                                         <tr>
-                                            {titleCategoryPage.map((item, index) => (
-                                                <th key={index} className={`category-table__header ${item.class}`}>
+                                            {titleAccommodationPage.map((item, index) => (
+                                                <th key={index} className={item.class}>
                                                     {item.title}
                                                 </th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data.map((category, index) => (
-                                            <tr className="category-table__row" key={category._id || index}>
-                                                <td className="category-table__index">
-                                                    {index + 1}
-                                                </td>
-
-                                                <td className="category-table__name-cell">
-                                                    <div className="category-name">
-                                                        <div className="category-name-icon">
-                                                            <MdCategory />
+                                        {data.map((item, index) => (
+                                            <tr key={item._id || index}>
+                                                <td>
+                                                    <div className="accommodation-name">
+                                                        <div className="accommodation-name-icon">
+                                                            <FaHotel />
                                                         </div>
-                                                        <span>{category.title}</span>
+                                                        <span>{item.name || "Chưa cập nhật"}</span>
                                                     </div>
                                                 </td>
 
-                                                <td className="category-table__status-cell">
+                                                <td>
+                                                    {item.category_id?.title || "Chưa cập nhật"}
+                                                </td>
+
+                                                <td>
+                                                    <div className="owner-info">
+                                                        <div className="owner-avatar">
+                                                            {item.ownerId?.username?.charAt(0)?.toUpperCase() || "?"}
+                                                        </div>
+                                                        <span>
+                                                            {item.ownerId?.username || "Chưa cập nhật"}
+                                                        </span>
+                                                    </div>
+                                                </td>
+
+                                                <td>
                                                     <div className="status-wrapper">
-                                                        {category.status === "banned" ? (
-                                                            <span className="status-locked">
-                                                                <i></i>
-                                                                Bị khóa
-                                                            </span>
-                                                        ) : (
-                                                            <span className="status-active">
-                                                                <i></i>
-                                                                Hoạt động
-                                                            </span>
-                                                        )}
+                                                        {getAccommodationAtt(item.status)}
                                                     </div>
                                                 </td>
 
-                                                <td className="category-table__accommodation-cell">
-                                                    <div className="category-accommodation">
-                                                        <FaHotel className="category-accommodation__icon" />
-                                                        <span className="category-accommodation__quantity">
-                                                            {category.quantityAccLinkTo || 0}
-                                                        </span>
-                                                        <span className="category-accommodation__label">
-                                                            Chỗ ở
-                                                        </span>
-                                                    </div>
-                                                </td>
-
-                                                <td className="category-table__date-cell">
-                                                    {category.createdAt
-                                                        ? new Date(category.createdAt).toLocaleString("vi-VN")
-                                                        : "Chưa cập nhật"}
-                                                </td>
-
-                                                <td className="category-table__action-cell">
-                                                    <div className="category-actions">
-                                                        <Link to={`detail/${category._id}`}>
+                                                <td>
+                                                    <div className="accommodation-actions">
+                                                        <Link to={`detail/${item._id}`}>
                                                             <button
                                                                 type="button"
-                                                                className="category-action-btn category-action-btn--view"
+                                                                className="accommodation-btn accommodation-btn-view"
                                                                 title="Xem chi tiết"
                                                             >
                                                                 <FaRegEye />
                                                             </button>
                                                         </Link>
 
-                                                        <Link to={`edit/${category._id}`}>
+                                                        {user?.role === "admin" ? (
                                                             <button
                                                                 type="button"
-                                                                className="category-action-btn category-action-btn--edit"
-                                                                title="Chỉnh sửa"
+                                                                className="accommodation-btn accommodation-btn-flag"
+                                                                title="Kiểm duyệt"
                                                             >
-                                                                <FaEdit />
+                                                                <FaFlag />
                                                             </button>
-                                                        </Link>
+                                                        ) : null}
 
-                                                        <button
-                                                            type="button"
-                                                            className="category-action-btn category-action-btn--delete"
-                                                            title="Xóa"
-                                                        >
-                                                            <MdDelete />
-                                                        </button>
+                                                        {user?.role === "owner" ? (
+                                                            <>
+                                                                <Link to={`edit/${item._id}`}>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="accommodation-btn accommodation-btn-flag"
+                                                                        title="Chỉnh sửa"
+                                                                    >
+                                                                        <FaEdit />
+                                                                    </button>
+                                                                </Link>
+
+                                                                <button
+                                                                    type="button"
+                                                                    className="accommodation-btn accommodation-btn-delete"
+                                                                    title="Xóa"
+                                                                    onClick={() => handleRemove(item._id)}
+                                                                >
+                                                                    <MdDelete />
+                                                                </button>
+                                                            </>
+                                                        ) : null}
                                                     </div>
                                                 </td>
                                             </tr>

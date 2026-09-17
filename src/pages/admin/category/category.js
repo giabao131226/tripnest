@@ -10,24 +10,15 @@ import TableManagement from "../../../Component/TableManagement/TableManagement"
 export default function ManageCategory() {
 
     const [categories, setCategories] = useState([]);
+    const [overview,setOverview] = useState({});
     const params = useParams();
     const [currentPage, setCurrentPage] = useState(params.page || 1);
     const [totalPage, setTotalPage] = useState(0);
     const [filterRole, setFilterRole] = useState("");
-    const [filterStatus, setFilterStatus] = useState("");
     const [search, setSearch] = useState("");
+    const [status,setStatus] = useState("");
     const [reload, setReload] = useState(false);
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        if (name == "role") {
-            setFilterRole(value);
-        } else if (name == "status") {
-            setFilterStatus(value);
-        }
-        setSearch(value);
-    }
 
     const handleRemove = useCallback((id) => {
         fetch(`${apiUrl}admin/user/delete/${id}`, {
@@ -40,35 +31,19 @@ export default function ManageCategory() {
             })
             .then(data => {
                 if (data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "🎉 Thành công!",
-                        text: `${data.message}`,
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#22c55e",
-                        toast: true,
-                        position: "top-end"
-                    });
+                    SwalAlert({
+                        "status": "success",
+                        "time": 2000,
+                        "message": data.message
+                    })
                     setReload(reload => !reload);
                 }
             }).catch(error => {
-                Swal.fire({
-                    icon: "error",
-                    title: "❌ Có lỗi xảy ra!",
-                    text: `${error.message}`,
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    background: "#ffffff",
-                    color: "#333",
-                    iconColor: "#ef4444",
-                    toast: true,
-                    position: "top-end"
-                });
+                SwalAlert({
+                        "status": "error",
+                        "time": 2000,
+                        "message": error
+                    })
             })
     })
 
@@ -102,7 +77,7 @@ export default function ManageCategory() {
 
 
     useEffect(() => {
-        fetch(`${apiUrl}categories/all`, {
+        fetch(`${apiUrl}categories/all?status=${status}&search=${search}`, {
             "credentials": "include"
         })
             .then(async res => {
@@ -115,11 +90,12 @@ export default function ManageCategory() {
                     setCategories(data.categories);
                     setCurrentPage(data.currentPage);
                     setTotalPage(data.totalPage);
+                    setOverview(data.overview);
                 }
             }).catch(ex => {
                 SwalAlert("error", 2000, ex);
             })
-    }, [reload, currentPage, filterRole, filterStatus, search])
+    }, [reload, currentPage, search,status])
 
     return (
         <TableManagement
@@ -127,10 +103,13 @@ export default function ManageCategory() {
             page={"category-manage"}
             currentPage={currentPage}
             totalPage={totalPage}
+            user = {{}}
+            overview = {overview}
             onPageChange={onPageChange}
             categories={categories}
             setSearch={setSearch}
             setReload={setReload}
+            setStatus = {setStatus}
             handleRemove={handleRemove}
         />
     )
