@@ -23,6 +23,7 @@ import CreateUser from "../pages/admin/users/create";
 import ProtectedLayoutHost from "../layouts/host/protected/protected-layout";
 import LayoutDefaultHost from "../layouts/host/default/default";
 import ManageCategory from "../pages/admin/category/category";
+import CreateCategory from "../pages/admin/category/create";
 
 export const routes = [{
     path: "/",
@@ -138,6 +139,10 @@ export const routes = [{
                         {
                             path: "",
                             element: <ManageCategory />
+                        },
+                        {
+                            path: "create",
+                            element: <CreateCategory />
                         }
                     ]
                 }
