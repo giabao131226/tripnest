@@ -77,7 +77,7 @@ export default function ManageCategory() {
 
 
     useEffect(() => {
-        fetch(`${apiUrl}categories/all?status=${status}&search=${search}`, {
+        fetch(`${apiUrl}categories/all?status=${status}&search=${search}&page=${currentPage}`, {
             "credentials": "include"
         })
             .then(async res => {
