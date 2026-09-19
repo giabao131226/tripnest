@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/admin/category/create.css";
 import {
     FaHotel,
@@ -8,6 +8,7 @@ import {
     FaBed
 } from "react-icons/fa";
 import SwalAlert from "../../../Component/SwalAlert/swal-alert";
+import { useParams } from "react-router-dom";
 const iconOptions = [
     {
         name: "hotel",
@@ -36,8 +37,9 @@ const iconOptions = [
     }
 ];
 
-export default function CreateCategory() {
+export default function EditCategory() {
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
+    const params = useParams();
     const [data, setData] = useState({
         title: "",
         description: "",
@@ -80,8 +82,8 @@ export default function CreateCategory() {
             icon: data.icon
         };
 
-        fetch(`${apiUrl}categories/create`, {
-            method: "POST",
+        fetch(`${apiUrl}categories/edit/${data._id}`, {
+            method: "PATCH",
             credentials: "include",
             headers: {
                 "Content-type": "application/json"
@@ -99,6 +101,7 @@ export default function CreateCategory() {
                         "time": 2000,
                         "message": data.message
                     });
+                    setData(data.newDetail);
                 }
             }).catch(ex => {
                 SwalAlert({
@@ -110,6 +113,26 @@ export default function CreateCategory() {
 
     }, [data]);
 
+    useEffect(() => {
+        fetch(`${apiUrl}categories/detail/${params.slug}`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.message);
+                return data;
+            }).then(data => {
+                if (data.success) {
+                    setData(data.detail);
+                }
+            }).catch(ex => SwalAlert({
+                "status": "error",
+                "time": 2000,
+                "message": ex
+            }))
+    }, [])
+
     const SelectedIcon =
         iconOptions.find(item => item.name === data.icon)?.component || FaHotel;
 
@@ -118,8 +141,8 @@ export default function CreateCategory() {
             <div className="category-create__container">
                 <div className="category-create__header">
                     <div>
-                        <h1>Tạo Danh Mục</h1>
-                        <p>Thêm danh mục mới cho các cơ sở lưu trú trên TripNest</p>
+                        <h1>Chỉnh sửa thông tin danh mục</h1>
+                        <p>Chỉnh sửa thông tin danh mục cho các cơ sở lưu trú trên TripNest</p>
                     </div>
                 </div>
 
@@ -158,6 +181,7 @@ export default function CreateCategory() {
                                         placeholder="Nhập mô tả cho danh mục..."
                                     />
                                 </div>
+
                                 <div className="form-group">
                                     <label>
                                         Biểu Tượng
@@ -244,7 +268,7 @@ export default function CreateCategory() {
                                         type="submit"
                                         className="btn-create"
                                     >
-                                        + Tạo Danh Mục
+                                        Cập Nhật
                                     </button>
                                 </div>
                             </div>
@@ -290,12 +314,12 @@ export default function CreateCategory() {
                                 <div className="preview-info">
                                     <div>
                                         <span>Chỗ ở liên kết</span>
-                                        <strong>0</strong>
+                                        <strong>{data.quantityAccLinkTo}</strong>
                                     </div>
 
                                     <div>
                                         <span>Ngày tạo</span>
-                                        <strong>--/--/----</strong>
+                                        <strong>{new Date(data.createdAt).toLocaleString()}</strong>
                                     </div>
                                 </div>
                             </div>

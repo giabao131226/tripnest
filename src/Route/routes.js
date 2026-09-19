@@ -24,6 +24,7 @@ import ProtectedLayoutHost from "../layouts/host/protected/protected-layout";
 import LayoutDefaultHost from "../layouts/host/default/default";
 import ManageCategory from "../pages/admin/category/category";
 import CreateCategory from "../pages/admin/category/create";
+import EditCategory from "../pages/admin/category/edit";
 
 export const routes = [{
     path: "/",
@@ -143,6 +144,10 @@ export const routes = [{
                         {
                             path: "create",
                             element: <CreateCategory />
+                        },
+                        {
+                            path: "edit/:slug",
+                            element: <EditCategory />
                         }
                     ]
                 }

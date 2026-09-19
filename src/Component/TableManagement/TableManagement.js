@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback} from "react"
 import { FaCheck, FaHotel } from "react-icons/fa";
 import { FaFlag } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -10,12 +10,9 @@ import { FaSearch } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
-import SwalAlert from "../../Component/SwalAlert/swal-alert";
-import { MdCategory } from "react-icons/md";
 import "./TableManagement.css"
 
 export default function TableManagement({ data, page, currentPage, totalPage, user, overview, onPageChange, categories, setSearch, setReload, setStatus, setCategory, handleRemove }) {
-    console.log(handleRemove);
     
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const titleAccommodationPage = [
@@ -67,7 +64,6 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
             class: "action-column"
         }
     ];
-
 
     const getAccommodationAtt = useCallback((att) => {
         if (att === "active") {
@@ -449,7 +445,7 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
                                                             </button>
                                                         </Link>
 
-                                                        <Link to={`edit/${category._id}`}>
+                                                        <Link to={`edit/${category.slug}`}>
                                                             <button
                                                                 type="button"
                                                                 className="accommodation-btn accommodation-btn-flag"

@@ -14,7 +14,6 @@ export default function ManageCategory() {
     const params = useParams();
     const [currentPage, setCurrentPage] = useState(params.page || 1);
     const [totalPage, setTotalPage] = useState(0);
-    const [filterRole, setFilterRole] = useState("");
     const [search, setSearch] = useState("");
     const [status,setStatus] = useState("");
     const [reload, setReload] = useState(false);
@@ -47,7 +46,7 @@ export default function ManageCategory() {
                         "message": error
                     })
             })
-    })
+    },[])
 
     const handleChangeStatus = useCallback((id, status) => {
         // fetch(`http://localhost:5000/admin/user/change-status/${status}/${id}`, {
