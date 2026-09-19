@@ -21,8 +21,10 @@ export default function ManageCategory() {
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleRemove = useCallback((id) => {
-        fetch(`${apiUrl}admin/user/delete/${id}`, {
-            method: "DELETE"
+        console.log(id);
+        fetch(`${apiUrl}categories/delete/${id}`, {
+            method: "DELETE",
+            credentials: "include"
         })
             .then(async res => {
                 const data = res.json();
@@ -110,6 +112,7 @@ export default function ManageCategory() {
             setSearch={setSearch}
             setReload={setReload}
             setStatus = {setStatus}
+            setCategory={{}}
             handleRemove={handleRemove}
         />
     )

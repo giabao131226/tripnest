@@ -15,6 +15,8 @@ import { MdCategory } from "react-icons/md";
 import "./TableManagement.css"
 
 export default function TableManagement({ data, page, currentPage, totalPage, user, overview, onPageChange, categories, setSearch, setReload, setStatus, setCategory, handleRemove }) {
+    console.log(handleRemove);
+    
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const titleAccommodationPage = [
         {
@@ -361,7 +363,9 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
                                                                     type="button"
                                                                     className="accommodation-btn accommodation-btn-delete"
                                                                     title="Xóa"
-                                                                    onClick={() => handleRemove(item._id)}
+                                                                    onClick={() =>{
+                                                                        handleRemove(item._id);
+                                                                    }}
                                                                 >
                                                                     <MdDelete />
                                                                 </button>
@@ -459,6 +463,9 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
                                                             type="button"
                                                             className="accommodation-btn accommodation-btn-delete"
                                                             title="Xóa"
+                                                            onClick={() =>{
+                                                                        handleRemove(category._id);
+                                                                    }}
                                                         >
                                                             <MdDelete />
                                                         </button>
