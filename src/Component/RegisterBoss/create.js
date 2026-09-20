@@ -3,6 +3,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useCallback, useEffect, useRef } from "react";
 import { useState } from "react";
 import "../../assets/css/client/manage-accommodation/create.css"
+import "../../assets/css/client/manage-accommodation/wizard-create.css"
 import { FaInbox } from "react-icons/fa6";
 import { data, useAsyncError } from "react-router-dom";
 import Swal from 'sweetalert2'
@@ -22,6 +23,7 @@ export default function CreateAccommodation() {
     const [previewRoomImage, setPreviewRoomImage] = useState({});
     const [roomImages, setRoomImages] = useState([]);
     const [roomImageRoomIds, setRoomImageRoomIds] = useState([]);
+    const [currentStep, setCurrentStep] = useState(1);
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handlePreviewImage = useCallback((e) => {
@@ -126,6 +128,7 @@ export default function CreateAccommodation() {
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
+        if (currentStep !== 3) return;
 
         const imageLisence = document.querySelector("input#lisence");
 
@@ -178,9 +181,10 @@ export default function CreateAccommodation() {
                     setPreviewRoomImage({});
                     setRoomImages([]);
                     setRoomImageRoomIds([]);
+                    setCurrentStep(1);
                 }
             });
-    }, [dataUpToSever, amenity, imagesUpToSever, roomImages, roomImageRoomIds]);
+    }, [dataUpToSever, amenity, imagesUpToSever, roomImages, roomImageRoomIds, currentStep]);
 
     const generateCode = () => {
         return Math.floor(100000 + Math.random() * 900000);
@@ -238,18 +242,81 @@ export default function CreateAccommodation() {
                 console.log(ex);
             })
     }, [])
+    const handleNextStep = () => {
+        if (currentStep === 1) {
+            if (!dataUpToSever.name || !dataUpToSever.address) {
+                SwalAlert({
+                    status: "error",
+                    time: 2000,
+                    message: "Vui lòng nhập tên và địa chỉ cơ sở lưu trú."
+                });
+                return;
+            }
+        }
+        setCurrentStep((step) => Math.min(3, step + 1));
+    };
+
+    const handlePrevStep = () => {
+        setCurrentStep((step) => Math.max(1, step - 1));
+    };
+
+    const handleGoToStep = (stepNumber) => {
+        if (stepNumber === currentStep) return;
+        setCurrentStep(stepNumber);
+    };
+
+    const steps = [
+        { number: 1, title: "Thông tin cơ bản", desc: "Tên, địa chỉ, tiện ích" },
+        { number: 2, title: "Thông tin phòng", desc: "Loại phòng và hình ảnh phòng" },
+        { number: 3, title: "Hình ảnh", desc: "Ảnh cơ sở và giấy tờ xác minh" }
+    ];
+
     return (
         <>
             <div className="py-3"></div>
-            <div className="accommodation-page">
-                <form className="accommodation-form" onSubmit={handleSubmit}>
-                    <div className="accommodation-content">
-                        <div className="accommodation-left">
+            <div className="accommodation-page wizard-page">
+                <form className="accommodation-form wizard-form" onSubmit={handleSubmit}>
+                    <div className="wizard-header">
+                        <h2>Tạo mới cơ sở lưu trú</h2>
+                        <p>Hoàn thành 3 bước để đăng ký cơ sở lưu trú của bạn</p>
+                    </div>
+                    <div className="wizard-steps">
+                        {steps.map((item) => (
+                            <div
+                                className={`wizard-step ${currentStep === item.number ? "active" : ""} ${currentStep > item.number ? "done" : ""}`}
+                                key={item.number}
+                                onClick={() => handleGoToStep(item.number)}
+                            >
+                                <button
+                                    type="button"
+                                    className="wizard-step-index"
+                                    onClick={() => handleGoToStep(item.number)}
+                                >
+                                    {item.number}
+                                </button>
+                                <div className="wizard-step-text">
+                                    <strong>{item.title}</strong>
+                                    <span>{item.desc}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="accommodation-content wizard-content">
+                        <div className={`wizard-panel ${currentStep === 1 ? "is-open" : ""}`}>
                             <div className="form-section">
                                 <h3>Thông Tin Cơ Bản</h3>
-                                <div className="form-group">
-                                    <label>Tên Cơ Sở Lưu Trú</label>
-                                    <input type="text" name="name" onChange={handleChange} required />
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Tên Cơ Sở Lưu Trú</label>
+                                        <input type="text" name="name" onChange={handleChange} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Loại Cơ Sở Lưu Trú</label>
+                                        <select name="category_id" onChange={handleChange}>
+                                            <option>--Lựa chọn loại cơ sở lưu trú--</option>
+                                            {categories.length > 0 ? categories.map((item) => <option key={item._id} value={item._id}>{item.title}</option>) : <></>}
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Địa chỉ</label>
@@ -271,15 +338,8 @@ export default function CreateAccommodation() {
                                     </div>
                                     <div className="form-group address-detail">
                                         <label>Địa chỉ cụ thể</label>
-                                        <input onChange={handleChange} name="address" type="text" placeholder="Ví dụ: 123 Trần Duy Hưng, Cầu Giấy" required />
+                                        <input onChange={handleChange} name="address" type="text" placeholder="Ví dụ: 123 Trần Duy Hưng, Cầu Giấy" />
                                     </div>
-                                </div>
-                                <div className="form-group">
-                                    <label>Loại Cơ Sở Lưu Trú</label>
-                                    <select name="category_id" onChange={handleChange}>
-                                        <option>--Lựa chọn loại cơ sở lưu trú--</option>
-                                        {categories.length > 0 ? categories.map((item) => <option key={item._id} value={item._id}>{item.title}</option>) : <></>}
-                                    </select>
                                 </div>
                                 <div className="form-group">
                                     <label>Tiện Ích</label>
@@ -310,6 +370,8 @@ export default function CreateAccommodation() {
                                     <Editor apiKey="1a2hzecrr53ypadb7v095uo5i8u7xzhzy2a0al9uyn03q53h" value={dataUpToSever.description} onEditorChange={(newValue) => setDataUpToSever({ ...dataUpToSever, "description": newValue })} />
                                 </div>
                             </div>
+                        </div>
+                        <div className={`wizard-panel ${currentStep === 2 ? "is-open" : ""}`}>
                             <div className="form-section">
                                 <div className="section-header">
                                     <div>
@@ -319,11 +381,14 @@ export default function CreateAccommodation() {
                                     <button type="button" className="btn-add-room" onClick={() => { handleChangeRoomCount("add") }}>+ Thêm phòng</button>
                                 </div>
                                 <div className="room-list">
+                                    {(!dataUpToSever.rooms || dataUpToSever.rooms.length === 0) ? (
+                                        <div className="room-empty">Chưa có phòng nào. Bấm “+ Thêm phòng” để bắt đầu.</div>
+                                    ) : null}
                                     {dataUpToSever.rooms?.map((room, index) =>
                                         <div className="room-card" key={room._id || room["id-tmp"]}>
                                             <div className="room-header">
                                                 <div>
-                                                    <h4>Phòng {room["id-tmp"]}</h4>
+                                                    <h4>Loại phòng {index + 1}</h4>
                                                     <span>Thông tin loại phòng</span>
                                                 </div>
                                                 <button type="button" className="btn-remove-room" onClick={() => { handleChangeRoomCount("delete", room._id || room["id-tmp"]) }}>× Xóa</button>
@@ -454,28 +519,41 @@ export default function CreateAccommodation() {
                                 </div>
                             </div>
                         </div>
-                        <div className="accommodation-right">
-                            <div className="form-section">
+                        <div className={`wizard-panel wizard-panel-media ${currentStep === 3 ? "is-open" : ""}`}>
+                            <div className="form-section acc-photos">
                                 <div className="upload-section">
                                     <div className="upload-header">
-                                        <label>Ảnh Về Cơ Sở Lưu Trú</label>
+                                        <div className="upload-title">
+                                            <label>Ảnh về cơ sở lưu trú</label>
+                                            <span className="upload-hint">
+                                                {imageAccomodation.length > 0
+                                                    ? `${imageAccomodation.length} ảnh đã chọn`
+                                                    : "Thêm nhiều ảnh để khách dễ hình dung hơn"}
+                                            </span>
+                                        </div>
                                         <label htmlFor="imageAccomodation" className="add-image-label">Thêm ảnh</label>
                                     </div>
                                     <input onChange={handlePreviewImage} id="imageAccomodation" type="file" name="image" accept="image/*" multiple className="hidden-input" />
-                                    <div className="image-preview-container">
+                                    <div className={`image-preview-container ${imageAccomodation.length > 0 ? "has-images" : "is-empty"}`}>
                                         {imageAccomodation.length > 0 ? (
                                             <>
                                                 {imageAccomodation.map((item, index) =>
-                                                    <div className="image-item" key={index}>
+                                                    <div className={`image-item ${index === 0 ? "is-cover" : ""}`} key={index}>
                                                         <Image src={item} className="image" />
+                                                        {index === 0 ? <span className="cover-badge">Ảnh bìa</span> : null}
                                                         <button type="button" onClick={handleRemoveImagePreview} input-name="images" image-index={index}>×</button>
                                                     </div>
                                                 )}
+                                                <label htmlFor="imageAccomodation" className="gallery-add-tile">
+                                                    + Thêm ảnh
+                                                </label>
                                             </>
                                         ) : (
-                                            <div className="empty">
+                                            <label htmlFor="imageAccomodation" className="gallery-empty">
                                                 <FaInbox className="font-30" />
-                                            </div>
+                                                <strong>Bấm để tải ảnh lên</strong>
+                                                <span>JPG, PNG. Có thể chọn nhiều ảnh cùng lúc.</span>
+                                            </label>
                                         )}
                                     </div>
                                 </div>
@@ -506,8 +584,17 @@ export default function CreateAccommodation() {
                         </div>
                     </div>
                     <div className="form-buttons">
-                        <button className="btn-save" type="submit">Lưu</button>
-                        <button className="btn-request" type="button">Yêu Cầu Xác Minh</button>
+                        {currentStep > 1 ? (
+                            <button className="btn-request" type="button" onClick={handlePrevStep}>Quay lại</button>
+                        ) : null}
+                        {currentStep < 3 ? (
+                            <button className="btn-save" type="button" onClick={handleNextStep}>Tiếp tục</button>
+                        ) : (
+                            <>
+                                <button className="btn-request" type="button">Yêu Cầu Xác Minh</button>
+                                <button className="btn-save" type="submit">Lưu</button>
+                            </>
+                        )}
                     </div>
                 </form>
             </div>

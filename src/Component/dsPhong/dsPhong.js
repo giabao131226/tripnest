@@ -8,6 +8,7 @@ import SlideUuDai from "../slideUuDai/SlideUuDai";
 import { Outlet, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2';
 import Pagination from "../Pagination/pagination";
+import SwalAlert from "../SwalAlert/swal-alert";
 const { RangePicker } = DatePicker;
 
 function BDSList() {
@@ -86,24 +87,17 @@ function BDSList() {
                 return data;
             })
             .then((responeFromServer) => {
+                console.log(responeFromServer);
                 if (responeFromServer.success) {
                     setAccommodations(responeFromServer.data);
                     setCurrentPage(responeFromServer.currentPage);
                     setTotalPage(responeFromServer.totalPage);
                 }
             }).catch(ex => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops!!",
-                    text: ex,
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 2500,
-                    timerProgressBar: true,
-                    background: "#ffffff",
-                    color: "#333",
-                    iconColor: "#22c55e"
+                SwalAlert({
+                    "status": "error",
+                    "time": 2000,
+                    "message": ex,
                 });
             })
     }, [currentPage])
