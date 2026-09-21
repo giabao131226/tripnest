@@ -1,0 +1,27 @@
+.preview-image__item{
+    width: 100%;
+    height: 200px;
+}
+.preview-image__item img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-image__footer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+    margin-top: 8px;
+}
+.preview-image__footer .preview-image__item{
+    width: calc(100% / 6);
+    height: 80px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.preview-image__footer .preview-image__item.active{
+    border: 2px solid rgb(78, 78, 176);
+}

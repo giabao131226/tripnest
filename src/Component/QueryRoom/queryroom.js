@@ -10,7 +10,6 @@ import Pagination from "../Pagination/pagination";
 
 function QueryRoom() {
     const {accommodations,currentPage,totalPage,onPageChange} = useOutletContext(); 
-    console.log(accommodations);
     return (
         <>
             <div className="bdsList">
@@ -53,7 +52,7 @@ function QueryRoom() {
                                         </div>
                                     </Link>
                                     <div className="bds__right">
-                                        <p>{item.price}VND</p>
+                                        <p>{item.price || 0} VND</p>
                                         <Link to={`/list-bds/detail/${item._id}`}><button>Xem Phòng</button></Link>
                                     </div>
                                 </div>

@@ -2,11 +2,12 @@ import { Rate, Tag, Button, Modal, Form, Input, DatePicker, message, Select, QRC
 import "./AboutRoom.css"
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import ModalDetail from "../ModalDetail/modal-detail";
 const { RangePicker } = DatePicker;
 
 function AboutRoom({ data, disableButton, setDisable }) {
-    console.log(data);
-    const [messageApi, contextHolder] = message.useMessage()
+    const [messageApi, contextHolder] = message.useMessage();
+    const [isOpenModalDetail, setIsOpenModalDetail] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [acc, setAcc] = useState(JSON.parse(localStorage.getItem("user")))
     const [form] = Form.useForm();
@@ -22,6 +23,23 @@ function AboutRoom({ data, disableButton, setDisable }) {
         }
     }
 
+    const handleOpenModalDetail = useCallback((index) => {
+        const newisOpenModalDetail = [...isOpenModalDetail];
+        newisOpenModalDetail[index] = true;
+        setIsOpenModalDetail(newisOpenModalDetail);
+    },[isOpenModalDetail])
+
+    const handleCloseModalDetail = useCallback((index) => {
+        const newisOpenModalDetail = [...isOpenModalDetail];
+        newisOpenModalDetail[index] = false;
+        setIsOpenModalDetail(newisOpenModalDetail);
+    },[isOpenModalDetail])
+
+    useEffect(() => {
+        if (data?.accommodationUnits) {
+            setIsOpenModalDetail(data.accommodationUnits.map((item) => false));
+        }
+    }, [data])
     useEffect(() => {
         setDisable(data.trangThai)
         fetch("https://servertripnest-4.onrender.com/api/taiKhoan?" + document.cookie)
@@ -57,7 +75,7 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                 )}
                             </div>
 
-                            <h1>{data.name}</h1>
+                            <h1 className="cursor-pointer">{data.name}</h1>
 
                             <div className="aboutroom__location">
                                 <span>📍</span>
@@ -122,38 +140,18 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                 </div>
 
                                 <div className="aboutroom__accommodation-list">
-                                    {data.accommodationUnits?.map((item) => (
+                                    {data.accommodationUnits?.map((item,index) => (
+                                        <>
+                                        <ModalDetail data={item} statusModal = {isOpenModalDetail[index]} onClose={() => {handleCloseModalDetail(index)}} />
                                         <div
                                             className="accommodation-card"
                                             key={item._id}
                                         >
-                                            {item.images?.length > 0 && (
-                                                <div className="accommodation-card__images">
-                                                    <div className="accommodation-card__image-list">
-                                                        {item.images.map((image, index) => (
-                                                            <div
-                                                                className="accommodation-card__image"
-                                                                key={index}
-                                                            >
-                                                                <Image
-                                                                    src={
-                                                                        typeof image === "string"
-                                                                            ? image
-                                                                            : image.url
-                                                                    }
-                                                                    alt={item.title}
-                                                                    preview
-                                                                />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-
                                             <div className="accommodation-card__top">
                                                 <div className="accommodation-card__info">
                                                     <div className="accommodation-card__title-row">
-                                                        <h3>{item.title}</h3>
+                                                        <h3 className="cursor-pointer" 
+                                                            onClick={() => {handleOpenModalDetail(index)}}>{item.title}</h3>
 
                                                         {item.is_guest_favorite && (
                                                             <span className="accommodation-card__favorite">
@@ -312,6 +310,7 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                                 </div>
                                             </div>
                                         </div>
+                                        </>
                                     ))}
                                 </div>
                             </section>

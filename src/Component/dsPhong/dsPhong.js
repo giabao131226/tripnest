@@ -6,7 +6,7 @@ import { MdDateRange } from "react-icons/md";
 import "./dsPhong.css"
 import SlideUuDai from "../slideUuDai/SlideUuDai";
 import { Outlet, useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2';
+
 import Pagination from "../Pagination/pagination";
 import SwalAlert from "../SwalAlert/swal-alert";
 const { RangePicker } = DatePicker;
@@ -18,7 +18,8 @@ function BDSList() {
     const [totalPage, setTotalPage] = useState(0);
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("");
-    const [provinceFilter, setProvinceFilter] = useState([])
+    const [provinceFilter, setProvinceFilter] = useState([]);
+    const [provinceSelected, setProvinceSelected] = useState("");
 
 
     const onPageChange = useCallback((page) => {
@@ -52,9 +53,9 @@ function BDSList() {
         else if (start[2] > end[2]) ans -= start[2] - end[2]
         return ans
     }, [])
-    const handleChange = useCallback((value) => {
-        setQDD(value)
-    }, [])
+    const handleChangeAntd = useCallback((value) => {
+        setProvinceSelected(value);
+    }, [provinceSelected])
     const TDLoaiPhong = useCallback((value) => {
         setTR(value)
     }, [])
@@ -80,14 +81,13 @@ function BDSList() {
     })
 
     useEffect(() => {
-        fetch(`${apiUrl}bds?page=${currentPage}`)
+        fetch(`${apiUrl}bds?page=${currentPage}&provinceId=${provinceSelected}`)
             .then(async res => {
                 const data = res.json();
                 if (!res.ok) throw new Error(data.message);
                 return data;
             })
             .then((responeFromServer) => {
-                console.log(responeFromServer);
                 if (responeFromServer.success) {
                     setAccommodations(responeFromServer.data);
                     setCurrentPage(responeFromServer.currentPage);
@@ -100,7 +100,7 @@ function BDSList() {
                     "message": ex,
                 });
             })
-    }, [currentPage])
+    }, [currentPage,provinceSelected])
 
     useEffect(() => {
         fetch(`${apiUrl}province/only-province`)
@@ -109,23 +109,15 @@ function BDSList() {
                 if (!res.ok) throw new Error(data.message);
                 return data;
             }).then(data => {
-                setProvinceFilter(data)
+                if(data.success) setProvinceFilter(data.data);
             }).catch(ex => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops!!",
-                    text: ex,
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 2500,
-                    timerProgressBar: true,
-                    background: "#ffffff",
-                    color: "#333",
-                    iconColor: "#22c55e"
-                });
+                SwalAlert({
+                    "status": "error",
+                    "time": 2000,
+                    "message": ex,
+                })
             })
-        // fetch("https://servertripnest-4.onrender.com/api/loaiPhong")
+        // fetch(`${apiUrl}categories`)
         //     .then(res => res.json())
         //     .then(data => {
         //         setLoaiP(data)
@@ -152,7 +144,7 @@ function BDSList() {
                                     prefix={<IoLocation style={{ color: '#0294F3' }} />}
                                     defaultValue="Lọc Theo Tỉnh/Thành Phố"
                                     style={{ width: 298, height: 70, fontSize: 18, fontWeight: 700, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-                                    onChange={handleChange}
+                                    onChange={handleChangeAntd}
                                     options={provinceFilter}
                                 />
                             </div>

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom"
 import XemAnh from "../XemAnh/xemanh";
 import AboutRoom from "../AboutRoom/AboutRoom";
+import SwalAlert from "../SwalAlert/swal-alert";
 
 function ChiTiet(){
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
@@ -19,7 +20,11 @@ function ChiTiet(){
             .then( async (data) => {
                 if(data.success) setDetail(data.detail);
             }).catch(ex => {
-                console.log(ex);
+                SwalAlert({
+                    "status": "error",
+                    "time": 2000,
+                    "message": ex
+                })
             })
     },[])
     return (
