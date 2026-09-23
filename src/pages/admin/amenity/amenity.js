@@ -1,11 +1,10 @@
+import { Outlet } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import SwalAlert from "../../../Component/SwalAlert/swal-alert";
-import TableManagement from "../../../Component/TableManagement/TableManagement";
 
-export default function ManageCategory() {
-
-    const [categories, setCategories] = useState([]);
+export default function ManageAmenity(){
+    const [amenities, setAmenities] = useState([]);
     const [overview,setOverview] = useState({});
     const params = useParams();
     const [currentPage, setCurrentPage] = useState(params.page || 1);
@@ -41,10 +40,10 @@ export default function ManageCategory() {
                         "message": error
                     })
             })
-    },[])
+    },[search,status])
 
     const handleChangeStatus = useCallback((id, status) => {
-        fetch(`${apiUrl}categories/change-status/${status}/${id}`, {
+        fetch(`${apiUrl}amenities/change-status/${status}/${id}`, {
             method: "PATCH",
             credentials: "include"
         })
@@ -60,16 +59,16 @@ export default function ManageCategory() {
                         "time": 2000,
                         "message": data.message
                     });
-                    const newCategories = categories.map((item) => {
+                    const newAmenities = amenities.map((item) => {
                         if (item._id == id) item.status = status;
                         return { ...item };
                     })
-                    setCategories(newCategories)
+                    setAmenities(newAmenities);
                 } 
             }).catch(ex => {
                 SwalAlert("error",2000,ex);
             })
-    }, [reload, categories])
+    }, [reload, amenities])
 
     const onPageChange = useCallback((page) => {
         setCurrentPage(page);
@@ -77,17 +76,17 @@ export default function ManageCategory() {
 
 
     useEffect(() => {
-        fetch(`${apiUrl}categories/all?status=${status}&search=${search}&page=${currentPage}`, {
+        fetch(`${apiUrl}amenities/all?status=${status}&search=${search}&page=${currentPage}`, {
             "credentials": "include"
         })
             .then(async res => {
-                const data = res.json();
+                const data = await res.json();
                 if (!res.ok) throw new Error(data.message);
                 return data;
             })
             .then(data => {
                 if (data.success) {
-                    setCategories(data.categories);
+                    setAmenities(data.amenities);
                     setCurrentPage(data.currentPage);
                     setTotalPage(data.totalPage);
                     setOverview(data.overview);
@@ -96,23 +95,17 @@ export default function ManageCategory() {
                 SwalAlert("error", 2000, ex);
             })
     }, [reload, currentPage, search,status])
-
     return (
-        <TableManagement
-            data={categories}
-            page={"category-manage"}
-            currentPage={currentPage}
-            totalPage={totalPage}
-            user = {{}}
-            overview = {overview}
-            onPageChange={onPageChange}
-            categories={categories}
-            setSearch={setSearch}
-            setReload={setReload}
-            setStatus = {setStatus}
-            setCategory={{}}
-            handleRemove={handleRemove}
-            handleChangeStatus = {handleChangeStatus}
-        />
+        <Outlet context={{
+            "data": amenities,
+            "overview": overview,
+            "currentPage": currentPage,
+            "totalPage": totalPage,
+            "onPageChange": onPageChange,
+            "handleChangeStatus": handleChangeStatus,
+            "handleRemove": handleRemove,
+            "setSearch": setSearch,
+            "setStatus": setStatus
+        }} />
     )
 }

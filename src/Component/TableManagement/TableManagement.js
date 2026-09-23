@@ -1,5 +1,5 @@
 import { useCallback} from "react"
-import { FaCheck, FaHotel } from "react-icons/fa";
+import { FaCheck, FaHotel, FaHome, FaBuilding, FaUmbrellaBeach, FaBed } from "react-icons/fa";
 import { FaFlag } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Pagination from "../../Component/Pagination/pagination";
@@ -10,9 +10,11 @@ import { FaSearch } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
+import { FaLock } from "react-icons/fa";
+import { FaLockOpen } from "react-icons/fa";
 import "./TableManagement.css"
 
-export default function TableManagement({ data, page, currentPage, totalPage, user, overview, onPageChange, categories, setSearch, setReload, setStatus, setCategory, handleRemove }) {
+export default function TableManagement({ data, page, currentPage, totalPage, user, overview, onPageChange, categories, setSearch, setReload, setStatus, setCategory, handleRemove ,handleChangeStatus}) {
     
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const titleAccommodationPage = [
@@ -65,6 +67,19 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
         }
     ];
 
+    const categoryIconMap = {
+        hotel: FaHotel,
+        home: FaHome,
+        building: FaBuilding,
+        villa: FaBed,
+        resort: FaUmbrellaBeach
+    };
+
+    const getCategoryIcon = useCallback((icon) => {
+        const Icon = categoryIconMap[icon] || FaHotel;
+        return <Icon />;
+    }, []);
+
     const getAccommodationAtt = useCallback((att) => {
         if (att === "active") {
             return <span className="accommodation-status status-active">Hoạt Động</span>;
@@ -79,7 +94,7 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
         }
 
         return <span className="accommodation-status status-rejected">Bị Từ Chối</span>;
-    }, []);
+    },[])
 
     const handleChangeTool = useCallback((e) => {
         const { name, value } = e.target;
@@ -393,7 +408,7 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
                                                 <td>
                                                     <div className="category-name">
                                                         <div className="category-name-icon">
-                                                            <FaHotel />
+                                                            {getCategoryIcon(category.icon)}
                                                         </div>
                                                         <span>{category.title}</span>
                                                     </div>
@@ -444,6 +459,16 @@ export default function TableManagement({ data, page, currentPage, totalPage, us
                                                                 <FaRegEye />
                                                             </button>
                                                         </Link>
+
+                                                        
+                                                        <button
+                                                            type="button"
+                                                            className="accommodation-btn accommodation-btn-flag"
+                                                            title="Thay đổi trạng thái"
+                                                            onClick={() => {handleChangeStatus(category._id,(category.status == "active" ? "inactive" : "active"))}}
+                                                        >
+                                                            {category.status == "active" ? <FaLock /> : <FaLockOpen />}
+                                                        </button>
 
                                                         <Link to={`edit/${category.slug}`}>
                                                             <button

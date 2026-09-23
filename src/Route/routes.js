@@ -25,6 +25,9 @@ import LayoutDefaultHost from "../layouts/host/default/default";
 import ManageCategory from "../pages/admin/category/category";
 import CreateCategory from "../pages/admin/category/create";
 import EditCategory from "../pages/admin/category/edit";
+import ManageAmenity from "../pages/admin/amenity/amenity";
+import TableManageAmenity from "../pages/admin/amenity";
+import CreateAmenity from "../pages/admin/amenity/create";
 
 export const routes = [{
     path: "/",
@@ -148,6 +151,20 @@ export const routes = [{
                         {
                             path: "edit/:slug",
                             element: <EditCategory />
+                        }
+                    ]
+                },
+                {
+                    path: "amenities",
+                    element: <ManageAmenity />,
+                    children: [
+                        {
+                            path: "",
+                            element: <TableManageAmenity />
+                        },
+                        {
+                            path: "create",
+                            element: <CreateAmenity />
                         }
                     ]
                 }
