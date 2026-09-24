@@ -70,7 +70,7 @@ export default function TableManageAmenity() {
                             </div>
                         </div>
 
-                        <div className={`overview-cards overview-cards--amenity`}>
+                        <div className={`overview-cards overview-cards--category`}>
                             <div className="overview-card">
                                 <div className="overview-icon active">
                                     <FaCheck />
@@ -219,7 +219,7 @@ export default function TableManageAmenity() {
                                                         {amenity.status == "active" ? <FaLock /> : <FaLockOpen />}
                                                     </button>
 
-                                                    <Link to={`edit/${amenity.slug}`}>
+                                                    <Link to={`edit/${amenity._id}`}>
                                                         <button
                                                             type="button"
                                                             className="accommodation-btn accommodation-btn-flag"

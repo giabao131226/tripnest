@@ -23,13 +23,14 @@ function Header({isOMSignIn,isOMRegister,openModalSI,handleCancel,openModalRegis
     const [acc, setAcc] = useState({})
     const [reload, setReload] = useState(false)
     const navigate = useNavigate();
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleReload = useCallback(() => {
         setReload(!reload)
     }, [])
     //
     const handleLogout = useCallback(() => {
-        fetch("http://localhost:5000/account/logout",{
+        fetch(`${apiUrl}account/logout`,{
             method: "POST",
             credentials: "include"
         })
@@ -89,7 +90,7 @@ function Header({isOMSignIn,isOMRegister,openModalSI,handleCancel,openModalRegis
     ]
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 200||window.location.pathname!="/") {
+            if (window.scrollY > 200 || window.location.pathname != "/") {
                 disPatch(changeHeader(true))
             } else {
                 disPatch(changeHeader(false))

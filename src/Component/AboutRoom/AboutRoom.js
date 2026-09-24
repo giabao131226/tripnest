@@ -1,26 +1,21 @@
 import { Rate, Tag, Button, Modal, Form, Input, DatePicker, message, Select, QRCode, Image } from "antd";
 import "./AboutRoom.css"
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ModalDetail from "../ModalDetail/modal-detail";
+import { useSelector } from "react-redux";
+import SwalAlert from "../SwalAlert/swal-alert";
 const { RangePicker } = DatePicker;
 
 function AboutRoom({ data, disableButton, setDisable }) {
     const [messageApi, contextHolder] = message.useMessage();
     const [isOpenModalDetail, setIsOpenModalDetail] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [acc, setAcc] = useState(JSON.parse(localStorage.getItem("user")))
-    const [form] = Form.useForm();
     const params = useParams();
-    const [pttt, setPTTT] = useState("trucTiep")
+    const user = useSelector(state => state.auth).payload;
+    const navigate = useNavigate();
     const checkModal = () => {
-        if (document.cookie != "") setIsModalOpen(true);
-        else {
-            messageApi.open({
-                "type": "error",
-                "content": "Xin vui lòng đăng nhập tài khoản để đặt được phòng!"
-            })
-        }
+        if(user) navigate(`/book/${data._id}`);
+        else SwalAlert({"status": "error","time": 2000,"message": "Bạn phải đăng nhập trước đã"});
     }
 
     const handleOpenModalDetail = useCallback((index) => {
@@ -40,25 +35,10 @@ function AboutRoom({ data, disableButton, setDisable }) {
             setIsOpenModalDetail(data.accommodationUnits.map((item) => false));
         }
     }, [data])
-    useEffect(() => {
-        setDisable(data.trangThai)
-        fetch("https://servertripnest-4.onrender.com/api/taiKhoan?" + document.cookie)
-            .then(res => res.json())
-            .then(data => {
-                setAcc(data[0])
-            });
-    }, [])
-    useEffect(() => {
-        if (acc) {
-            form.setFieldsValue({
-                phone: acc.phone,
-                email: acc.email
-            });
-        }
-    }, [acc, form]);
     return (
         <>
             {contextHolder}
+
             <div className="aboutroom">
                 <div className="aboutroom__container">
                     <div className="aboutroom__header">

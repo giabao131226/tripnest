@@ -28,6 +28,8 @@ import EditCategory from "../pages/admin/category/edit";
 import ManageAmenity from "../pages/admin/amenity/amenity";
 import TableManageAmenity from "../pages/admin/amenity";
 import CreateAmenity from "../pages/admin/amenity/create";
+import EditAmenity from "../pages/admin/amenity/edit";
+import Book from "../pages/client/book/book";
 
 export const routes = [{
     path: "/",
@@ -71,10 +73,6 @@ export const routes = [{
                 ]
             },
             {
-                path: "terms",
-                element: < Terms />
-            },
-            {
                 path: "history-book",
                 element: < LichSuDatPhong />
             },
@@ -85,6 +83,10 @@ export const routes = [{
             {
                 path: "quan-ly-tai-khoan",
                 element: < QuanLyTaiKhoan />
+            },
+            {
+                path: "book/:id",
+                element: <Book />
             }
         ]
     }
@@ -165,6 +167,10 @@ export const routes = [{
                         {
                             path: "create",
                             element: <CreateAmenity />
+                        },
+                        {
+                            path: "edit/:id",
+                            element: <EditAmenity />
                         }
                     ]
                 }

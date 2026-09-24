@@ -15,7 +15,7 @@ export default function ManageAmenity(){
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleRemove = useCallback((id) => {
-        fetch(`${apiUrl}categories/delete/${id}`, {
+        fetch(`${apiUrl}amenities/delete/${id}`, {
             method: "DELETE",
             credentials: "include"
         })
