@@ -13,8 +13,8 @@ function AboutRoom({ data, disableButton, setDisable }) {
     const params = useParams();
     const user = useSelector(state => state.auth).payload;
     const navigate = useNavigate();
-    const checkModal = () => {
-        if(user) navigate(`/book/${data._id}`);
+    const navigateToBook = (id) => {
+        if(user) navigate(`/book/${id}`);
         else SwalAlert({"status": "error","time": 2000,"message": "Bạn phải đăng nhập trước đã"});
     }
 
@@ -275,7 +275,7 @@ function AboutRoom({ data, disableButton, setDisable }) {
                                                     )}
 
                                                     <Button
-                                                        onClick={() => checkModal(item)}
+                                                        onClick={() => navigateToBook(item._id)}
                                                         disabled={
                                                             disableButton ||
                                                             item.status !== "active"

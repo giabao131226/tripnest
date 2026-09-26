@@ -1,9 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../../../assets/css/client/book/book.css";
+import {useParams} from "react-router-dom";
+import SwalAlert from "../../../Component/SwalAlert/swal-alert";
 
 export default function Book() {
-
+    const params = useParams();
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const [step,setStep] = useState(1);
+    const [detailRoom,setDetailRoom] = useState({});
+
+    useEffect(() => {  
+        fetch(`${apiUrl}accommodation-unit/detail/${params.id}`)
+            .then(async res => {
+                const data = await res.json();
+                if(!res.ok || data.success == false) throw new Error(data.message);
+                return data;
+            }).then(data => {
+                console.log(data);
+                if(data.success){
+                    setDetailRoom(data.detail);
+
+                }
+            }).catch(ex => {
+                SwalAlert({
+                    "status": "error",
+                    "time": 2000,
+                    "message": ex
+                })
+            })
+    },[])
 
     return (
         <>
@@ -310,8 +335,8 @@ export default function Book() {
                                     />
 
                                     <div>
-                                        <strong>Villa Ocean View</strong>
-                                        <span>Phòng Deluxe</span>
+                                        <strong>{detailRoom.titleAcc}</strong>
+                                        <span>{detailRoom.title}</span>
                                     </div>
                                 </div>
 
@@ -327,8 +352,8 @@ export default function Book() {
                                     </div>
 
                                     <div>
-                                        <span>Khách</span>
-                                        <strong>2 khách</strong>
+                                        <span>Số Khách Tối Đa</span>
+                                        <strong>{detailRoom.max_guests} khách</strong>
                                     </div>
 
                                     <div>

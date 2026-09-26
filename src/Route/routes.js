@@ -30,6 +30,9 @@ import TableManageAmenity from "../pages/admin/amenity";
 import CreateAmenity from "../pages/admin/amenity/create";
 import EditAmenity from "../pages/admin/amenity/edit";
 import Book from "../pages/client/book/book";
+import ManageVoucher from "../pages/admin/voucher/voucher";
+import TableManageVoucher from "../pages/admin/voucher";
+import CreateVoucher from "../pages/admin/voucher/create";
 
 export const routes = [{
     path: "/",
@@ -171,6 +174,20 @@ export const routes = [{
                         {
                             path: "edit/:id",
                             element: <EditAmenity />
+                        }
+                    ]
+                },
+                {
+                    path: "vouchers",
+                    element: <ManageVoucher />,
+                    children: [
+                        {
+                            path: "",
+                            element: <TableManageVoucher />
+                        },
+                        {
+                            path: "create",
+                            element: <CreateVoucher />
                         }
                     ]
                 }

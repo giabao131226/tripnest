@@ -2,13 +2,12 @@ import { MdMenu } from "react-icons/md";
 import "./sider.css";
 import { Link } from "react-router-dom";
 import { BiSolidUserAccount } from "react-icons/bi";
-import { MdAdminPanelSettings } from "react-icons/md";
-import { FaShieldAlt } from "react-icons/fa";
-import { MdLibraryAdd } from "react-icons/md";
 import { FaHotel } from "react-icons/fa";
 import { FaBuildingCircleCheck } from "react-icons/fa6";
 import { FaUserGroup } from "react-icons/fa6";
 import { TbCategoryFilled } from "react-icons/tb";
+import { CiDiscount1 } from "react-icons/ci";
+
 
 
 export default function Sider({ user }) {
@@ -62,6 +61,16 @@ export default function Sider({ user }) {
                     </Link> : <></>}
 
                 </div>
+
+                {user?.role == "admin" ? <><p className="title">Voucher</p>
+
+                    <div className="main">
+
+                        <Link to="/admin/vouchers">
+                            <CiDiscount1 />
+                            <span>Quản Trị</span>
+                        </Link>
+                    </div></> : <></>}
 
                 {user?.role == "admin" ? <><p className="title">PHÂN QUYỀN</p>
 

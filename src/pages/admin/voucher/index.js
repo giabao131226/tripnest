@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom"
-import { useCallback} from "react"
-import { FaCheck} from "react-icons/fa";
+import { useCallback } from "react"
+import { FaCheck } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Pagination from "../../../Component/Pagination/pagination";
 import { FaToggleOff } from "react-icons/fa6";
@@ -11,18 +11,26 @@ import { FaEdit } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { FaLockOpen } from "react-icons/fa";
 
-export default function TableManageAmenity() {
+export default function TableManageVoucher() {
     const titleAmenityPage = [
         {
             title: "#",
             class: ""
         },
         {
-            title: "Tiện Ích",
+            title: "Mã Voucher",
             class: ""
         },
         {
-            title: "Ngày Tạo",
+            title: "Tên Voucher",
+            class: ""
+        },
+        {
+            title: "Phạm vi áp dụng",
+            class: ""
+        },
+        {
+            title: "Số Lượng Còn Lại",
             class: ""
         },
         {
@@ -30,27 +38,37 @@ export default function TableManageAmenity() {
             class: ""
         },
         {
+            title: "Ngày Bắt Đầu",
+            class: ""
+        },
+        {
+            title: "Ngày Kết Thúc",
+            class: ""
+        },
+        {
             title: "Hành Động",
             class: "action-column"
         }
-    ]
+    ];
     const handleChangeTool = useCallback((e) => {
         const { name, value } = e.target;
         if (name == "search") setSearch(value);
         else if (name == "status") setStatus(value);
     }, [])
 
-    const { 
+    const {
         data,
         overview,
         currentPage,
-        totalPage ,
+        totalPage,
         onPageChange,
         handleChangeStatus,
         handleRemove,
         setSearch,
         setStatus
     } = useOutletContext();
+
+    console.log(data);
     return (
         <>
             <div className="accommodation-manage container-fluid">
@@ -59,23 +77,25 @@ export default function TableManageAmenity() {
                         <div className="overview-header">
                             <div>
                                 <p className="overview-title">
-                                    Thông Tin Tiện Ích
+                                    Thông Tin Voucher
                                 </p>
                                 <p className="overview-description">
-                                    Tổng Quan Tình Trạng Tiện Ích
+                                    Tổng Quan Tình Trạng Voucher
                                 </p>
                             </div>
                         </div>
 
-                        <div className={`overview-cards overview-cards--category`}>
+                        <div className="overview-cards overview-cards--category">
                             <div className="overview-card">
                                 <div className="overview-icon active">
                                     <FaCheck />
                                 </div>
+
                                 <div className="overview-info">
                                     <span className="overview-number">
                                         {overview?.totalActive}
                                     </span>
+
                                     <span className="overview-label">
                                         Đang Hoạt Động
                                     </span>
@@ -86,33 +106,35 @@ export default function TableManageAmenity() {
                                 <div className="overview-icon inactive">
                                     <FaToggleOff />
                                 </div>
+
                                 <div className="overview-info">
                                     <span className="overview-number">
                                         {overview?.totalInActive}
                                     </span>
+
                                     <span className="overview-label">
                                         Bị Khóa
                                     </span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
+
                     <div className="accommodation-list">
                         <div className="list-header">
                             <div className="d-flex items-center gap-x-3">
                                 <div>
                                     <p className="list-title">
-                                        Danh Sách Tiện Ích
+                                        Danh Sách Voucher
                                     </p>
 
                                     <p className="list-description">
-                                        Quản lý các tiện ích
+                                        Quản lý các voucher giảm giá
                                     </p>
                                 </div>
 
                                 <div className="list-total">
-                                    <span>Tổng số</span>
+                                    <span>Tổng số voucher</span>
                                     <strong>{overview?.total}</strong>
                                 </div>
                             </div>
@@ -120,37 +142,49 @@ export default function TableManageAmenity() {
                             <div className="tool">
                                 <div className="tool-search d-flex items-center gap-x-3">
                                     <FaSearch />
+
                                     <input
-                                        placeholder="Tìm theo tên tiện ích"
+                                        placeholder="Tìm theo mã hoặc tên voucher"
                                         name="search"
                                         onChange={handleChangeTool}
                                     />
                                 </div>
-
 
                                 <select
                                     name="status"
                                     className="amenity-status-filter"
                                     onChange={handleChangeTool}
                                 >
-                                    <option value="all">Tất cả trạng thái</option>
-                                    <option value="active">Hoạt động</option>
-                                    <option value="inactive">Bị khóa</option>
+                                    <option value="all">
+                                        Tất cả trạng thái
+                                    </option>
+
+                                    <option value="active">
+                                        Hoạt động
+                                    </option>
+
+                                    <option value="inactive">
+                                        Bị khóa
+                                    </option>
                                 </select>
 
-
                                 <Link to="create">
-                                    <button>+ Thêm Tiện Ích</button>
+                                    <button>
+                                        + Thêm Voucher
+                                    </button>
                                 </Link>
-
                             </div>
                         </div>
+
                         <div className="table-wrapper">
                             <table className="accommodation-table">
                                 <thead>
                                     <tr>
                                         {titleAmenityPage.map((item, index) => (
-                                            <th key={index} className={item.class}>
+                                            <th
+                                                key={index}
+                                                className={item.class}
+                                            >
                                                 {item.title}
                                             </th>
                                         ))}
@@ -158,29 +192,45 @@ export default function TableManageAmenity() {
                                 </thead>
 
                                 <tbody>
-                                    {data.map((amenity, index) => (
-                                        <tr key={amenity._id || index}>
-                                            <td>{index + 1}</td>
+                                    {data.map((voucher, index) => (
+                                        <tr key={voucher._id || index}>
+                                            <td>
+                                                {index + 1}
+                                            </td>
 
                                             <td>
                                                 <div className="amenity-name">
                                                     <div className="amenity-name-icon">
-                                                        <i className={`${amenity.icon}`}></i>
+                                                        <i className="fa-solid fa-ticket"></i>
                                                     </div>
-                                                    <span>{amenity.name}</span>
+
+                                                    <span>
+                                                        {voucher.code}
+                                                    </span>
                                                 </div>
                                             </td>
 
                                             <td>
-                                                {amenity.createdAt
-                                                    ? new Date(amenity.createdAt).toLocaleString("vi-VN")
-                                                    : "Chưa cập nhật"}
+                                                {voucher.name}
                                             </td>
 
+                                            <td>
+                                                {voucher.apply_scope === "all"
+                                                    ? "Tất cả thành viên"
+                                                    : "Thành viên được chọn"}
+                                            </td>
+
+                                            <td>
+                                                {Math.max(
+                                                    0,
+                                                    voucher.quantity - voucher.used_count
+                                                )}
+                                                <span> / {voucher.quantity}</span>
+                                            </td>
 
                                             <td>
                                                 <div className="status-wrapper">
-                                                    {amenity.status === "inactive" ? (
+                                                    {voucher.status === "inactive" ? (
                                                         <span className="status-locked">
                                                             <i></i>
                                                             Không hoạt động
@@ -195,32 +245,56 @@ export default function TableManageAmenity() {
                                             </td>
 
                                             <td>
+                                                {voucher.start_date
+                                                    ? new Date(
+                                                        voucher.start_date
+                                                    ).toLocaleDateString("vi-VN")
+                                                    : "Chưa cập nhật"}
+                                            </td>
+
+                                            <td>
+                                                {voucher.end_date
+                                                    ? new Date(
+                                                        voucher.end_date
+                                                    ).toLocaleDateString("vi-VN")
+                                                    : "Chưa cập nhật"}
+                                            </td>
+
+                                            <td>
                                                 <div className="accommodation-actions">
-                                                    <Link to={`detail/${amenity._id}`}>
+                                                    <Link to={`detail/${voucher._id}`}>
                                                         <button
                                                             type="button"
                                                             className="accommodation-btn accommodation-btn-view"
-                                                            title="Xem chi tiết"
+                                                            title="Xem chi tiết voucher"
                                                         >
                                                             <FaRegEye />
                                                         </button>
                                                     </Link>
 
-
                                                     <button
                                                         type="button"
                                                         className="accommodation-btn accommodation-btn-flag"
-                                                        title="Thay đổi trạng thái"
-                                                        onClick={() => { handleChangeStatus(amenity._id, (amenity.status == "active" ? "inactive" : "active")) }}
+                                                        title="Thay đổi trạng thái voucher"
+                                                        onClick={() => {
+                                                            handleChangeStatus(
+                                                                voucher._id,
+                                                                voucher.status === "active"
+                                                                    ? "inactive"
+                                                                    : "active"
+                                                            );
+                                                        }}
                                                     >
-                                                        {amenity.status == "active" ? <FaLock /> : <FaLockOpen />}
+                                                        {voucher.status === "active"
+                                                            ? <FaLock />
+                                                            : <FaLockOpen />}
                                                     </button>
 
-                                                    <Link to={`edit/${amenity._id}`}>
+                                                    <Link to={`edit/${voucher._id}`}>
                                                         <button
                                                             type="button"
                                                             className="accommodation-btn accommodation-btn-flag"
-                                                            title="Chỉnh sửa"
+                                                            title="Chỉnh sửa voucher"
                                                         >
                                                             <FaEdit />
                                                         </button>
@@ -229,9 +303,9 @@ export default function TableManageAmenity() {
                                                     <button
                                                         type="button"
                                                         className="accommodation-btn accommodation-btn-delete"
-                                                        title="Xóa"
+                                                        title="Xóa voucher"
                                                         onClick={() => {
-                                                            handleRemove(amenity._id);
+                                                            handleRemove(voucher._id);
                                                         }}
                                                     >
                                                         <MdDelete />
@@ -243,8 +317,13 @@ export default function TableManageAmenity() {
                                 </tbody>
                             </table>
                         </div>
+
                         <div className="accommodation-pagination">
-                            <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={onPageChange} />
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPage={totalPage}
+                                onPageChange={onPageChange}
+                            />
                         </div>
                     </div>
                 </div>

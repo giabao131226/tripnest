@@ -81,6 +81,7 @@
 
 .book-room__step.active {
     color: #222;
+    background-color: transparent;
 }
 
 .book-room__step-number {
@@ -118,6 +119,7 @@
 
 .book-room__step.active small {
     color: #6b7280;
+    background-color: transparent;
 }
 
 .book-room__step-line {
