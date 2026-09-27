@@ -2,13 +2,19 @@ import { useState, useEffect, useCallback } from "react";
 import SwalAlert from "../../../Component/SwalAlert/swal-alert";
 import { useNavigate } from "react-router-dom";
 import "../../../assets/css/admin/category/create.css";
-import {validateVoucher} from "../../../helper/validatedVoucher";
+import "../../../assets/css/admin/vouchers/create.css";
+import { validateVoucher } from "../../../helper/validatedVoucher";
+import { FaSearch } from "react-icons/fa";
+import Pagination from "../../../Component/Pagination/pagination";
 
 export default function CreateVoucher() {
 
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
+    const [search,setSearch] = useState("");
 
     const [data, setData] = useState({});
 
@@ -25,10 +31,24 @@ export default function CreateVoucher() {
 
     }
 
+    const onPageChange = useCallback((page) => {
+        setCurrentPage(page);
+    }, [currentPage])
+
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
 
+        const inputUserIDs = document.querySelectorAll("input[name='user_ids']");
+        if(inputUserIDs.length > 0){
+            const userIds = [];
+            inputUserIDs.forEach((item) =>{
+                if(item.checked) userIds.push(item.value);
+            });
+            data["user_ids"] = userIds;
+            console.log(data["user_ids"]);
+        }
+        
         const error = validateVoucher(data);
 
         if (error) {
@@ -99,20 +119,23 @@ export default function CreateVoucher() {
     }, [apiUrl, data]);
 
     useEffect(() => {
-        fetch(`${apiUrl}admin/user/all`, {
+        fetch(`${apiUrl}admin/user/all?page=${currentPage}&search=${search}`, {
             credentials: "include"
         })
             .then(async res => {
                 const data = await res.json();
-                console.log(data);
                 if (!res.ok || data.success === false) {
                     throw new Error(data.message);
                 }
                 return data;
             })
             .then(data => {
-                console.data(data);
-                if (data.success) setUsers(data.users);
+                console.log(data);
+                if (data.success) {
+                    setUsers(data.users);
+                    setCurrentPage(data.currentPage);
+                    setTotalPage(data.totalPage);
+                }
             })
             .catch(ex => {
                 SwalAlert({
@@ -121,7 +144,7 @@ export default function CreateVoucher() {
                     message: ex.message
                 });
             });
-    }, [])
+    }, [currentPage,search])
 
     return (
         <>
@@ -333,30 +356,39 @@ export default function CreateVoucher() {
                                     </div>
 
                                     {data.apply_scope === "specific_users" && (
-                                        <div className="category-create__form-group">
-                                            <label>
-                                                Chọn thành viên <span>*</span>
-                                            </label>
+                                        <div className="voucher-add-user d-flex flex-column">
+                                            <div className="tool-search">
+                                                <FaSearch />
+                                                <input className="col-10" name="search-user" placeholder="Nhập email, username" onChange={(e) => {
+                                                    setSearch(e.target.value);
+                                                }}></input>
+                                            </div>
+                                            <div className="py-2"></div>
+                                            <div className="d-flex items-center">
+                                                <div className="d-flex flex-column gap-y-3">
+                                                    {users.map((item) =>
+                                                        <div className="d-flex items-center justify-between">
+                                                            <div className="d-flex items-center gap-x-3">
+                                                                <div className="vien-img">
+                                                                    <img src={item.avatar}></img>
+                                                                </div>
+                                                                <span className="font-bold">{item.username}</span>
+                                                            </div>
+                                                            <input type="checkbox" name="user_ids" value={item._id}></input>
+                                                        </div>)}
+                                                </div>
 
-                                            <select
-                                                name="user_ids"
-                                                multiple
-                                                value={data.user_ids}
-                                                onChange={handleUserChange}
-                                            >
-                                                {users.map((user) => (
-                                                    <option
-                                                        key={user._id}
-                                                        value={user._id}
-                                                    >
-                                                        {user.full_name} - {user.email}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                                <div className="selected-user">
 
-                                            <small>
-                                                Có thể chọn nhiều thành viên cùng lúc
-                                            </small>
+                                                </div>
+                                            </div>
+                                            <div className="d-flex justify-center">
+                                                <Pagination
+                                                    currentPage={currentPage}
+                                                    totalPage={totalPage}
+                                                    onPageChange={onPageChange}
+                                                />
+                                            </div>
                                         </div>
                                     )}
                                 </div>

@@ -43,7 +43,7 @@ export default function ManageVoucher() {
     }, [search, status])
 
     const handleChangeStatus = useCallback((id, status) => {
-        fetch(`${apiUrl}vouchers/change-status/${status}/${id}`, {
+        fetch(`${apiUrl}admin/vouchers/change-status/${status}/${id}`, {
             method: "PATCH",
             credentials: "include"
         })
@@ -59,11 +59,11 @@ export default function ManageVoucher() {
                         "time": 2000,
                         "message": data.message
                     });
-                    const newAmenities = vouchers.map((item) => {
+                    const newVouchers = vouchers.map((item) => {
                         if (item._id == id) item.status = status;
                         return { ...item };
                     })
-                    setVouchers(newAmenities);
+                    setVouchers(newVouchers);
                 }
             }).catch(ex => {
                 SwalAlert("error", 2000, ex);

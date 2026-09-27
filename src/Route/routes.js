@@ -33,6 +33,7 @@ import Book from "../pages/client/book/book";
 import ManageVoucher from "../pages/admin/voucher/voucher";
 import TableManageVoucher from "../pages/admin/voucher";
 import CreateVoucher from "../pages/admin/voucher/create";
+import EditVoucher from "../pages/admin/voucher/edit";
 
 export const routes = [{
     path: "/",
@@ -188,6 +189,10 @@ export const routes = [{
                         {
                             path: "create",
                             element: <CreateVoucher />
+                        },
+                        {
+                            path: "edit/:code",
+                            element: <EditVoucher />
                         }
                     ]
                 }

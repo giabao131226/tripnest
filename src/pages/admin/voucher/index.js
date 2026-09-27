@@ -68,7 +68,6 @@ export default function TableManageVoucher() {
         setStatus
     } = useOutletContext();
 
-    console.log(data);
     return (
         <>
             <div className="accommodation-manage container-fluid">
@@ -290,7 +289,7 @@ export default function TableManageVoucher() {
                                                             : <FaLockOpen />}
                                                     </button>
 
-                                                    <Link to={`edit/${voucher._id}`}>
+                                                    <Link to={`edit/${voucher.code}`}>
                                                         <button
                                                             type="button"
                                                             className="accommodation-btn accommodation-btn-flag"
