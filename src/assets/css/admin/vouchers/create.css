@@ -25,3 +25,242 @@
     object-fit: cover;
 }
 
+.voucher-add-user {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.voucher-add-user .tool-search {
+    width: 100%;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.voucher-add-user .tool-search svg {
+    color: #7b8491;
+    font-size: 15px;
+}
+
+.voucher-add-user .tool-search input {
+    flex: 1;
+    width: auto;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0;
+    background: transparent;
+    font-size: 14px;
+}
+
+.voucher-user-selection {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.voucher-user-list,
+.voucher-selected-user {
+    min-width: 0;
+    border: 1px solid #e1e5ea;
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.voucher-user-list__header,
+.voucher-selected-user__header {
+    height: 48px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e8ebef;
+    background: #f8f9fb;
+    box-sizing: border-box;
+}
+
+.voucher-user-list__header span:first-child,
+.voucher-selected-user__header span:first-child {
+    font-size: 14px;
+    font-weight: 700;
+    color: #252a31;
+}
+
+.voucher-user-list__header span:last-child,
+.voucher-selected-user__header span:last-child {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #eef1f5;
+    color: #59636f;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.voucher-user-list__content,
+.voucher-selected-user__content {
+    height: 280px;
+    overflow-y: auto;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.voucher-user-list__content::-webkit-scrollbar,
+.voucher-selected-user__content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.voucher-user-list__content::-webkit-scrollbar-thumb,
+.voucher-selected-user__content::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #d1d6dc;
+}
+
+.voucher-user-item,
+.voucher-selected-user__item {
+    min-height: 58px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 7px;
+    box-sizing: border-box;
+}
+
+.voucher-user-item:hover {
+    background: #f6f8fa;
+}
+
+.voucher-user-item__info {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.voucher-user-item .vien-img,
+.voucher-selected-user__item .vien-img {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #eef1f5;
+}
+
+.voucher-user-item .vien-img img,
+.voucher-selected-user__item .vien-img img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.voucher-user-item__text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.voucher-user-item__text span {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #252a31;
+    font-size: 14px;
+}
+
+.voucher-user-item__text small {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #858e99;
+    font-size: 12px;
+}
+
+.voucher-user-item input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    cursor: pointer;
+    accent-color: #6758ff;
+}
+
+.voucher-selected-user__item {
+    background: #f8f9fb;
+    margin-bottom: 5px;
+}
+
+.voucher-selected-user__item:last-child {
+    margin-bottom: 0;
+}
+
+.voucher-selected-user__item button {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: #f1f2f4;
+    color: #777f89;
+    font-size: 19px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.voucher-selected-user__item button:hover {
+    background: #ffe8e8;
+    color: #e5484d;
+}
+
+.voucher-selected-user__empty {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.voucher-selected-user__empty span {
+    color: #9299a3;
+    font-size: 13px;
+}
+
+.voucher-add-user > .d-flex.justify-center {
+    margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+    .voucher-user-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .voucher-user-list__content,
+    .voucher-selected-user__content {
+        height: 240px;
+    }
+}
+

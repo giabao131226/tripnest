@@ -2,7 +2,6 @@
 export const validateVoucher = (data) => {
     const code = data.code.trim();
     const name = data.name.trim();
-    const description = data.description.trim();
     const discountValue = Number(data.discount_value);
     const maxDiscount = data.max_discount === "" ? null : Number(data.max_discount);
     const minOrderValue = Number(data.min_order_value);

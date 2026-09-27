@@ -289,7 +289,7 @@ export default function TableManageVoucher() {
                                                             : <FaLockOpen />}
                                                     </button>
 
-                                                    <Link to={`edit/${voucher.code}`}>
+                                                    <Link to={`edit/${voucher._id}`}>
                                                         <button
                                                             type="button"
                                                             className="accommodation-btn accommodation-btn-flag"

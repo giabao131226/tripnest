@@ -14,7 +14,7 @@ export default function CreateVoucher() {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
-    const [search,setSearch] = useState("");
+    const [search, setSearch] = useState("");
 
     const [data, setData] = useState({});
 
@@ -27,9 +27,18 @@ export default function CreateVoucher() {
         }));
     }, []);
 
-    const handleUserChange = () => {
+    const handleUserChange = useCallback((e) => {
+        const { value, checked } = e.target;
 
-    }
+        setData(prev => ({
+            ...prev,
+            user_ids: checked
+                ? prev.user_ids?.includes(value)
+                    ? prev.user_ids
+                    : [...(prev.user_ids || []), value]
+                : (prev.user_ids || []).filter(id => id !== value)
+        }));
+    }, []);
 
     const onPageChange = useCallback((page) => {
         setCurrentPage(page);
@@ -40,15 +49,15 @@ export default function CreateVoucher() {
         e.preventDefault();
 
         const inputUserIDs = document.querySelectorAll("input[name='user_ids']");
-        if(inputUserIDs.length > 0){
+        if (inputUserIDs.length > 0) {
             const userIds = [];
-            inputUserIDs.forEach((item) =>{
-                if(item.checked) userIds.push(item.value);
+            inputUserIDs.forEach((item) => {
+                if (item.checked) userIds.push(item.value);
             });
             data["user_ids"] = userIds;
             console.log(data["user_ids"]);
         }
-        
+
         const error = validateVoucher(data);
 
         if (error) {
@@ -63,7 +72,7 @@ export default function CreateVoucher() {
         const payload = {
             code: data.code.trim().toUpperCase(),
             name: data.name.trim(),
-            description: data.description.trim(),
+            description: data.description?.trim(),
             discount_type: data.discount_type,
             discount_value: Number(data.discount_value),
             max_discount: data.max_discount === ""
@@ -144,7 +153,7 @@ export default function CreateVoucher() {
                     message: ex.message
                 });
             });
-    }, [currentPage,search])
+    }, [currentPage, search])
 
     return (
         <>
@@ -356,32 +365,126 @@ export default function CreateVoucher() {
                                     </div>
 
                                     {data.apply_scope === "specific_users" && (
-                                        <div className="voucher-add-user d-flex flex-column">
+                                        <div className="voucher-add-user">
                                             <div className="tool-search">
                                                 <FaSearch />
-                                                <input className="col-10" name="search-user" placeholder="Nhập email, username" onChange={(e) => {
-                                                    setSearch(e.target.value);
-                                                }}></input>
+                                                <input
+                                                    className="col-10"
+                                                    name="search-user"
+                                                    placeholder="Nhập email, username"
+                                                    onChange={(e) => {
+                                                        setSearch(e.target.value);
+                                                    }}
+                                                />
                                             </div>
-                                            <div className="py-2"></div>
-                                            <div className="d-flex items-center">
-                                                <div className="d-flex flex-column gap-y-3">
-                                                    {users.map((item) =>
-                                                        <div className="d-flex items-center justify-between">
-                                                            <div className="d-flex items-center gap-x-3">
-                                                                <div className="vien-img">
-                                                                    <img src={item.avatar}></img>
+
+                                            <div className="voucher-user-selection">
+                                                <div className="voucher-user-list">
+                                                    <div className="voucher-user-list__header">
+                                                        <span>Danh sách thành viên</span>
+                                                        <span>{users.length} thành viên</span>
+                                                    </div>
+
+                                                    <div className="voucher-user-list__content">
+                                                        {users.map((item) => (
+                                                            <div
+                                                                className="voucher-user-item"
+                                                                key={item._id}
+                                                            >
+                                                                <div className="voucher-user-item__info">
+                                                                    <div className="vien-img">
+                                                                        <img
+                                                                            src={item.avatar}
+                                                                            alt={item.username}
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className="voucher-user-item__text">
+                                                                        <span className="font-bold">
+                                                                            {item.username}
+                                                                        </span>
+                                                                        <small>
+                                                                            {item.email}
+                                                                        </small>
+                                                                    </div>
                                                                 </div>
-                                                                <span className="font-bold">{item.username}</span>
+
+                                                                <input
+                                                                    type="checkbox"
+                                                                    name="user_ids"
+                                                                    value={item._id}
+                                                                    onChange={handleUserChange}
+                                                                />
                                                             </div>
-                                                            <input type="checkbox" name="user_ids" value={item._id}></input>
-                                                        </div>)}
+                                                        ))}
+                                                    </div>
                                                 </div>
 
-                                                <div className="selected-user">
+                                                <div className="voucher-selected-user">
+                                                    <div className="voucher-selected-user__header">
+                                                        <span>Thành viên đã chọn</span>
+                                                        <span>{data.user_ids?.length || 0}</span>
+                                                    </div>
 
+                                                    <div className="voucher-selected-user__content">
+                                                        {data.user_ids?.length > 0 ? (
+                                                            data.user_ids.map((userId) => {
+                                                                const user = users.find(
+                                                                    item => item._id === userId
+                                                                );
+
+                                                                if (!user) return null;
+
+                                                                return (
+                                                                    <div
+                                                                        className="voucher-selected-user__item"
+                                                                        key={user._id}
+                                                                    >
+                                                                        <div className="voucher-user-item__info">
+                                                                            <div className="vien-img">
+                                                                                <img
+                                                                                    src={user.avatar}
+                                                                                    alt={user.username}
+                                                                                />
+                                                                            </div>
+
+                                                                            <div className="voucher-user-item__text">
+                                                                                <span className="font-bold">
+                                                                                    {user.username}
+                                                                                </span>
+                                                                                <small>
+                                                                                    {user.email}
+                                                                                </small>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setData(prev => ({
+                                                                                    ...prev,
+                                                                                    user_ids: prev.user_ids.filter(
+                                                                                        id => id !== user._id
+                                                                                    )
+                                                                                }));
+                                                                                const input = document.querySelector(`input[name = 'user_ids'][value = '${user._id}']`);
+                                                                                if(input) input.checked = false;
+                                                                            }}
+                                                                        >
+                                                                            ×
+                                                                        </button>
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        ) : (
+                                                            <div className="voucher-selected-user__empty">
+                                                                <span>Chưa có thành viên nào được chọn</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
+
                                             <div className="d-flex justify-center">
                                                 <Pagination
                                                     currentPage={currentPage}

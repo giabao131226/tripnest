@@ -191,7 +191,7 @@ export const routes = [{
                             element: <CreateVoucher />
                         },
                         {
-                            path: "edit/:code",
+                            path: "edit/:id",
                             element: <EditVoucher />
                         }
                     ]
