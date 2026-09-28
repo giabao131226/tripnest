@@ -114,7 +114,7 @@ function Header({isOMSignIn,isOMRegister,openModalSI,handleCancel,openModalRegis
                         <div className={isActive ? "header2__toolMain" : "header__toolMain"}>
                             <ul>
                                 <Link to={"/"}><li>Trang Chủ</li></Link>
-                                <li>Phòng</li>
+                                <Link to = {"/khuyen-mai"}><li>Khuyến Mãi</li></Link>
                                 <li><button onClick={handleNavigateProperty} className={isActive ? "text-color-black bg-none" : "text-color-white bg-none"}>Danh Sách BĐS của bạn</button></li>
                             </ul>
                             {user ? <div className="user">

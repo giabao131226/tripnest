@@ -15,8 +15,24 @@ export default function CreateVoucher() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
     const [search, setSearch] = useState("");
+    const [categories, setCategories] = useState([]);
 
-    const [data, setData] = useState({});
+    const [data, setData] = useState({
+        code: "",
+        name: "",
+        description: "",
+        discount_type: "percent",
+        discount_value: "",
+        max_discount: "",
+        min_order_value: "",
+        quantity: "",
+        apply_scope: "all",
+        user_ids: [],
+        category_ids: [],
+        start_date: "",
+        end_date: "",
+        status: "active"
+    });
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
@@ -39,6 +55,30 @@ export default function CreateVoucher() {
                 : (prev.user_ids || []).filter(id => id !== value)
         }));
     }, []);
+
+    const handleCategoryChange = useCallback((e) => {
+        const { value, checked } = e.target;
+
+        setData(prev => ({
+            ...prev,
+            category_ids: checked
+                ? prev.category_ids?.includes(value)
+                    ? prev.category_ids
+                    : [...(prev.category_ids || []), value]
+                : (prev.category_ids || []).filter(id => id !== value)
+        }));
+    }, []);
+
+    const handleSelectAllCategories = useCallback((e) => {
+        const { checked } = e.target;
+
+        setData(prev => ({
+            ...prev,
+            category_ids: checked
+                ? categories.map(category => category._id)
+                : []
+        }));
+    }, [categories]);
 
     const onPageChange = useCallback((page) => {
         setCurrentPage(page);
@@ -84,6 +124,7 @@ export default function CreateVoucher() {
             user_ids: data.apply_scope === "specific_users"
                 ? data.user_ids
                 : [],
+            category_ids: data.category_ids || [],
             start_date: data.start_date,
             end_date: data.end_date,
             status: data.status
@@ -112,10 +153,21 @@ export default function CreateVoucher() {
                         message: result.message
                     });
                     setData({
+                        code: "",
                         name: "",
-                        status: "active",
-                        icon: ""
-                    })
+                        description: "",
+                        discount_type: "percent",
+                        discount_value: "",
+                        max_discount: "",
+                        min_order_value: "",
+                        quantity: "",
+                        apply_scope: "all",
+                        user_ids: [],
+                        category_ids: [],
+                        start_date: "",
+                        end_date: "",
+                        status: "active"
+                    });
                 }
             })
             .catch(ex => {
@@ -126,6 +178,29 @@ export default function CreateVoucher() {
                 });
             });
     }, [apiUrl, data]);
+
+    useEffect(() => {
+        fetch(`${apiUrl}categories`, {
+            credentials: "include"
+        })
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok || data.success === false) {
+                    throw new Error(data.message);
+                }
+                return data;
+            })
+            .then(data => {
+                if (data.success) setCategories(data.categories);
+            })
+            .catch(ex => {
+                SwalAlert({
+                    status: "error",
+                    time: 2000,
+                    message: ex.message
+                });
+            });
+    }, [])
 
     useEffect(() => {
         fetch(`${apiUrl}admin/user/all?page=${currentPage}&search=${search}`, {
@@ -468,7 +543,7 @@ export default function CreateVoucher() {
                                                                                     )
                                                                                 }));
                                                                                 const input = document.querySelector(`input[name = 'user_ids'][value = '${user._id}']`);
-                                                                                if(input) input.checked = false;
+                                                                                if (input) input.checked = false;
                                                                             }}
                                                                         >
                                                                             ×
@@ -494,6 +569,70 @@ export default function CreateVoucher() {
                                             </div>
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                            <div className="category-create__section">
+                                <div className="category-create__section-header">
+                                    <h2>Danh Mục Áp Dụng</h2>
+                                    <p>Xác định những danh mục chỗ ở được áp dụng voucher</p>
+                                </div>
+
+                                <div className="category-create__form">
+                                    <div className="category-create__form-group">
+                                        <label>
+                                            Danh mục áp dụng <span>*</span>
+                                        </label>
+
+                                        <label className="voucher-category-all">
+                                            <input
+                                                type="checkbox"
+                                                checked={
+                                                    categories.length > 0 &&
+                                                    data.category_ids?.length === categories.length
+                                                }
+                                                onChange={handleSelectAllCategories}
+                                            />
+                                            <span>Tất cả danh mục</span>
+                                        </label>
+
+                                        <div className="voucher-category-selection">
+                                            {categories.length > 0 ? (
+                                                categories.map((category) => (
+                                                    <label
+                                                        className="voucher-category-item"
+                                                        key={category._id}
+                                                    >
+                                                        <div className="voucher-category-item__info">
+                                                            <div className="voucher-category-item__icon">
+                                                                <i className={category.icon}></i>
+                                                            </div>
+
+                                                            <span className="font-bold">
+                                                                {category.title}
+                                                            </span>
+                                                        </div>
+
+                                                        <input
+                                                            type="checkbox"
+                                                            name="category_ids"
+                                                            value={category._id}
+                                                            checked={data.category_ids?.includes(category._id)}
+                                                            onChange={handleCategoryChange}
+                                                        />
+                                                    </label>
+                                                ))
+                                            ) : (
+                                                <div className="voucher-category-empty">
+                                                    Chưa có danh mục nào
+                                                </div>
+                                            )}
+                                        </div>
+
+
+                                        <small>
+                                            Đã chọn {data.category_ids?.length || 0} danh mục
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
 

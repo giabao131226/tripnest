@@ -34,6 +34,7 @@ import ManageVoucher from "../pages/admin/voucher/voucher";
 import TableManageVoucher from "../pages/admin/voucher";
 import CreateVoucher from "../pages/admin/voucher/create";
 import EditVoucher from "../pages/admin/voucher/edit";
+import KhuyenMai from "../pages/client/KhuyenMai/khuyen-mai";
 
 export const routes = [{
     path: "/",
@@ -93,6 +94,10 @@ export const routes = [{
                 element: <Book />
             }
         ]
+    },
+    {
+        path: "khuyen-mai",
+        element: <KhuyenMai />
     }
     ]
 }

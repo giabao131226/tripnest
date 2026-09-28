@@ -19,6 +19,8 @@ export default function EditVoucher() {
     const [totalPage, setTotalPage] = useState(0);
     const [search, setSearch] = useState("");
 
+    const [categories, setCategories] = useState([]);
+
     const [data, setData] = useState({
         code: "",
         name: "",
@@ -30,6 +32,7 @@ export default function EditVoucher() {
         quantity: "",
         apply_scope: "all",
         user_ids: [],
+        category_ids: [],
         start_date: "",
         end_date: "",
         status: "active"
@@ -60,6 +63,31 @@ export default function EditVoucher() {
                 : prev.user_ids.filter(id => id !== value)
         }));
     }, []);
+
+
+    const handleCategoryChange = useCallback((e) => {
+        const { value, checked } = e.target;
+
+        setData(prev => ({
+            ...prev,
+            category_ids: checked
+                ? prev.category_ids.includes(value)
+                    ? prev.category_ids
+                    : [...prev.category_ids, value]
+                : prev.category_ids.filter(id => id !== value)
+        }));
+    }, []);
+
+    const handleSelectAllCategories = useCallback((e) => {
+        const { checked } = e.target;
+
+        setData(prev => ({
+            ...prev,
+            category_ids: checked
+                ? categories.map(category => category._id)
+                : []
+        }));
+    }, [categories]);
 
     const onPageChange = useCallback((page) => {
         setCurrentPage(page);
@@ -117,6 +145,7 @@ export default function EditVoucher() {
             user_ids: data.apply_scope === "specific_users"
                 ? data.user_ids
                 : [],
+            category_ids: data.category_ids || [],
             start_date: data.start_date,
             end_date: data.end_date,
             status: data.status
@@ -172,10 +201,8 @@ export default function EditVoucher() {
                 return result;
             })
             .then(result => {
-                console.log(result);
                 if (result.success) {
                     const voucher = result.detail;
-
                     setData({
                         code: voucher.code || "",
                         name: voucher.name || "",
@@ -188,6 +215,11 @@ export default function EditVoucher() {
                         apply_scope: voucher.apply_scope || "all",
                         user_ids: Array.isArray(voucher.user_ids)
                             ? voucher.user_ids.map(id =>
+                                typeof id === "object" ? id._id : id
+                            )
+                            : [],
+                        category_ids: Array.isArray(voucher.category_ids)
+                            ? voucher.category_ids.map(id =>
                                 typeof id === "object" ? id._id : id
                             )
                             : [],
@@ -238,6 +270,34 @@ export default function EditVoucher() {
                 });
             });
     }, [apiUrl, currentPage, search, data.apply_scope]);
+
+
+    useEffect(() => {
+        fetch(`${apiUrl}categories`, {
+            credentials: "include"
+        })
+            .then(async res => {
+                const result = await res.json();
+
+                if (!res.ok || result.success === false) {
+                    throw new Error(result.message);
+                }
+
+                return result;
+            })
+            .then(result => {
+                if (result.success) {
+                    setCategories(result.categories);
+                }
+            })
+            .catch(ex => {
+                SwalAlert({
+                    status: "error",
+                    time: 2000,
+                    message: ex.message
+                });
+            });
+    }, [apiUrl]);
 
     return (
         <>
@@ -659,6 +719,63 @@ export default function EditVoucher() {
                                         </div>
                                     )}
 
+                                </div>
+                            </div>
+
+                            <div className="category-create__form">
+                                <div className="category-create__form-group">
+                                    <label>
+                                        Danh mục áp dụng <span>*</span>
+                                    </label>
+
+                                    <label className="voucher-category-all">
+                                        <input
+                                            type="checkbox"
+                                            checked={
+                                                categories.length > 0 &&
+                                                data.category_ids?.length === categories.length
+                                            }
+                                            onChange={handleSelectAllCategories}
+                                        />
+                                        <span>Tất cả danh mục</span>
+                                    </label>
+
+                                    <div className="voucher-category-selection">
+                                        {categories.length > 0 ? (
+                                            categories.map((category) => (
+                                                <label
+                                                    className="voucher-category-item"
+                                                    key={category._id}
+                                                >
+                                                    <div className="voucher-category-item__info">
+                                                        <div className="voucher-category-item__icon">
+                                                            <i className={category.icon}></i>
+                                                        </div>
+
+                                                        <span className="font-bold">
+                                                            {category.title}
+                                                        </span>
+                                                    </div>
+
+                                                    <input
+                                                        type="checkbox"
+                                                        name="category_ids"
+                                                        value={category._id}
+                                                        checked={data.category_ids?.includes(category._id)}
+                                                        onChange={handleCategoryChange}
+                                                    />
+                                                </label>
+                                            ))
+                                        ) : (
+                                            <div className="voucher-category-empty">
+                                                Chưa có danh mục nào
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <small>
+                                        Đã chọn {data.category_ids?.length || 0} danh mục
+                                    </small>
                                 </div>
                             </div>
 
