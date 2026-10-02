@@ -1,20 +1,19 @@
-import { useEffect, useMemo, useState,useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
     FaSearch,
     FaCopy,
     FaCalendarAlt,
     FaTag,
     FaClock,
-    FaHotel,
-    FaPlane,
-    FaMapMarkerAlt,
     FaGift,
-    FaChevronLeft,
-    FaChevronRight,
+    FaTicketAlt,
+    FaBookmark
 } from "react-icons/fa";
 import "../../../assets/css/client/khuyenmai/khuyenmai.css";
 import SwalAlert from "../../../Component/SwalAlert/swal-alert";
 import Pagination from "../../../Component/Pagination/pagination";
+import { useSelector } from "react-redux";
+import socket from "../../../socket/socket";
 
 export default function VoucherFetured() {
     const [search, setSearch] = useState("");
@@ -22,8 +21,19 @@ export default function VoucherFetured() {
     const [copiedCode, setCopiedCode] = useState("");
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const [vouchers, setVouchers] = useState([]);
-    const [currentPage,setCurrentPage] = useState(1);
-    const [totalPage,setTotalPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [savedVouchers, setSavedVouchers] = useState([]);
+    const user = useSelector(state => state.auth).payload;
+
+    const handleSaveVoucher = (voucherId) => {
+        setSavedVouchers([...savedVouchers, voucherId]);
+        const data = {
+            "userId": user._id,
+            "voucherId": voucherId
+        }
+        socket.emit("CLIENT_SEND_REQUEST_SAVE_VOUCHER", data);
+    };
 
     // const filteredVouchers = useMemo(() => {
     //     const now = new Date();
@@ -79,8 +89,8 @@ export default function VoucherFetured() {
     };
 
     const onPageChange = useCallback((page) => {
-            setCurrentPage(page);
-        }, [currentPage]);
+        setCurrentPage(page);
+    }, [currentPage]);
 
     useEffect(() => {
         fetch(`${apiUrl}vouchers/all?search=${search}`, {
@@ -104,6 +114,29 @@ export default function VoucherFetured() {
                 });
             })
     }, [search])
+
+    useEffect(() => {
+        socket.on("connect", () => {
+            console.log("Socket connected:", socket.id);
+        });
+
+        socket.on("SERVER_RESPOND_REQUEST_SAVE_VOUCHER",(data) => {
+            const index = vouchers.findIndex((voucher) => voucher._id == data.voucherId);
+            if(index < 0) return;
+            SwalAlert({
+                "status": "success",
+                "time": 2000,
+                "message": data.message
+            });
+            const newVouchers = [...vouchers];
+            newVouchers[index].quantity = data.newQuantity;
+            setVouchers(newVouchers);
+        })
+
+        return () => {
+            socket.off("connect");
+        };
+    }, []);
 
     return (
         <>
@@ -234,6 +267,17 @@ export default function VoucherFetured() {
                                                 </span>
                                             </div>
 
+                                            <div>
+                                                <FaTicketAlt />
+
+                                                <span>
+                                                    Còn lại:{" "}
+                                                    <strong>
+                                                        {voucher.quantity} voucher
+                                                    </strong>
+                                                </span>
+                                            </div>
+
                                             {voucher.max_discount !== null && (
                                                 <div>
                                                     <FaTag />
@@ -274,17 +318,32 @@ export default function VoucherFetured() {
                                                 </span>
                                             </div>
 
-                                            <button
-                                                type="button"
-                                                className="voucher-copy"
-                                                onClick={() =>
-                                                    handleCopy(voucher.code)
-                                                }
-                                            >
-                                                {copiedCode === voucher.code
-                                                    ? "Đã sao chép"
-                                                    : "Sao chép mã"}
-                                            </button>
+                                            <div className="voucher-actions">
+                                                <button
+                                                    type="button"
+                                                    className={`voucher-save ${savedVouchers.includes(voucher._id)
+                                                        ? "saved"
+                                                        : ""
+                                                        }`}
+                                                    onClick={() => handleSaveVoucher(voucher._id)}
+                                                >
+                                                    <FaBookmark />
+
+                                                    {savedVouchers.includes(voucher._id)
+                                                        ? "Đã lưu"
+                                                        : "Lưu"}
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="voucher-copy"
+                                                    onClick={() => handleCopy(voucher.code)}
+                                                >
+                                                    {copiedCode === voucher.code
+                                                        ? "Đã sao chép"
+                                                        : "Sao chép mã"}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
