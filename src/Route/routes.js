@@ -35,6 +35,8 @@ import TableManageVoucher from "../pages/admin/voucher";
 import CreateVoucher from "../pages/admin/voucher/create";
 import EditVoucher from "../pages/admin/voucher/edit";
 import KhuyenMai from "../pages/client/KhuyenMai/khuyen-mai";
+import VoucherFetured from "../pages/client/KhuyenMai/voucher-feartured";
+import VoucherClient from "../pages/client/KhuyenMai";
 
 export const routes = [{
     path: "/",
@@ -97,7 +99,19 @@ export const routes = [{
     },
     {
         path: "khuyen-mai",
-        element: <KhuyenMai />
+        element: <VoucherClient />,
+        children: [
+            {
+                path: "",
+                element: <KhuyenMai />
+            },
+            {
+                path: "noi-bat",
+                element: <VoucherFetured />
+            }
+
+        ]
+
     }
     ]
 }
