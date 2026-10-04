@@ -25,8 +25,10 @@ export default function VoucherFetured() {
     const [totalPage, setTotalPage] = useState(1);
     const [savedVouchers, setSavedVouchers] = useState([]);
     const user = useSelector(state => state.auth).payload;
+    const [statusSaveButton,setStatusSaveButton] = useState(false);
 
     const handleSaveVoucher = (voucherId) => {
+        setStatusSaveButton(true);
         setSavedVouchers([...savedVouchers, voucherId]);
         const data = {
             "userId": user._id,
@@ -34,6 +36,17 @@ export default function VoucherFetured() {
         }
         socket.emit("CLIENT_SEND_REQUEST_SAVE_VOUCHER", data);
     };
+
+    const handleCancelSaveVoucher = (voucherId) => {
+        setStatusSaveButton(false);
+        const newSavedVoucher = savedVouchers.filter((item) => item != voucherId);
+        setSavedVouchers(newSavedVoucher);
+        const data = {
+            "userId": user._id,
+            "voucherId": voucherId
+        }
+        socket.emit("CLIENT_SEND_REQUEST_CANCEL_SAVE_VOUCHER", data);
+    }
 
     // const filteredVouchers = useMemo(() => {
     //     const now = new Date();
@@ -122,24 +135,48 @@ export default function VoucherFetured() {
 
         socket.on("SERVER_RESPOND_REQUEST_SAVE_VOUCHER",(data) => {
             const index = vouchers.findIndex((voucher) => voucher._id == data.voucherId);
+            const userId = document.querySelector("[user_id]").getAttribute("user_id");
             if(index < 0) return;
-            SwalAlert({
-                "status": "success",
-                "time": 2000,
-                "message": data.message
-            });
-            const newVouchers = [...vouchers];
-            newVouchers[index].quantity = data.newQuantity;
-            setVouchers(newVouchers);
+            if(data.userId == userId){
+                SwalAlert({
+                    "status": data.success ? "success" : "error",
+                    "time": 2000,
+                    "message": data.message
+                });
+            }
+            if(data.success){
+                const newVouchers = [...vouchers];
+                newVouchers[index].quantity = data.newQuantity;
+                setVouchers(newVouchers);
+            }
+        })
+
+        socket.on("SERVER_RESPOND_REQUEST_CANCEL_SAVE_VOUCHER",(data) => {
+            const index = vouchers.findIndex((voucher) => voucher._id == data.voucherId);
+            const userId = document.querySelector("[user_id]").getAttribute("user_id");
+            if(index < 0) return;
+            if(data.userId == userId){
+                SwalAlert({
+                    "status": data.success ? "success" : "error",
+                    "time": 2000,
+                    "message": data.message
+                });
+            }
+            if(data.success){
+                const newVouchers = [...vouchers];
+                newVouchers[index].quantity = data.newQuantity;
+                setVouchers(newVouchers);
+            }
         })
 
         return () => {
             socket.off("connect");
         };
-    }, []);
+    }, [vouchers]);
 
     return (
         <>
+            <span user_id = {user?._id}></span>
             <main className="promotion-container">
                 <section className="promotion-filter">
                     <div className="promotion-search">
@@ -325,7 +362,7 @@ export default function VoucherFetured() {
                                                         ? "saved"
                                                         : ""
                                                         }`}
-                                                    onClick={() => handleSaveVoucher(voucher._id)}
+                                                    onClick={() => statusSaveButton === false ? handleSaveVoucher(voucher._id) : handleCancelSaveVoucher(voucher._id)}
                                                 >
                                                     <FaBookmark />
 
