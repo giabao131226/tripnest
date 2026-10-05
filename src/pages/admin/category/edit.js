@@ -82,7 +82,7 @@ export default function EditCategory() {
             icon: data.icon
         };
 
-        fetch(`${apiUrl}categories/edit/${data._id}`, {
+        fetch(`${apiUrl}admin/categories/edit/${data._id}`, {
             method: "PATCH",
             credentials: "include",
             headers: {
@@ -114,7 +114,7 @@ export default function EditCategory() {
     }, [data]);
 
     useEffect(() => {
-        fetch(`${apiUrl}categories/detail/${params.slug}`, {
+        fetch(`${apiUrl}admin/categories/detail/${params.slug}`, {
             method: "GET",
             credentials: "include"
         })

@@ -16,7 +16,7 @@ export default function ManageCategory() {
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
 
     const handleRemove = useCallback((id) => {
-        fetch(`${apiUrl}categories/delete/${id}`, {
+        fetch(`${apiUrl}admin/categories/delete/${id}`, {
             method: "DELETE",
             credentials: "include"
         })
@@ -44,7 +44,7 @@ export default function ManageCategory() {
     },[])
 
     const handleChangeStatus = useCallback((id, status) => {
-        fetch(`${apiUrl}categories/change-status/${status}/${id}`, {
+        fetch(`${apiUrl}admin/categories/change-status/${status}/${id}`, {
             method: "PATCH",
             credentials: "include"
         })
@@ -77,7 +77,7 @@ export default function ManageCategory() {
 
 
     useEffect(() => {
-        fetch(`${apiUrl}categories/all?status=${status}&search=${search}&page=${currentPage}`, {
+        fetch(`${apiUrl}admin/categories/all?status=${status}&search=${search}&page=${currentPage}`, {
             "credentials": "include"
         })
             .then(async res => {

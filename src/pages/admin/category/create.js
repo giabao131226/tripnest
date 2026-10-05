@@ -80,7 +80,7 @@ export default function CreateCategory() {
             icon: data.icon
         };
 
-        fetch(`${apiUrl}categories/create`, {
+        fetch(`${apiUrl}admin/categories/create`, {
             method: "POST",
             credentials: "include",
             headers: {

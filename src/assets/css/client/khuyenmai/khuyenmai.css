@@ -1,4 +1,3 @@
-
 .promotion-page {
     min-height: 100vh;
     background: #f8faff;
@@ -11,6 +10,78 @@
     margin: 0 auto;
     padding: 28px 20px 55px;
 }
+
+/* HERO */
+
+.promotion-hero {
+    position: relative;
+    min-height: 330px;
+    background-image: url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80");
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+.promotion-hero__overlay {
+    min-height: 330px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(
+        90deg,
+        rgba(15, 35, 75, 0.82) 0%,
+        rgba(15, 35, 75, 0.62) 45%,
+        rgba(15, 35, 75, 0.2) 100%
+    );
+}
+
+.promotion-hero .promotion-container {
+    padding-top: 45px;
+    padding-bottom: 45px;
+}
+
+.promotion-hero__content {
+    max-width: 650px;
+    color: #fff;
+}
+
+.promotion-hero__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.promotion-hero__label svg {
+    color: #ffd166;
+    font-size: 14px;
+}
+
+.promotion-hero__content h1 {
+    margin: 0 0 16px;
+    color: #fff;
+    font-size: 42px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.promotion-hero__content p {
+    max-width: 600px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* FILTER */
 
 .promotion-filter {
     display: flex;
@@ -26,7 +97,7 @@
     align-items: center;
     gap: 12px;
     padding: 0 17px;
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 11px;
     box-shadow: 0 3px 12px rgba(32, 64, 110, 0.04);
@@ -70,7 +141,7 @@
     padding: 0 19px;
     border: 1px solid #e2e8f0;
     border-radius: 11px;
-    background: #ffffff;
+    background: #fff;
     color: #475569;
     font-size: 13px;
     font-weight: 600;
@@ -87,12 +158,14 @@
 .promotion-tabs button.active {
     border-color: #6758ff;
     background: #6758ff;
-    color: #ffffff;
+    color: #fff;
     box-shadow: 0 5px 14px rgba(103, 88, 255, 0.2);
 }
 
+/* SECTION */
+
 .promotion-section {
-    margin-top: 0;
+    margin-bottom: 42px;
 }
 
 .promotion-section__header {
@@ -132,6 +205,41 @@
     font-weight: 600;
 }
 
+.promotion-section__header a {
+    text-decoration: none;
+}
+
+.promotion-view-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 36px;
+    padding: 0 13px;
+    border: 1px solid #dfe4ee;
+    border-radius: 8px;
+    background: #fff;
+    color: #6758ff;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.promotion-view-all:hover {
+    border-color: #6758ff;
+    background: #6758ff;
+    color: #fff;
+    box-shadow: 0 5px 12px rgba(103, 88, 255, 0.16);
+}
+
+.promotion-view-all svg {
+    font-size: 10px;
+}
+
+/* VOUCHER */
+
 .voucher-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -141,7 +249,7 @@
 .voucher-card {
     min-width: 0;
     overflow: hidden;
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e4eaf2;
     border-radius: 14px;
     box-shadow: 0 5px 20px rgba(32, 64, 110, 0.06);
@@ -172,7 +280,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #ffffff;
+    background: #fff;
     transform: translateY(-50%);
 }
 
@@ -198,7 +306,7 @@
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    color: #ffffff;
+    color: #fff;
 }
 
 .voucher-card__discount span {
@@ -380,7 +488,7 @@
 
 .voucher-save {
     border: 1px solid #e2e8f0;
-    background: #ffffff;
+    background: #fff;
     color: #64748b;
 }
 
@@ -397,13 +505,13 @@
 .voucher-save.saved {
     border-color: #6758ff;
     background: #6758ff;
-    color: #ffffff;
+    color: #fff;
 }
 
 .voucher-copy {
     border: none;
     background: #6758ff;
-    color: #ffffff;
+    color: #fff;
 }
 
 .voucher-copy:hover {
@@ -411,12 +519,242 @@
     box-shadow: 0 4px 10px rgba(103, 88, 255, 0.2);
 }
 
+/* CATEGORY */
+
+.promotion-category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.promotion-category {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px rgba(32, 64, 110, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.promotion-category:hover {
+    transform: translateY(-4px);
+    border-color: #d8d3ff;
+    box-shadow: 0 12px 28px rgba(32, 64, 110, 0.1);
+}
+
+.promotion-category__content {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.promotion-category__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f0efff;
+    color: #6758ff;
+    font-size: 21px;
+}
+
+.promotion-category:nth-child(2n) .promotion-category__icon {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.promotion-category:nth-child(3n) .promotion-category__icon {
+    background: #fff1f2;
+    color: #e11d48;
+}
+
+.promotion-category__content > div:last-child {
+    min-width: 0;
+}
+
+.promotion-category__content h3 {
+    margin: 2px 0 6px;
+    overflow: hidden;
+    color: #1e293b;
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: 800;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.promotion-category__content p {
+    display: -webkit-box;
+    min-height: 36px;
+    margin: 0 0 11px;
+    overflow: hidden;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.promotion-category__content button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #6758ff;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.promotion-category__content button:hover {
+    color: #5142df;
+}
+
+.promotion-category__content button svg {
+    font-size: 9px;
+    transition: transform 0.2s ease;
+}
+
+.promotion-category__content button:hover svg {
+    transform: translateX(2px);
+}
+
+/* EXPIRING */
+
+.promotion-expiring {
+    padding: 25px;
+    border-radius: 15px;
+    background: #fff8f5;
+    border: 1px solid #ffe8df;
+}
+
+.promotion-expiring .promotion-section__header {
+    margin-bottom: 18px;
+}
+
+.expiring-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.expiring-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid #eceff4;
+    border-radius: 11px;
+    box-shadow: 0 3px 12px rgba(32, 64, 110, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.expiring-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(32, 64, 110, 0.08);
+}
+
+.expiring-card__discount {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.expiring-card__discount span {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.expiring-card__discount strong {
+    margin-top: 2px;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.expiring-card--red .expiring-card__discount {
+    background: linear-gradient(135deg, #e11d48, #fb7185);
+}
+
+.expiring-card--blue .expiring-card__discount {
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+}
+
+.expiring-card--purple .expiring-card__discount {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+}
+
+.expiring-card__info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 5px;
+}
+
+.expiring-card__info strong {
+    overflow: hidden;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.expiring-card__info span {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.expiring-card button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    background: #fff;
+    color: #6758ff;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.expiring-card button:hover {
+    border-color: #6758ff;
+    background: #6758ff;
+    color: #fff;
+}
+
+/* EMPTY */
+
 .promotion-empty {
     display: flex;
     align-items: center;
     flex-direction: column;
     padding: 65px 20px;
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 14px;
 }
@@ -439,9 +777,54 @@
     text-align: center;
 }
 
+/* PAGINATION */
+
+.promotion-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 5px;
+}
+
+.promotion-pagination button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.promotion-pagination button:hover {
+    border-color: #6758ff;
+    color: #6758ff;
+}
+
+.promotion-pagination button.active {
+    border-color: #6758ff;
+    background: #6758ff;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(103, 88, 255, 0.18);
+}
+
+/* RESPONSIVE */
+
 @media (max-width: 1100px) {
     .voucher-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .promotion-category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -462,6 +845,30 @@
     .voucher-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .expiring-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .promotion-hero,
+    .promotion-hero__overlay {
+        min-height: 290px;
+    }
+
+    .promotion-hero .promotion-container {
+        padding-top: 35px;
+        padding-bottom: 35px;
+    }
+
+    .promotion-hero__content h1 {
+        font-size: 34px;
+    }
+
+    .promotion-hero__content p {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 650px) {
@@ -479,8 +886,16 @@
         align-self: flex-start;
     }
 
+    .promotion-category-grid {
+        grid-template-columns: 1fr;
+    }
+
     .voucher-grid {
         grid-template-columns: 1fr;
+    }
+
+    .promotion-expiring {
+        padding: 18px;
     }
 
     .voucher-card__top {
@@ -489,6 +904,20 @@
 }
 
 @media (max-width: 480px) {
+    .promotion-hero,
+    .promotion-hero__overlay {
+        min-height: 270px;
+    }
+
+    .promotion-hero__content h1 {
+        font-size: 29px;
+    }
+
+    .promotion-hero__content p {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
     .promotion-tabs {
         overflow-x: auto;
         padding-bottom: 2px;
@@ -501,6 +930,10 @@
 
     .promotion-section__header h2 {
         font-size: 20px;
+    }
+
+    .promotion-section__header p {
+        font-size: 12px;
     }
 
     .voucher-card__discount strong {
@@ -536,5 +969,17 @@
         height: 35px;
         padding: 0 12px;
     }
-}
 
+    .promotion-expiring .promotion-section__header {
+        margin-bottom: 15px;
+    }
+
+    .expiring-card {
+        padding: 12px;
+    }
+
+    .expiring-card__discount {
+        width: 54px;
+        height: 54px;
+    }
+}

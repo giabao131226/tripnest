@@ -37,6 +37,7 @@ import EditVoucher from "../pages/admin/voucher/edit";
 import KhuyenMai from "../pages/client/KhuyenMai/khuyen-mai";
 import VoucherFetured from "../pages/client/KhuyenMai/voucher-feartured";
 import VoucherClient from "../pages/client/KhuyenMai";
+import VoucherCategory from "../pages/client/KhuyenMai/danh-muc";
 
 export const routes = [{
     path: "/",
@@ -108,10 +109,12 @@ export const routes = [{
             {
                 path: "noi-bat",
                 element: <VoucherFetured />
+            },
+            {
+                path: "danh-muc",
+                element: <VoucherCategory />
             }
-
         ]
-
     }
     ]
 }
