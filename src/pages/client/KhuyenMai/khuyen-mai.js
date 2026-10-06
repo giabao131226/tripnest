@@ -11,7 +11,7 @@ import {
     FaTicketAlt,
     FaBookmark
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../../assets/css/client/khuyenmai/khuyenmai.css";
 import SwalAlert from "../../../Component/SwalAlert/swal-alert";
 import socket from "../../../socket/socket";
@@ -45,8 +45,10 @@ export default function KhuyenMai() {
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
     const [vouchers, setVouchers] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [myVouchers, setMyVouchers] = useState([]);
     const [savedVouchers, setSavedVouchers] = useState([]);
     const user = useSelector(state => state.auth).payload;
+    const navigate = useNavigate();
 
     const filteredVouchers = useMemo(() => {
         const now = new Date();
@@ -136,6 +138,7 @@ export default function KhuyenMai() {
                 if (data.success) {
                     setVouchers(data.vouchers);
                     setCategories(data.categories);
+                    setMyVouchers(data.myVouchers);
                 }
             }).catch(ex => {
                 SwalAlert({
@@ -219,7 +222,6 @@ export default function KhuyenMai() {
                     </div>
 
                     <div className="voucher-grid">
-
                         {filteredVouchers.map((voucher) => {
                             const now = new Date();
                             const endDate = new Date(voucher.end_date);
@@ -427,10 +429,10 @@ export default function KhuyenMai() {
 
                                         <p>{category.description}</p>
 
-                                        <button type="button">
+                                        <Link to={`/khuyen-mai/${category.slug}`}><button type="button">
                                             Xem khuyến mãi
                                             <FaChevronRight />
-                                        </button>
+                                        </button></Link>
                                     </div>
                                 </div>
                             </div>
@@ -442,64 +444,169 @@ export default function KhuyenMai() {
                     <div className="promotion-section__header">
                         <div>
                             <h2>
-                                <span>⏰</span>
-                                Sắp hết hạn
+                                <span>🎟️</span>
+                                Voucher của tôi
                             </h2>
 
                             <p>
-                                Nhanh tay sử dụng trước khi ưu đãi kết thúc!
+                                Những voucher bạn đã lưu và có thể sử dụng.
                             </p>
                         </div>
 
-                        <button className="promotion-view-all">
+                        <button
+                            className="promotion-view-all"
+                            onClick={() => navigate("/khuyen-mai/cua-toi")}
+                        >
                             Xem tất cả
                             <FaChevronRight />
                         </button>
                     </div>
 
                     <div className="expiring-list">
-                        {expiringVouchers.map((voucher) => (
-                            <div
-                                className={`expiring-card expiring-card--${voucher.color}`}
-                                key={voucher.code}
-                            >
-                                <div className="expiring-card__discount">
-                                    <span>GIẢM</span>
-                                    <strong>{voucher.value}</strong>
-                                </div>
+                        {myVouchers.length > 0 ? (
+                            myVouchers.map((voucher) => {
+                                const now = new Date()
+                                const endDate = new Date(voucher.end_date)
 
-                                <div className="expiring-card__info">
-                                    <strong>{voucher.code}</strong>
-                                    <span>HSD: {voucher.endDate}</span>
-                                </div>
+                                const isExpiring =
+                                    voucher.status === "active" &&
+                                    endDate > now &&
+                                    endDate <= new Date(
+                                        now.getTime() + 7 * 24 * 60 * 60 * 1000
+                                    )
 
-                                <button
-                                    onClick={() => handleCopy(voucher.code)}
-                                >
-                                    {copiedCode === voucher.code ? (
-                                        "Đã sao chép"
-                                    ) : (
-                                        <FaCopy />
-                                    )}
-                                </button>
+                                return (
+                                    <div
+                                        className={`voucher-card voucher-card--${isExpiring ? "red" : "blue"}`}
+                                        key={voucher._id}
+                                    >
+                                        <div className="voucher-card__top">
+                                            <div className="voucher-card__discount">
+                                                <span>GIẢM</span>
+
+                                                <strong>
+                                                    {voucher.discount_type === "percent"
+                                                        ? `${voucher.discount_value}%`
+                                                        : `${voucher.discount_value / 1000}K`}
+                                                </strong>
+                                            </div>
+
+                                            <div className="voucher-card__code">
+                                                <span>{voucher.code}</span>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleCopy(voucher.code)}
+                                                    title="Sao chép mã"
+                                                >
+                                                    <FaCopy />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="voucher-card__content">
+                                            <div className="voucher-status">
+                                                {isExpiring
+                                                    ? "Sắp hết hạn"
+                                                    : "Đang diễn ra"}
+                                            </div>
+
+                                            <h3>{voucher.name}</h3>
+
+                                            <p className="voucher-description">
+                                                {voucher.description}
+                                            </p>
+
+                                            <div className="voucher-info">
+                                                <div>
+                                                    <FaCalendarAlt />
+
+                                                    <span>
+                                                        Đơn tối thiểu:{" "}
+                                                        <strong>
+                                                            {formatMoney(
+                                                                voucher.min_order_value
+                                                            )}
+                                                        </strong>
+                                                    </span>
+                                                </div>
+
+                                                <div>
+                                                    <FaTicketAlt />
+
+                                                    <span>
+                                                        Còn lại:{" "}
+                                                        <strong>
+                                                            {voucher.quantity} voucher
+                                                        </strong>
+                                                    </span>
+                                                </div>
+
+                                                {voucher.max_discount !== null && (
+                                                    <div>
+                                                        <FaTag />
+
+                                                        <span>
+                                                            Giảm tối đa:{" "}
+                                                            <strong>
+                                                                {formatMoney(
+                                                                    voucher.max_discount
+                                                                )}
+                                                            </strong>
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                <div>
+                                                    <FaClock />
+
+                                                    <span>
+                                                        HSD:{" "}
+                                                        <strong>
+                                                            {formatDate(voucher.end_date)}
+                                                        </strong>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="voucher-card__bottom">
+                                                <div className="voucher-scope">
+                                                    <FaGift />
+
+                                                    <span>
+                                                        {voucher.apply_scope === "all"
+                                                            ? "Tất cả thành viên"
+                                                            : "Thành viên được chọn"}
+                                                    </span>
+                                                </div>
+
+                                                <div className="voucher-actions">
+                                                    <button
+                                                        type="button"
+                                                        className="voucher-copy"
+                                                        onClick={() =>
+                                                            handleCopy(voucher.code)
+                                                        }
+                                                    >
+                                                        {copiedCode === voucher.code
+                                                            ? "Đã sao chép"
+                                                            : "Sao chép mã"}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        ) : (
+                            <div className="promotion-empty">
+                                <span>🎟️</span>
+                                <h3>Chưa có voucher</h3>
+                                <p>Bạn chưa lưu voucher nào</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </section>
-
-                <div className="promotion-pagination">
-                    <button>
-                        <FaChevronLeft />
-                    </button>
-
-                    <button className="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-
-                    <button>
-                        <FaChevronRight />
-                    </button>
-                </div>
             </main>
         </>
     );

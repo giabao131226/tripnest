@@ -38,6 +38,8 @@ import KhuyenMai from "../pages/client/KhuyenMai/khuyen-mai";
 import VoucherFetured from "../pages/client/KhuyenMai/voucher-feartured";
 import VoucherClient from "../pages/client/KhuyenMai";
 import VoucherCategory from "../pages/client/KhuyenMai/danh-muc";
+import VoucherByCategory from "../pages/client/KhuyenMai/voucher-category";
+import MyVouchers from "../pages/client/KhuyenMai/MyVouchers";
 
 export const routes = [{
     path: "/",
@@ -113,6 +115,14 @@ export const routes = [{
             {
                 path: "danh-muc",
                 element: <VoucherCategory />
+            },
+            {
+                path: "cua-toi",
+                element: <MyVouchers />
+            },
+            {
+                path: ":slug",
+                element: <VoucherByCategory />
             }
         ]
     }
