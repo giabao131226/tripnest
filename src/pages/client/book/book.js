@@ -1,25 +1,44 @@
 import { useEffect, useState } from "react";
 import "../../../assets/css/client/book/book.css";
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SwalAlert from "../../../Component/SwalAlert/swal-alert";
+import FormatMoneyVND from "../../../helper/formatMoneyVND";
 
 export default function Book() {
     const params = useParams();
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
-    const [step,setStep] = useState(1);
-    const [detailRoom,setDetailRoom] = useState({});
+    const [step, setStep] = useState(1);
+    const [detailRoom, setDetailRoom] = useState({});
+    const [myVouchers,setMyVouchers] = useState([]);
 
-    useEffect(() => {  
+    useEffect(() => {
+        fetch(`${apiUrl}vouchers/my-voucher/all`, {
+            credentials: "include"
+        }).then(async res => {
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.message);
+            return data;
+        }).then(data => {
+            if(data.success) setMyVouchers(data.vouchers);
+        }).catch(ex => {
+            SwalAlert({
+                "status": "error",
+                "time": 2000,
+                "message": ex
+            });
+        })
+    }, [])
+
+    useEffect(() => {
         fetch(`${apiUrl}accommodation-unit/detail/${params.id}`)
             .then(async res => {
                 const data = await res.json();
-                if(!res.ok || data.success == false) throw new Error(data.message);
+                if (!res.ok || data.success == false) throw new Error(data.message);
                 return data;
             }).then(data => {
                 console.log(data);
-                if(data.success){
+                if (data.success) {
                     setDetailRoom(data.detail);
-
                 }
             }).catch(ex => {
                 SwalAlert({
@@ -28,7 +47,7 @@ export default function Book() {
                     "message": ex
                 })
             })
-    },[])
+    }, [])
 
     return (
         <>
@@ -365,7 +384,7 @@ export default function Book() {
                                 <div className="booking-summary__voucher">
                                     <label>Mã giảm giá</label>
 
-                                    <div>
+                                    <div className="booking-voucher__input">
                                         <input
                                             type="text"
                                             placeholder="Nhập mã voucher"
@@ -374,6 +393,36 @@ export default function Book() {
                                         <button type="button">
                                             Áp dụng
                                         </button>
+                                    </div>
+
+                                    <div className="booking-voucher__list">
+                                        <div className="booking-voucher__list-header">
+                                            <strong>Voucher của bạn</strong>
+                                            <span>{myVouchers.length} mã khả dụng</span>
+                                        </div>
+                                        {myVouchers.length > 0 ? myVouchers.map((voucher) =><label className="booking-voucher__item">
+                                                <input type="radio" name="bookingVoucher" />
+
+                                                <div className="booking-voucher__icon">
+                                                    🎟️
+                                                </div>
+
+                                                <div className="booking-voucher__info">
+                                                    <div className="booking-voucher__top">
+                                                        <strong>{voucher.code}</strong>
+                                                        <span>{voucher.name}</span>
+                                                    </div>
+
+                                                    <p>{voucher.description}</p>
+                                                    <small>Đơn tối thiểu {FormatMoneyVND(voucher.min_order_value)}đ</small>
+                                                    <small>Giảm tối đa {FormatMoneyVND(voucher.max_discount)}đ</small>
+                                                    <small className="booking-voucher__expiry">
+                                                        Hạn sử dụng: {new Date(voucher.end_date).toLocaleDateString("vi-VN")}
+                                                    </small>
+                                                </div>
+                                        </label>)
+                                            
+                                         : <h1>Không có voucher nào khả dụng</h1>}
                                     </div>
                                 </div>
 
@@ -407,8 +456,6 @@ export default function Book() {
                     </div>
                 </div>
             </div>
-
-
         </>
     )
 }

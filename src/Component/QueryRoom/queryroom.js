@@ -1,11 +1,9 @@
-import { useEffect, useState,useCallback } from "react";
 import { Carousel, Tag, Rate } from 'antd';
 import { FaHotel } from "react-icons/fa6";
 import { Link } from 'react-router-dom'
 import { useOutletContext } from "react-router-dom";
 import "./queryroom.css"
 import { TbMoodEmptyFilled } from "react-icons/tb";
-import Swal from 'sweetalert2';
 import Pagination from "../Pagination/pagination";
 
 function QueryRoom() {

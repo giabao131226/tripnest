@@ -1,171 +1,465 @@
-import { Form, Input, Button, Modal, Tag, Image, message } from "antd"
-import { useForm } from "antd/es/form/Form";
+
+import { Tag, Image } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import "./quanlytaikhoan.css"
+import "./quanlytaikhoan.css";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { GiBeard } from "react-icons/gi";
 import { IoMdPerson } from "react-icons/io";
-import { FaUpLong } from "react-icons/fa6";
-import Swal from 'sweetalert2';
+import {
+    FaUser,
+    FaEnvelope,
+    FaPhone,
+    FaBuilding,
+    FaFileAlt,
+    FaUniversity,
+    FaIdCard,
+    FaCamera,
+    FaArrowUp,
+    FaSave
+} from "react-icons/fa";
+import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
-
+import SwalAlert from "../SwalAlert/swal-alert";
 
 function QuanLyTaiKhoan() {
     const acc = useSelector(state => state.auth).payload;
-    const [isOpenModal, setModal] = useState(false)
     const [dataUpToServer, setDataUpToServer] = useState({ ...acc });
     const [previewAvatar, setPreviewAvatar] = useState(acc.avatar);
     const [previewBL, setPreviewBL] = useState(acc.business_lisence ?? null);
     const dispatch = useDispatch();
+    const [sendRequestUpgrade, setSendRequestUpgrade] = useState(false);
+    const apiUrl = process.env.REACT_APP_BACKEND_URL;
+
+    useEffect(() => {
+        setDataUpToServer({ ...acc });
+        setPreviewAvatar(acc.avatar);
+        setPreviewBL(acc.business_lisence ?? null);
+    }, [acc]);
+
+    useEffect(() => {
+        fetch(`${apiUrl}account/send-request-upgrade`,{
+            credentials: "include"
+        })
+            .then(async res => {
+                const data = await res.json();
+                if(!res.ok || data.success == false) throw new Error(data.message);
+                return data;
+            }).then(data => {
+                if(data.success) setSendRequestUpgrade(data.sendRequestUpgrade);
+            }).catch(ex => {
+                console.log(ex);
+                SwalAlert({
+                    "status": "error",
+                    "message": ex,
+                    "time": 2000
+                });
+            })
+    },[])
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
-        setDataUpToServer({ ...dataUpToServer, "name": value });
-    }, [dataUpToServer])
+        setDataUpToServer(prev => ({ ...prev, [name]: value }));
+    }, []);
 
     const handleUpgrade = useCallback(() => {
-        if (acc.cccd != "" && acc.giayPhepKD != "") {
-            fetch("https://servertripnest-4.onrender.com/api/taiKhoan/" + acc.id, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ "vaiTro": "chuCoSo" })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    localStorage.setItem("user", JSON.stringify(data))
-                    // setAcc(data)
-                    Swal.fire({
-                        icon: "success",
-                        title: "Thành Công",
-                        text: "Giờ Bạn Có Thể Upload Bất Động Sản Của Bạn!!"
-                    })
-                })
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Thất Bại",
-                text: "Bạn Phải Cập Nhật Đầy Đủ Thông Tin Trước Đã"
-            })
-        }
-    }, [acc])
-
-    const handleSubmit = useCallback((e) => {
-        e.preventDefault();
         const formData = new FormData();
-        Object.keys(dataUpToServer).map((item) => {
-            formData.append(item,dataUpToServer[item]);
-        })
-        fetch(`http://localhost:5000/account/update-account/${acc._id}`, {
+
+        Object.keys(dataUpToServer).forEach(item => {
+            if (dataUpToServer[item] !== undefined && dataUpToServer[item] !== null) {
+                formData.append(item, dataUpToServer[item]);
+            }
+        });
+
+        fetch(`${apiUrl}account/edit/${acc._id}`, {
             method: "PATCH",
+            credentials: "include",
             body: formData
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    dispatch({ type: "UPDATE", "payload": data.newInfo });
+                    dispatch({ type: "UPDATE", payload: data.newInfo });
+                } else {
                     Swal.fire({
-                        icon: "success",
-                        title: "🎉 Updated Successfully!",
-                        text: "Your account information has been updated successfully.",
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: "#ffffff",
-                        color: "#333",
-                        iconColor: "#22c55e",
-                        toast: true,
-                        position: "top-end"
+                        icon: "error",
+                        title: "Cập nhật thất bại",
+                        text: data.message || "Vui lòng thử lại."
                     });
                 }
             })
-    }, [dataUpToServer])
+            .catch(() => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Lỗi kết nối",
+                    text: "Không thể cập nhật thông tin vào lúc này."
+                });
+            });
+        if (dataUpToServer.business_lisence && dataUpToServer.tax_code) {
+            const dataRequestUpgrade = {
+                account_id: dataUpToServer._id,
+                business_lisence: dataUpToServer.business_lisence,
+                tax_code: dataUpToServer.tax_code,
+                bank_account: dataUpToServer.bank_account
+            };
 
+            fetch(`${apiUrl}account/request-upgrade-role`, {
+                method: "PATCH",
+                credentials: "include",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(dataRequestUpgrade)
+            })
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok || !data.success) throw new Error(data.message);
+                    return data;
+                })
+                .then(data => {
+                    setSendRequestUpgrade(true);
+                    SwalAlert({
+                        "status": "success",
+                        "message": data.message,
+                        "time": 2000
+                    })
+                }).catch(ex => {
+                    SwalAlert({
+                        "status": "error",
+                        "message": ex,
+                        "time": 2000
+                    })
+                });
+        } else {
+            SwalAlert({
+                "status": "error",
+                "message": "Bạn phải nhập đầy đủ thông tin yêu cầu",
+                "time": 2000
+            })
+        }
+    }, [dataUpToServer, acc._id, dispatch]);
 
-    // Hiển thị Image ảo
+    const handleSubmit = useCallback((e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        Object.keys(dataUpToServer).forEach(item => {
+            if (dataUpToServer[item] !== undefined && dataUpToServer[item] !== null) {
+                formData.append(item, dataUpToServer[item]);
+            }
+        });
+
+        fetch(`${apiUrl}account/edit/${acc._id}`, {
+            method: "PATCH",
+            credentials: "include",
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    dispatch({ type: "UPDATE", payload: data.newInfo });
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Cập nhật thành công!",
+                        text: "Thông tin tài khoản của bạn đã được cập nhật.",
+                        showConfirmButton: false,
+                        timer: 2000,
+                        toast: true,
+                        position: "top-end"
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Cập nhật thất bại",
+                        text: data.message || "Vui lòng thử lại."
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Lỗi kết nối",
+                    text: "Không thể cập nhật thông tin vào lúc này."
+                });
+            });
+    }, [dataUpToServer, acc._id, dispatch]);
+
     const handleChangeImage = useCallback((e) => {
-        const {name,files} = e.target;
-        console.log(name);
-        const url = URL.createObjectURL(e.target.files[0]);
-        if(name == "avatar") setPreviewAvatar(url);
-        else{
-            console.log(name,url);
+        const { name, files } = e.target;
+
+        if (!files || !files[0]) return;
+
+        const file = files[0];
+        const url = URL.createObjectURL(file);
+
+        if (name === "avatar") {
+            setPreviewAvatar(url);
+        } else {
             setPreviewBL(url);
         }
-        setDataUpToServer({ ...dataUpToServer, [name]: files[0] });
-    }, [dataUpToServer])
-    //
+
+        setDataUpToServer(prev => ({ ...prev, [name]: file }));
+    }, []);
+
+    const roleInfo = {
+        owner: {
+            label: "Chủ cơ sở",
+            color: "blue",
+            icon: <GiBeard />
+        }
+    };
+
+    const currentRole = roleInfo[acc.role] || {
+        label: "Khách hàng",
+        color: "green",
+        icon: <IoMdPerson />
+    };
+
     return (
-        <>
-            <div className="qltk">
-                <div className="qltk__container">
-                    <h1 className="qltk__title">
-                        Tài Khoản Của Bạn
-                    </h1>
-                    <p>Thông tin tài khoản của bạn được hiển thị ở đây!!</p>
-                    <form onSubmit={handleSubmit} className="d-flex flex-column col-12">
-                        <p className="qltk__role m-0">Vai trò của bạn là: <Tag style={{ fontSize: 14, fontWeight: 700, padding: 5, borderRadius: 3 }} color={acc.vaiTro == "qtv" ? "green" : (acc.vaiTro == "chuCoSo" ? "blue" : "red")}>{acc.vaiTro == "qtv" ? <><MdOutlineAdminPanelSettings /> Quản Trị Viên</> : (acc.vaiTro == "chuCoSo" ? <><GiBeard /> Chủ cơ sở</> : <><IoMdPerson /> Khách hàng</>)}</Tag></p>
+        <main className="qltk">
+            <div className="qltk__container">
+                <header className="qltk__header">
+                    <div>
+                        <span className="qltk__eyebrow">TRIPNEST ACCOUNT</span>
+                        <h1 className="qltk__title">Quản lý tài khoản</h1>
+                        <p className="qltk__subtitle">
+                            Quản lý thông tin cá nhân và hồ sơ hoạt động của bạn.
+                        </p>
+                    </div>
+                    <Tag className="qltk__role" color={currentRole.color}>
+                        {currentRole.icon}
+                        <span>{currentRole.label}</span>
+                    </Tag>
+                </header>
 
-                        <h1 className="m-0 py-3">Thông tin cơ bản</h1>
-                        <div className="px-4 d-flex flex-column gap-y-3">
-                            <div className="d-flex justify-center items-center">
-                                <div className="avatar">
-                                    <img src={previewAvatar}></img>
-                                    <label className="avatar-icon" htmlFor="avatar">
-                                        <i className="text-black fa-regular fa-pen-to-square"></i>
-                                    </label>
-                                </div>
-                                <input onChange={handleChangeImage} id="avatar" name="avatar" type="file" accept="image/*" className="d-none"></input>
+                <form onSubmit={handleSubmit} className="qltk__form">
+                    <section className="qltk__card qltk__profile">
+                        <div className="qltk__section-heading">
+                            <div className="qltk__section-icon">
+                                <FaUser />
                             </div>
-                            <div className="d-flex flex-column">
-                                <label><span className="font-bold text-red">* </span>UserName</label>
-                                <input type="text" name="username" value={acc.username} onChange={handleChange}></input>
-                            </div>
-                            <div className="d-flex flex-column">
-                                <label><span className="font-bold text-red">* </span>Email</label>
-                                <input type="email" name="email" value={acc.email} onChange={handleChange}></input>
-                            </div>
-                            <div className="d-flex flex-column">
-                                <label><span className="font-bold text-red">* </span>Số Điện Thoại</label>
-                                <input type="phone" name="phone" value={acc.phone} onChange={handleChange}></input>
+                            <div>
+                                <h2>Thông tin cá nhân</h2>
+                                <p>Cập nhật thông tin cơ bản của tài khoản.</p>
                             </div>
                         </div>
 
-                        <h1 className="m-0 py-3">Thông tin chủ cơ sở</h1>
-                        <div className="px-4 d-flex flex-column gap-y-3">
-                            <div className="d-flex flex-column">
-                                <div className="d-flex items-center justify-between">
-                                    <label>Giấy phép kinh doanh: </label>
-                                    <label htmlFor="imageBusinessLisence" className="px-2 py-2 cursor-pointer">
-                                        Thêm mới
-                                    </label>
+                        <div className="qltk__avatar-section">
+                            <div className="qltk__avatar">
+                                <img
+                                    src={previewAvatar || "https://placehold.co/140x140?text=Avatar"}
+                                    alt="Ảnh đại diện"
+                                />
+                                <label htmlFor="avatar" className="qltk__avatar-edit" title="Đổi ảnh đại diện">
+                                    <FaCamera />
+                                </label>
+                                <input
+                                    id="avatar"
+                                    name="avatar"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleChangeImage}
+                                    hidden
+                                />
+                            </div>
+                            <div className="qltk__avatar-info">
+                                <h3>Ảnh đại diện</h3>
+                                <p>Chọn ảnh rõ nét để mọi người dễ nhận diện bạn.</p>
+                                <label htmlFor="avatar" className="qltk__upload-link">
+                                    Thay đổi ảnh
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="qltk__fields">
+                            <div className="qltk__field">
+                                <label htmlFor="username">
+                                    Tên người dùng <span>*</span>
+                                </label>
+                                <div className="qltk__input-wrap">
+                                    <FaUser />
+                                    <input
+                                        id="username"
+                                        type="text"
+                                        name="username"
+                                        value={dataUpToServer.username ?? ""}
+                                        onChange={handleChange}
+                                        placeholder="Nhập tên người dùng"
+                                    />
                                 </div>
-                                <input onChange={handleChangeImage} className="d-none" id="imageBusinessLisence" type="file" name="business_lisence" accept="image/*"></input>
-                                <Image src={previewBL}></Image>
                             </div>
 
-                            <div className="d-flex flex-column">
-                                <label>Mã số thuế</label>
-                                <input name="tax_code" type="text" onChange={handleChange}></input>
-                            </div>
-                            <div className="d-flex flex-column">
-                                <label>Tài khoản ngân hàng</label>
-                                <input name="stk" type="text" onChange={handleChange}></input>
+                            <div className="qltk__field">
+                                <label htmlFor="email">
+                                    Email <span>*</span>
+                                </label>
+                                <div className="qltk__input-wrap">
+                                    <FaEnvelope />
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        value={dataUpToServer.email ?? ""}
+                                        onChange={handleChange}
+                                        placeholder="example@email.com"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="d-flex justify-end">
-                                <div className="d-flex items-center gap-x-2">
-                                    <button className="bg-blue border-none text-white font-bold px-2 py-2 rounded" type="submit">Lưu</button>
-                                    <button className="bg-green border-none text-white font-bold px-2 py-2 rounded" type="button"><i className="fa-solid fa-circle-up"></i> Yêu cầu nâng cấp</button>
+                            <div className="qltk__field">
+                                <label htmlFor="phone">
+                                    Số điện thoại <span>*</span>
+                                </label>
+                                <div className="qltk__input-wrap">
+                                    <FaPhone />
+                                    <input
+                                        id="phone"
+                                        type="tel"
+                                        name="phone"
+                                        value={dataUpToServer.phone ?? ""}
+                                        onChange={handleChange}
+                                        placeholder="Nhập số điện thoại"
+                                    />
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </section>
 
-                </div>
-            </div >
-        </>
-    )
+                    <section className="qltk__card qltk__business">
+                        <div className="qltk__section-heading">
+                            <div className="qltk__section-icon qltk__section-icon--business">
+                                <FaBuilding />
+                            </div>
+                            <div>
+                                <h2>Hồ sơ chủ cơ sở</h2>
+                                <p>Thông tin cần thiết để quản lý cơ sở lưu trú.</p>
+                            </div>
+                        </div>
+
+                        <div className="qltk__license">
+                            <div className="qltk__license-heading">
+                                <div>
+                                    <h3>Giấy phép kinh doanh</h3>
+                                    <p>Tải lên hình ảnh giấy phép kinh doanh của bạn.</p>
+                                </div>
+                                <label htmlFor="imageBusinessLisence" className="qltk__upload-button">
+                                    <FaCamera />
+                                    <span>Tải ảnh lên</span>
+                                </label>
+                            </div>
+
+                            <input
+                                onChange={handleChangeImage}
+                                id="imageBusinessLisence"
+                                type="file"
+                                name="business_lisence"
+                                accept="image/*"
+                                hidden
+                            />
+
+                            {previewBL ? (
+                                <div className="qltk__license-preview">
+                                    <Image
+                                        src={previewBL}
+                                        alt="Giấy phép kinh doanh"
+                                        className="qltk__license-image"
+                                    />
+                                </div>
+                            ) : (
+                                <label htmlFor="imageBusinessLisence" className="qltk__upload-area">
+                                    <FaFileAlt />
+                                    <strong>Chưa có giấy phép kinh doanh</strong>
+                                    <span>Nhấn để chọn ảnh từ thiết bị</span>
+                                </label>
+                            )}
+                        </div>
+
+                        <div className="qltk__fields">
+                            <div className="qltk__field">
+                                <label htmlFor="tax_code">Mã số thuế</label>
+                                <div className="qltk__input-wrap">
+                                    <FaIdCard />
+                                    <input
+                                        id="tax_code"
+                                        name="tax_code"
+                                        type="text"
+                                        value={dataUpToServer.tax_code ?? ""}
+                                        onChange={handleChange}
+                                        placeholder="Nhập mã số thuế"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label htmlFor="stk">Tài khoản ngân hàng</label>
+                                <div className="qltk__input-wrap">
+                                    <FaUniversity />
+                                    <input
+                                        id="stk"
+                                        name="stk"
+                                        type="text"
+                                        value={dataUpToServer.stk ?? ""}
+                                        onChange={handleChange}
+                                        placeholder="Nhập số tài khoản"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {acc.role !== "owner" && (
+                        <section className="qltk__upgrade">
+                            <div className="qltk__upgrade-icon">
+                                <FaBuilding />
+                            </div>
+                            {!sendRequestUpgrade ? (
+                                <>
+                                    <div className="qltk__upgrade-content">
+                                        <h2>Trở thành đối tác TripNest</h2>
+                                        <p>
+                                            Hoàn thiện hồ sơ để bắt đầu đăng tải và quản lý
+                                            cơ sở lưu trú của bạn trên TripNest.
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="qltk__upgrade-button"
+                                        onClick={handleUpgrade}
+                                    >
+                                        <FaArrowUp />
+                                        <span>Yêu cầu nâng cấp</span>
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="qltk__upgrade-content qltk__upgrade-content--pending">
+                                    <h2>Đã gửi yêu cầu nâng cấp</h2>
+                                    <p>
+                                        Yêu cầu nâng cấp tài khoản của bạn đã được gửi thành công.
+                                        Vui lòng chờ tối đa 3 ngày để TripNest kiểm tra và đối chiếu
+                                        thông tin.
+                                    </p>
+                                    <p className="qltk__upgrade-notice">
+                                        <strong>Lưu ý:</strong> Vui lòng không cập nhật hoặc thay đổi
+                                        thông tin hồ sơ trong thời gian chờ xét duyệt để chúng tôi
+                                        thực hiện đối chiếu chính xác.
+                                    </p>
+                                </div>
+                            )}
+                        </section>
+                    )}
+
+                    <footer className="qltk__footer">
+                        <p>Hãy đảm bảo thông tin của bạn luôn chính xác và cập nhật.</p>
+                        <button type="submit" className="qltk__save-button">
+                            <FaSave />
+                            <span>Lưu thay đổi</span>
+                        </button>
+                    </footer>
+                </form>
+            </div>
+        </main>
+    );
 }
+
 export default QuanLyTaiKhoan;

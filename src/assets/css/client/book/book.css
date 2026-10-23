@@ -1,3 +1,4 @@
+
 .book-room {
     width: 100%;
     min-height: 100vh;
@@ -527,7 +528,7 @@
     border-bottom: 1px solid #eee;
 }
 
-.booking-summary__voucher label {
+.booking-summary__voucher > label {
     display: block;
     margin-bottom: 8px;
     color: #333;
@@ -535,15 +536,16 @@
     font-weight: 600;
 }
 
-.booking-summary__voucher > div {
+.booking-voucher__input {
     display: flex;
     gap: 7px;
 }
 
-.booking-summary__voucher input {
+.booking-voucher__input input {
+    width: 0;
     min-width: 0;
-    flex: 1;
     height: 40px;
+    flex: 1;
     padding: 0 10px;
     border: 1px solid #d9d9d9;
     border-radius: 6px;
@@ -552,11 +554,12 @@
     box-sizing: border-box;
 }
 
-.booking-summary__voucher input:focus {
+.booking-voucher__input input:focus {
     border-color: #1677ff;
 }
 
-.booking-summary__voucher button {
+.booking-voucher__input button {
+    flex-shrink: 0;
     height: 40px;
     padding: 0 12px;
     border: 1px solid #1677ff;
@@ -566,11 +569,171 @@
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    transition: background 0.2s, color 0.2s;
 }
 
-.booking-summary__voucher button:hover {
+.booking-voucher__input button:hover {
     background: #1677ff;
     color: #fff;
+}
+
+.booking-voucher__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.booking-voucher__list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.booking-voucher__list-header strong {
+    color: #333;
+    font-size: 13px;
+}
+
+.booking-voucher__list-header span {
+    color: #777;
+    font-size: 11px;
+    text-align: right;
+}
+
+.booking-voucher__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 12px 9px;
+    margin: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.booking-voucher__item:hover {
+    border-color: #1677ff;
+    background: #f8fbff;
+}
+
+.booking-voucher__item:has(input[type="radio"]:checked) {
+    border-color: #1677ff;
+    background: #f3f7ff;
+}
+
+.booking-voucher__item input[type="radio"] {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    margin: 3px 0 0;
+    accent-color: #1677ff;
+    cursor: pointer;
+}
+
+.booking-voucher__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #f0edff;
+    font-size: 18px;
+}
+
+.booking-voucher__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.booking-voucher__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.booking-voucher__top strong {
+    color: #6758ff;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.booking-voucher__top span {
+    color: #e05260;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.booking-voucher__info p {
+    margin: 5px 0;
+    color: #444;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.booking-voucher__info small {
+    display: block;
+    margin-top: 4px;
+    color: #777;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.booking-voucher__info .booking-voucher__expiry {
+    color: #d97706;
+}
+
+.booking-voucher__apply {
+    width: 100%;
+    min-height: 40px;
+    padding: 10px 12px;
+    border: 1px solid #1677ff;
+    border-radius: 7px;
+    background: #1677ff;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.booking-voucher__apply:hover {
+    background: #0958d9;
+}
+
+.booking-voucher__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 22px 12px;
+    border: 1px dashed #ddd;
+    border-radius: 9px;
+    text-align: center;
+}
+
+.booking-voucher__empty span {
+    margin-bottom: 8px;
+    font-size: 28px;
+}
+
+.booking-voucher__empty strong {
+    color: #333;
+    font-size: 13px;
+}
+
+.booking-voucher__empty p {
+    margin: 6px 0 0;
+    color: #777;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 .booking-summary__price {
@@ -604,6 +767,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
     padding-top: 17px;
     border-top: 1px solid #ddd;
 }
@@ -617,6 +781,7 @@
 .booking-summary__total strong {
     color: #1677ff;
     font-size: 20px;
+    text-align: right;
 }
 
 .booking-summary__secure {
@@ -633,7 +798,7 @@
 
 @media (max-width: 900px) {
     .book-room__content {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .booking-summary {
@@ -656,13 +821,17 @@
 
     .book-room__header {
         flex-direction: column;
-        gap: 12px;
         align-items: flex-start;
+        gap: 12px;
     }
 
     .book-room__title {
         align-items: flex-start;
         order: -1;
+    }
+
+    .book-room__title h2 {
+        font-size: 21px;
     }
 
     .book-room__steps {
@@ -675,12 +844,34 @@
         margin: 0 10px;
     }
 
+    .book-room__step {
+        gap: 7px;
+    }
+
+    .book-room__step strong {
+        font-size: 12px;
+    }
+
+    .book-room__step small {
+        font-size: 10px;
+    }
+
+    .book-room__step-number {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+    }
+
     .booking-form {
         padding: 20px;
     }
 
+    .booking-form__header h2 {
+        font-size: 20px;
+    }
+
     .booking-date {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .booking-date__arrow {
@@ -690,12 +881,41 @@
     .booking-date__nights {
         align-items: flex-start;
         padding: 10px 0 0;
-        border-left: none;
         border-top: 1px solid #ddd;
+        border-left: none;
     }
 
     .booking-guests,
     .booking-input-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .booking-form__actions {
+        flex-wrap: wrap;
+    }
+
+    .booking-btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 0 12px;
+    }
+
+    .booking-summary {
+        padding: 18px;
+    }
+
+    .booking-voucher__top {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .booking-voucher__list-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .booking-voucher__list-header span {
+        text-align: left;
     }
 }

@@ -17,20 +17,20 @@ function BDSList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
     const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("");
+    const [categorySelected, setCategorySelected] = useState("");
     const [provinceFilter, setProvinceFilter] = useState([]);
     const [provinceSelected, setProvinceSelected] = useState("");
-
+    const [categories,setCategories] = useState([]);
 
     const onPageChange = useCallback((page) => {
         setCurrentPage(page);
     }, [currentPage])
 
-    const [loaiPhong, setLoaiP] = useState([])
     const [queryDiaDiem, setQDD] = useState("HaNoi")
     const [queryTypeRoom, setTR] = useState("Villa")
     const [querryTime, setTime] = useState(-1)
     const navigate = useNavigate();
+
     const getSoNgay = useCallback((start, end) => {
         let ans = 0;
         const day = [
@@ -53,12 +53,12 @@ function BDSList() {
         else if (start[2] > end[2]) ans -= start[2] - end[2]
         return ans
     }, [])
-    const handleChangeAntd = useCallback((value) => {
-        setProvinceSelected(value);
-    }, [provinceSelected])
-    const TDLoaiPhong = useCallback((value) => {
-        setTR(value)
-    }, [])
+
+    const handleChangeFilter = useCallback((type,value) => {
+        if(type == "province") setProvinceSelected(value);
+        else if(type == "category") setCategorySelected(value);
+    },[])
+
     const TDTime = useCallback((value) => {
         const startDate = value[0].format("YYYY-MM-DD").split("-").map((item) => {
             return parseInt(item)
@@ -69,19 +69,19 @@ function BDSList() {
         let soNgay = getSoNgay(startDate, endDate)
         setTime(soNgay)
     }, [])
+
     const handleClick = useCallback(() => {
         let urlNew = "https://servertripnest-4.onrender.com/api/bdsDuLich";
         urlNew += "?diaChi=" + queryDiaDiem;
-        urlNew += "&loaiPhong=" + queryTypeRoom;
+        urlNew += "&categories=" + queryTypeRoom;
         if (querryTime > 0) {
             urlNew += "&thoiGianChoThue=" + querryTime;
         }
-        // setUrl(urlNew)
-        navigate("/list-bds")
+       navigate("/list-bds")
     })
 
     useEffect(() => {
-        fetch(`${apiUrl}bds?page=${currentPage}&provinceId=${provinceSelected}`)
+        fetch(`${apiUrl}bds?page=${currentPage}&provinceId=${provinceSelected}&category=${categorySelected}`)
             .then(async res => {
                 const data = res.json();
                 if (!res.ok) throw new Error(data.message);
@@ -100,28 +100,55 @@ function BDSList() {
                     "message": ex,
                 });
             })
-    }, [currentPage,provinceSelected])
+    }, [currentPage,provinceSelected,categorySelected])
 
     useEffect(() => {
-        fetch(`${apiUrl}province/only-province`)
+        fetch(`${apiUrl}province/only-province`,{
+            credentials: "include"
+        })
             .then(async res => {
                 const data = res.json();
                 if (!res.ok) throw new Error(data.message);
                 return data;
             }).then(data => {
+                console.log(data);
                 if(data.success) setProvinceFilter(data.data);
             }).catch(ex => {
                 SwalAlert({
                     "status": "error",
                     "time": 2000,
-                    "message": ex,
+                    "message": ex
                 })
             })
-        // fetch(`${apiUrl}categories`)
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         setLoaiP(data)
-        //     })
+        fetch(`${apiUrl}categories`,{
+            credentials: "include"
+        })
+            .then(async res => {
+                const data = await res.json();
+                if(!data.success || !res.ok) throw new Error(data.message);
+                return data;
+            })
+            .then(data => {
+                if(data.success){
+                    const dataCategories = data.categories.map((category) => {
+                        return {
+                            "value": category._id,
+                            "label": category.title
+                        }
+                    })
+                    dataCategories.push({
+                        "value": "all",
+                        "label": "Tất Cả"
+                    })
+                    setCategories(dataCategories);
+                }
+            }).catch(ex => {
+                SwalAlert({
+                    "status": "error",
+                    "time": 2000,
+                    "message": ex
+                })
+            })
     }, [])
     return (
         <>
@@ -144,7 +171,7 @@ function BDSList() {
                                     prefix={<IoLocation style={{ color: '#0294F3' }} />}
                                     defaultValue="Lọc Theo Tỉnh/Thành Phố"
                                     style={{ width: 298, height: 70, fontSize: 18, fontWeight: 700, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-                                    onChange={handleChangeAntd}
+                                    onChange={(value) => {handleChangeFilter("province",value)}}
                                     options={provinceFilter}
                                 />
                             </div>
@@ -159,10 +186,10 @@ function BDSList() {
                             <div className="search__box">
                                 <Select
                                     className="box"
-                                    defaultValue="Villa"
+                                    defaultValue="all"
                                     style={{ width: 298, height: 70, fontSize: 18, fontWeight: 700, borderRadius: 0 }}
-                                    onChange={TDLoaiPhong}
-                                    options={loaiPhong}
+                                    onChange={(value) => {handleChangeFilter("category",value)}}
+                                    options={categories}
                                 />
                             </div>
                             <button onClick={handleClick}><IoSearch /></button>
