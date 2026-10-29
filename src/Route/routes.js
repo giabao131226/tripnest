@@ -40,6 +40,7 @@ import VoucherClient from "../pages/client/KhuyenMai";
 import VoucherCategory from "../pages/client/KhuyenMai/danh-muc";
 import VoucherByCategory from "../pages/client/KhuyenMai/voucher-category";
 import MyVouchers from "../pages/client/KhuyenMai/MyVouchers";
+import UpgradeRequestManagement from "../pages/admin/users/request-upgrade-role";
 
 export const routes = [{
     path: "/",
@@ -173,6 +174,10 @@ export const routes = [{
                             path: "create",
                             element: <CreateUser />, // /admin/user/create
                         },
+                        {
+                            path: "upgrade-requests",
+                            element: <UpgradeRequestManagement />
+                        }
                     ],
                 },
                 {

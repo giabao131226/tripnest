@@ -7,7 +7,7 @@ import { FaBuildingCircleCheck } from "react-icons/fa6";
 import { FaUserGroup } from "react-icons/fa6";
 import { TbCategoryFilled } from "react-icons/tb";
 import { CiDiscount1 } from "react-icons/ci";
-
+import { FaUserCheck } from "react-icons/fa6";
 
 
 export default function Sider({ user }) {
@@ -44,7 +44,14 @@ export default function Sider({ user }) {
                             <FaUserGroup />
                             <span>Quản lý người dùng</span>
                         </Link>
-                    </div></> : <></>}
+
+                        <Link to="/admin/user/upgrade-requests">
+                            <FaUserCheck />
+                            <span>Kiểm duyệt yêu cầu nâng cấp tài khoản</span>
+                        </Link>
+
+                    </div>
+                    </> : <></>}
 
                 <p className="title">QUẢN LÝ CƠ SỞ LƯU TRÚ</p>
 

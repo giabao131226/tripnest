@@ -1,0 +1,267 @@
+
+/* Header icon */
+.urm-header-icon {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background: #eeebff;
+    color: #6758ff;
+    font-size: 25px;
+}
+
+/* Tiêu đề danh sách */
+.urm-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding: 0 20px;
+    padding-top: 10px;
+}
+
+.urm-panel-heading h2 {
+    margin: 0 0 6px;
+    color: #20243a;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.urm-panel-heading p {
+    margin: 0;
+    color: #7b8193;
+    font-size: 13px;
+}
+
+.urm-count {
+    padding: 8px 13px;
+    border-radius: 9px;
+    background: #f0edff;
+    color: #6758ff;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Ngày gửi */
+.urm-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #687086;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.urm-date svg {
+    flex-shrink: 0;
+    color: #6758ff;
+}
+
+/* Nút phê duyệt */
+.user-actions .urm-approve-action {
+    color: #16a34a;
+    background: #ecfdf3;
+}
+
+.user-actions .urm-approve-action:hover {
+    color: #fff;
+    background: #16a34a;
+}
+
+/* Nút từ chối */
+.user-actions .urm-reject-action {
+    color: #dc2626;
+    background: #fff1f2;
+}
+
+.user-actions .urm-reject-action:hover {
+    color: #fff;
+    background: #dc2626;
+}
+
+/* Danh sách trống */
+.urm-empty {
+    padding: 48px 20px;
+    text-align: center;
+}
+
+/* Chi tiết hồ sơ */
+.urm-detail {
+    padding: 8px 0;
+}
+
+.urm-detail-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px;
+    margin-bottom: 24px;
+    border-radius: 14px;
+    background: #f8f7ff;
+}
+
+.urm-detail-user h3 {
+    margin: 0 0 9px;
+    color: #24243a;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.urm-detail-user p {
+    margin: 9px 0 0;
+    color: #85899a;
+    font-size: 13px;
+}
+
+.urm-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 25px;
+}
+
+.urm-detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #ececf3;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.urm-detail-item > svg {
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: #6758ff;
+    font-size: 17px;
+}
+
+.urm-detail-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.urm-detail-item span {
+    color: #85899a;
+    font-size: 12px;
+}
+
+.urm-detail-item strong {
+    color: #292d40;
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* Giấy phép kinh doanh */
+.urm-license {
+    padding: 18px;
+    border: 1px solid #ececf3;
+    border-radius: 12px;
+}
+
+.urm-license h4 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 16px;
+    color: #292d40;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.urm-license h4 svg {
+    color: #6758ff;
+}
+
+.urm-license-image {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+/* Nút trong Modal */
+.urm-detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.urm-reject-button,
+.urm-approve-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.urm-reject-button {
+    color: #dc2626;
+    background: #fff1f2;
+}
+
+.urm-reject-button:hover {
+    color: #fff;
+    background: #dc2626;
+}
+
+.urm-approve-button {
+    color: #fff;
+    background: #6758ff;
+}
+
+.urm-approve-button:hover {
+    background: #5544ed;
+    box-shadow: 0 5px 14px rgba(103, 88, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .urm-header-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+
+    .urm-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .urm-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .urm-detail-actions {
+        flex-direction: column-reverse;
+    }
+
+    .urm-reject-button,
+    .urm-approve-button {
+        width: 100%;
+    }
+
+    .urm-date {
+        white-space: normal;
+    }
+}

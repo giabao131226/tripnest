@@ -26,6 +26,8 @@ function QuanLyTaiKhoan() {
     const [dataUpToServer, setDataUpToServer] = useState({ ...acc });
     const [previewAvatar, setPreviewAvatar] = useState(acc.avatar);
     const [previewBL, setPreviewBL] = useState(acc.business_lisence ?? null);
+    const [previewIDCardFront,setPreviewIDCardFront] = useState(acc["id_card_front"] ?? null);
+    const [previewIDCardBack,setPreviewIDCardBack] = useState(acc["id_card_back"] ?? null);
     const dispatch = useDispatch();
     const [sendRequestUpgrade, setSendRequestUpgrade] = useState(false);
     const apiUrl = process.env.REACT_APP_BACKEND_URL;
@@ -37,15 +39,15 @@ function QuanLyTaiKhoan() {
     }, [acc]);
 
     useEffect(() => {
-        fetch(`${apiUrl}account/send-request-upgrade`,{
+        fetch(`${apiUrl}account/send-request-upgrade`, {
             credentials: "include"
         })
             .then(async res => {
                 const data = await res.json();
-                if(!res.ok || data.success == false) throw new Error(data.message);
+                if (!res.ok || data.success == false) throw new Error(data.message);
                 return data;
             }).then(data => {
-                if(data.success) setSendRequestUpgrade(data.sendRequestUpgrade);
+                if (data.success) setSendRequestUpgrade(data.sendRequestUpgrade);
             }).catch(ex => {
                 console.log(ex);
                 SwalAlert({
@@ -54,7 +56,7 @@ function QuanLyTaiKhoan() {
                     "time": 2000
                 });
             })
-    },[])
+    }, [])
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
@@ -94,12 +96,14 @@ function QuanLyTaiKhoan() {
                     text: "Không thể cập nhật thông tin vào lúc này."
                 });
             });
-        if (dataUpToServer.business_lisence && dataUpToServer.tax_code) {
+        if (dataUpToServer.business_lisence && dataUpToServer.tax_code && dataUpToServer.id_card_back && dataUpToServer.id_card_front) {
             const dataRequestUpgrade = {
                 account_id: dataUpToServer._id,
                 business_lisence: dataUpToServer.business_lisence,
                 tax_code: dataUpToServer.tax_code,
-                bank_account: dataUpToServer.bank_account
+                bank_account: dataUpToServer.bank_account,
+                id_card_back: dataUpToServer.id_card_back,
+                id_card_front: dataUpToServer.id_card_front
             };
 
             fetch(`${apiUrl}account/request-upgrade-role`, {
@@ -195,6 +199,10 @@ function QuanLyTaiKhoan() {
 
         if (name === "avatar") {
             setPreviewAvatar(url);
+        }else if(name == "id_card_front"){
+            setPreviewIDCardFront(url);
+        }else if(name == "id_card_back"){
+            setPreviewIDCardBack(url);
         } else {
             setPreviewBL(url);
         }
@@ -219,20 +227,6 @@ function QuanLyTaiKhoan() {
     return (
         <main className="qltk">
             <div className="qltk__container">
-                <header className="qltk__header">
-                    <div>
-                        <span className="qltk__eyebrow">TRIPNEST ACCOUNT</span>
-                        <h1 className="qltk__title">Quản lý tài khoản</h1>
-                        <p className="qltk__subtitle">
-                            Quản lý thông tin cá nhân và hồ sơ hoạt động của bạn.
-                        </p>
-                    </div>
-                    <Tag className="qltk__role" color={currentRole.color}>
-                        {currentRole.icon}
-                        <span>{currentRole.label}</span>
-                    </Tag>
-                </header>
-
                 <form onSubmit={handleSubmit} className="qltk__form">
                     <section className="qltk__card qltk__profile">
                         <div className="qltk__section-heading">
@@ -240,8 +234,8 @@ function QuanLyTaiKhoan() {
                                 <FaUser />
                             </div>
                             <div>
-                                <h2>Thông tin cá nhân</h2>
-                                <p>Cập nhật thông tin cơ bản của tài khoản.</p>
+                                <h2>Thông tin tài khoản</h2>
+                                <p>Quản lý thông tin cá nhân và trạng thái tài khoản của bạn.</p>
                             </div>
                         </div>
 
@@ -274,9 +268,7 @@ function QuanLyTaiKhoan() {
 
                         <div className="qltk__fields">
                             <div className="qltk__field">
-                                <label htmlFor="username">
-                                    Tên người dùng <span>*</span>
-                                </label>
+                                <label htmlFor="username">Tên đăng nhập</label>
                                 <div className="qltk__input-wrap">
                                     <FaUser />
                                     <input
@@ -285,15 +277,28 @@ function QuanLyTaiKhoan() {
                                         name="username"
                                         value={dataUpToServer.username ?? ""}
                                         onChange={handleChange}
-                                        placeholder="Nhập tên người dùng"
+                                        placeholder="Nhập tên đăng nhập"
                                     />
                                 </div>
                             </div>
 
                             <div className="qltk__field">
-                                <label htmlFor="email">
-                                    Email <span>*</span>
-                                </label>
+                                <label htmlFor="full_name">Họ và tên</label>
+                                <div className="qltk__input-wrap">
+                                    <FaUser />
+                                    <input
+                                        id="full_name"
+                                        type="text"
+                                        name="full_name"
+                                        value={dataUpToServer.full_name ?? ""}
+                                        onChange={handleChange}
+                                        placeholder="Nhập họ và tên"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label htmlFor="email">Email</label>
                                 <div className="qltk__input-wrap">
                                     <FaEnvelope />
                                     <input
@@ -308,9 +313,7 @@ function QuanLyTaiKhoan() {
                             </div>
 
                             <div className="qltk__field">
-                                <label htmlFor="phone">
-                                    Số điện thoại <span>*</span>
-                                </label>
+                                <label htmlFor="phone">Số điện thoại</label>
                                 <div className="qltk__input-wrap">
                                     <FaPhone />
                                     <input
@@ -323,6 +326,138 @@ function QuanLyTaiKhoan() {
                                     />
                                 </div>
                             </div>
+
+                            <div className="qltk__field">
+                                <label htmlFor="CCCD">Số CCCD</label>
+                                <div className="qltk__input-wrap">
+                                    <FaIdCard />
+                                    <input
+                                        id="CCCD"
+                                        type="text"
+                                        name="CCCD"
+                                        value={dataUpToServer.CCCD ?? ""}
+                                        onChange={handleChange}
+                                        placeholder="Nhập số CCCD"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label htmlFor="gender">Giới tính</label>
+                                <div className="qltk__input-wrap">
+                                    <IoMdPerson />
+                                    <select
+                                        id="gender"
+                                        name="gender"
+                                        value={dataUpToServer.gender ?? ""}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Chọn giới tính</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                        <option value="other">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label htmlFor="date_of_birth">Ngày sinh</label>
+                                <div className="qltk__input-wrap">
+                                    <input
+                                        id="date_of_birth"
+                                        type="date"
+                                        name="date_of_birth"
+                                        value={
+                                            dataUpToServer.date_of_birth
+                                                ? new Date(dataUpToServer.date_of_birth).toISOString().slice(0, 10)
+                                                : ""
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="qltk__field qltk__field--full">
+                                <label htmlFor="bio">Giới thiệu bản thân</label>
+                                <textarea
+                                    id="bio"
+                                    name="bio"
+                                    value={dataUpToServer.bio ?? ""}
+                                    onChange={handleChange}
+                                    placeholder="Giới thiệu đôi nét về bản thân..."
+                                    rows={4}
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="qltk__card">
+                        <div className="qltk__section-heading">
+                            <div className="qltk__section-icon">
+                                <MdOutlineAdminPanelSettings />
+                            </div>
+                            <div>
+                                <h2>Thông tin quản lý tài khoản</h2>
+                                <p>Vai trò, trạng thái và thông tin hệ thống.</p>
+                            </div>
+                        </div>
+
+                        <div className="qltk__fields">
+                            <div className="qltk__field">
+                                <label>Vai trò tài khoản</label>
+                                <div className="qltk__readonly">
+                                    <Tag color={currentRole.color}>
+                                        {currentRole.icon} {currentRole.label}
+                                    </Tag>
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label>Trạng thái tài khoản</label>
+                                <div className="qltk__readonly">
+                                    <Tag color={dataUpToServer.status === "banned" ? "red" : "green"}>
+                                        {dataUpToServer.status === "banned"
+                                            ? "Đã khóa"
+                                            : dataUpToServer.status || "Chưa cập nhật"}
+                                    </Tag>
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label>Tình trạng xóa</label>
+                                <div className="qltk__readonly">
+                                    <Tag color={dataUpToServer.deleted ? "red" : "green"}>
+                                        {dataUpToServer.deleted ? "Đã xóa" : "Đang sử dụng"}
+                                    </Tag>
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label>Thời điểm xóa</label>
+                                <div className="qltk__readonly">
+                                    {dataUpToServer.deletedAt
+                                        ? new Date(dataUpToServer.deletedAt).toLocaleString("vi-VN")
+                                        : "Chưa có"}
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label>Ngày tạo tài khoản</label>
+                                <div className="qltk__readonly">
+                                    {dataUpToServer.createdAt
+                                        ? new Date(dataUpToServer.createdAt).toLocaleString("vi-VN")
+                                        : "Chưa có thông tin"}
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <label>Cập nhật lần cuối</label>
+                                <div className="qltk__readonly">
+                                    {dataUpToServer.updatedAt
+                                        ? new Date(dataUpToServer.updatedAt).toLocaleString("vi-VN")
+                                        : "Chưa có thông tin"}
+                                </div>
+                            </div>
                         </div>
                     </section>
 
@@ -332,8 +467,8 @@ function QuanLyTaiKhoan() {
                                 <FaBuilding />
                             </div>
                             <div>
-                                <h2>Hồ sơ chủ cơ sở</h2>
-                                <p>Thông tin cần thiết để quản lý cơ sở lưu trú.</p>
+                                <h2>Hồ sơ kinh doanh</h2>
+                                <p>Giấy phép kinh doanh và thông tin phục vụ hoạt động lưu trú.</p>
                             </div>
                         </div>
 
@@ -392,7 +527,7 @@ function QuanLyTaiKhoan() {
                             </div>
 
                             <div className="qltk__field">
-                                <label htmlFor="stk">Tài khoản ngân hàng</label>
+                                <label htmlFor="stk">Số tài khoản ngân hàng</label>
                                 <div className="qltk__input-wrap">
                                     <FaUniversity />
                                     <input
@@ -403,6 +538,66 @@ function QuanLyTaiKhoan() {
                                         onChange={handleChange}
                                         placeholder="Nhập số tài khoản"
                                     />
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <div className="d-flex items-center justify-between">
+                                    <label>Mặt trước CCCD</label>
+
+                                    <label htmlFor="id_card_front" className="qltk__upload-button">
+                                        <FaCamera />
+                                        <span>Tải ảnh lên</span>
+                                    </label>
+
+                                    <input
+                                        onChange={handleChangeImage}
+                                        id="id_card_front"
+                                        type="file"
+                                        name="id_card_front"
+                                        accept="image/*"
+                                        hidden
+                                    />
+                                </div>
+                                <div className="qltk__document">
+                                    {previewIDCardFront ? (
+                                        <Image
+                                            src={previewIDCardFront}
+                                            alt="CCCD mặt trước"
+                                        />
+                                    ) : (
+                                        <span>Chưa có ảnh CCCD mặt trước</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="qltk__field">
+                                <div className="d-flex items-center justify-between">
+                                    <label>Mặt sau CCCD</label>
+
+                                    <label htmlFor="id_card_back" className="qltk__upload-button">
+                                        <FaCamera />
+                                        <span>Tải ảnh lên</span>
+                                    </label>
+
+                                    <input
+                                        onChange={handleChangeImage}
+                                        id="id_card_back"
+                                        type="file"
+                                        name="id_card_back"
+                                        accept="image/*"
+                                        hidden
+                                    />
+                                </div>
+                                <div className="qltk__document">
+                                    {previewIDCardBack ? (
+                                        <Image
+                                            src={previewIDCardBack}
+                                            alt="CCCD mặt sau"
+                                        />
+                                    ) : (
+                                        <span>Chưa có ảnh CCCD mặt sau</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -451,7 +646,7 @@ function QuanLyTaiKhoan() {
 
                     <footer className="qltk__footer">
                         <p>Hãy đảm bảo thông tin của bạn luôn chính xác và cập nhật.</p>
-                        <button type="submit" className="qltk__save-button">
+                        <button type = "submit" className="qltk__save-button">
                             <FaSave />
                             <span>Lưu thay đổi</span>
                         </button>

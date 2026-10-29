@@ -1,4 +1,3 @@
-
 .qltk {
     min-height: 100vh;
     padding: 40px 24px 60px;
@@ -16,50 +15,6 @@
     margin: 0 auto;
 }
 
-.qltk__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 30px;
-}
-
-.qltk__eyebrow {
-    display: inline-block;
-    margin-bottom: 10px;
-    color: #6758ff;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.8px;
-}
-
-.qltk__title {
-    margin: 0;
-    color: #202235;
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1.3;
-}
-
-.qltk__subtitle {
-    margin: 10px 0 0;
-    color: #818398;
-    font-size: 14px;
-    line-height: 1.7;
-}
-
-.qltk__role {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin: 4px 0 0;
-    padding: 8px 13px;
-    border: none;
-    border-radius: 9px;
-    font-size: 13px;
-    font-weight: 700;
-}
-
 .qltk__form {
     display: flex;
     flex-direction: column;
@@ -70,7 +25,7 @@
     padding: 28px;
     border: 1px solid #ececf4;
     border-radius: 18px;
-    background: #ffffff;
+    background: #fff;
     box-shadow: 0 5px 24px rgba(35, 34, 76, 0.035);
 }
 
@@ -79,6 +34,12 @@
     align-items: center;
     gap: 14px;
     margin-bottom: 26px;
+    flex-wrap: wrap;
+}
+
+.qltk__section-heading > div:nth-child(2) {
+    flex: 1;
+    min-width: 180px;
 }
 
 .qltk__section-icon {
@@ -110,7 +71,20 @@
     margin: 6px 0 0;
     color: #9293a5;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.6;
+}
+
+.qltk__role {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 0 auto;
+    padding: 8px 13px;
+    border: none;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .qltk__avatar-section {
@@ -202,7 +176,7 @@
     gap: 9px;
 }
 
-.qltk__field label {
+.qltk__field > label {
     color: #45465a;
     font-size: 13px;
     font-weight: 700;
@@ -210,6 +184,10 @@
 
 .qltk__field label span {
     color: #ed626e;
+}
+
+.qltk__field--full {
+    grid-column: 1 / -1;
 }
 
 .qltk__input-wrap {
@@ -235,7 +213,8 @@
     font-size: 14px;
 }
 
-.qltk__input-wrap input {
+.qltk__input-wrap input,
+.qltk__input-wrap select {
     width: 100%;
     min-width: 0;
     height: 44px;
@@ -248,8 +227,60 @@
     font-size: 13px;
 }
 
+.qltk__input-wrap select {
+    cursor: pointer;
+}
+
 .qltk__input-wrap input::placeholder {
     color: #b2b3c1;
+}
+
+.qltk__field textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 13px 14px;
+    border: 1px solid #e7e7f0;
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    color: #303146;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.7;
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.qltk__field textarea::placeholder {
+    color: #b2b3c1;
+}
+
+.qltk__field textarea:focus {
+    border-color: #8b80ff;
+    box-shadow: 0 0 0 3px rgba(103, 88, 255, 0.1);
+}
+
+.qltk__readonly {
+    display: flex;
+    align-items: center;
+    min-height: 47px;
+    padding: 10px 14px;
+    border: 1px solid #e7e7f0;
+    border-radius: 10px;
+    background: #f8f8fc;
+    color: #505067;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.qltk__readonly .ant-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    border: none;
+    border-radius: 7px;
+    font-weight: 700;
 }
 
 .qltk__license {
@@ -362,6 +393,35 @@
     object-fit: contain;
 }
 
+.qltk__document {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    padding: 12px;
+    border: 1px dashed #d7d4f0;
+    border-radius: 12px;
+    background: #fafaff;
+    color: #8888a0;
+    font-size: 12px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.qltk__document .ant-image {
+    display: block;
+    max-width: 100%;
+}
+
+.qltk__document .ant-image-img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
 .qltk__upgrade {
     display: flex;
     align-items: center;
@@ -403,6 +463,18 @@
     color: #828198;
     font-size: 13px;
     line-height: 1.7;
+}
+
+.qltk__upgrade-content--pending {
+    flex-basis: 100%;
+}
+
+.qltk__upgrade-notice {
+    margin-top: 10px !important;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fff7e6;
+    color: #946200 !important;
 }
 
 .qltk__upgrade-button,
@@ -475,15 +547,6 @@
         padding: 28px 16px 40px;
     }
 
-    .qltk__header {
-        flex-direction: column;
-        gap: 14px;
-    }
-
-    .qltk__title {
-        font-size: 26px;
-    }
-
     .qltk__card {
         padding: 22px 18px;
         border-radius: 15px;
@@ -492,6 +555,10 @@
     .qltk__fields {
         grid-template-columns: 1fr;
         gap: 19px;
+    }
+
+    .qltk__field--full {
+        grid-column: auto;
     }
 
     .qltk__upgrade {
@@ -522,14 +589,6 @@
         padding: 22px 12px 32px;
     }
 
-    .qltk__title {
-        font-size: 23px;
-    }
-
-    .qltk__subtitle {
-        font-size: 13px;
-    }
-
     .qltk__card {
         padding: 19px 15px;
     }
@@ -548,6 +607,10 @@
 
     .qltk__section-heading h2 {
         font-size: 16px;
+    }
+
+    .qltk__role {
+        margin-left: 51px;
     }
 
     .qltk__avatar-section {
