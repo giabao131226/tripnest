@@ -15,7 +15,11 @@ import {
     FaCalendarAlt,
     FaFileAlt,
     FaCheck,
-    FaTimes
+    FaTimes,
+    FaUser,
+    FaClipboardCheck,
+    FaCalendarCheck,
+    FaStickyNote
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "../../../assets/css/admin/users/upgrade-request-management.css";
@@ -65,27 +69,38 @@ export default function UpgradeRequestManagement() {
 
         if (!result.isConfirmed) return;
 
-        // TODO: Thay bằng API xét duyệt khi đã có endpoint.
-        setUpgradeRequests(prev => prev.map(item =>
-            item._id === request._id
-                ? { ...item, status: newStatus }
-                : item
-        ));
-
-        setSelectedRequest(prev =>
-            prev?._id === request._id
-                ? { ...prev, status: newStatus }
-                : prev
-        );
-
-        await Swal.fire({
-            title: "Thành công",
-            text: isApproved
-                ? "Đã phê duyệt yêu cầu nâng cấp."
-                : "Đã từ chối yêu cầu nâng cấp.",
-            icon: "success",
-            confirmButtonColor: "#6758FF"
-        });
+        fetch(`${apiUrl}admin/request-upgrade/${newStatus}`,{
+            credentials: "include",
+            method: "PATCH",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(request)
+        })
+            .then(async res => {
+                const data = await res.json();
+                if(!res.ok || !data.success) throw new Error(data.message);
+                return data;
+            }).then(data => {
+                if(data.success){
+                    Swal.fire({
+                        title: "Thành công",
+                        text: isApproved
+                            ? "Đã phê duyệt yêu cầu nâng cấp."
+                            : "Đã từ chối yêu cầu nâng cấp.",
+                        icon: "success",
+                        confirmButtonColor: "#6758FF"
+                    });
+                    setReload(prev => !prev);
+                    setDetailOpen(false);
+                }
+            }).catch(ex => {
+                SwalAlert({
+                    "status": "error",
+                    "message": ex,
+                    "time": 2000
+                })
+            })
     };
 
     const openDetail = request => {
@@ -273,7 +288,7 @@ export default function UpgradeRequestManagement() {
                                     <td>
                                         <div className="urm-date">
                                             <FaCalendarAlt />
-                                            <span>{formatDate(request.createdAt)}</span>
+                                            <span>{formatDate(request.submitted_at)}</span>
                                         </div>
                                     </td>
 
@@ -344,16 +359,19 @@ export default function UpgradeRequestManagement() {
                 </div>
             </div>
 
+            {/* Modal chi tiết hồ sơ */}
             <Modal
                 title="Chi tiết hồ sơ nâng cấp"
                 open={detailOpen}
                 onCancel={() => setDetailOpen(false)}
                 footer={null}
-                width={720}
+                width={800}
                 destroyOnClose
             >
                 {selectedRequest && (
                     <div className="urm-detail">
+
+                        {/* Thông tin người đăng ký */}
                         <div className="urm-detail-user">
                             <Avatar
                                 size={64}
@@ -371,68 +389,193 @@ export default function UpgradeRequestManagement() {
                                     {statusConfig[selectedRequest.status]?.label || selectedRequest.status}
                                 </Tag>
 
-                                <p>Gửi lúc {formatDate(selectedRequest.createdAt)}</p>
+                                <p>
+                                    Gửi lúc: {formatDate(selectedRequest.submitted_at)}
+                                </p>
                             </div>
                         </div>
 
-                        <div className="urm-detail-grid">
-                            <div className="urm-detail-item">
-                                <FaEnvelope />
-                                <div>
-                                    <span>Email</span>
-                                    <strong>
-                                        {selectedRequest.account_id?.email || "Chưa cung cấp"}
-                                    </strong>
-                                </div>
-                            </div>
-
-                            <div className="urm-detail-item">
-                                <FaPhone />
-                                <div>
-                                    <span>Số điện thoại</span>
-                                    <strong>
-                                        {selectedRequest.account_id?.phone || "Chưa cung cấp"}
-                                    </strong>
-                                </div>
-                            </div>
-
-                            <div className="urm-detail-item">
-                                <FaIdCard />
-                                <div>
-                                    <span>Mã số thuế</span>
-                                    <strong>
-                                        {selectedRequest.tax_code || "Chưa cung cấp"}
-                                    </strong>
-                                </div>
-                            </div>
-
-                            <div className="urm-detail-item">
-                                <FaUniversity />
-                                <div>
-                                    <span>Tài khoản ngân hàng</span>
-                                    <strong>
-                                        {selectedRequest.stk || "Chưa cung cấp"}
-                                    </strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="urm-license">
+                        {/* Thông tin tài khoản */}
+                        <div className="urm-detail-section">
                             <h4>
-                                <FaBuilding /> Giấy phép kinh doanh
+                                <FaUser /> Thông tin người đăng ký
                             </h4>
 
-                            {selectedRequest.business_lisence ? (
-                                <Image
-                                    src={selectedRequest.business_lisence}
-                                    alt="Giấy phép kinh doanh"
-                                    className="urm-license-image"
-                                />
-                            ) : (
-                                <Empty description="Chưa có giấy phép kinh doanh" />
-                            )}
+                            <div className="urm-detail-grid">
+                                <div className="urm-detail-item">
+                                    <FaUser />
+                                    <div>
+                                        <span>Họ và tên</span>
+                                        <strong>
+                                            {selectedRequest.account_id?.full_name || "Chưa cung cấp"}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="urm-detail-item">
+                                    <FaEnvelope />
+                                    <div>
+                                        <span>Email</span>
+                                        <strong>
+                                            {selectedRequest.account_id?.email || "Chưa cung cấp"}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="urm-detail-item">
+                                    <FaPhone />
+                                    <div>
+                                        <span>Số điện thoại</span>
+                                        <strong>
+                                            {selectedRequest.account_id?.phone || "Chưa cung cấp"}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="urm-detail-item">
+                                    <FaIdCard />
+                                    <div>
+                                        <span>Số CCCD</span>
+                                        <strong>
+                                            {selectedRequest.account_id?.CCCD || "Chưa cung cấp"}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        {/* Thông tin đăng ký kinh doanh */}
+                        <div className="urm-detail-section">
+                            <h4>
+                                <FaBuilding /> Thông tin đăng ký chủ cơ sở
+                            </h4>
+
+                            <div className="urm-detail-grid">
+                                <div className="urm-detail-item">
+                                    <FaIdCard />
+                                    <div>
+                                        <span>Mã số thuế</span>
+                                        <strong>
+                                            {selectedRequest.tax_code || "Chưa cung cấp"}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="urm-detail-item">
+                                    <FaUniversity />
+                                    <div>
+                                        <span>Tài khoản ngân hàng</span>
+                                        <strong>
+                                            {selectedRequest.bank_account || "Chưa cung cấp"}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Giấy tờ xác minh */}
+                        <div className="urm-detail-section">
+                            <h4>
+                                <FaFileAlt /> Giấy tờ xác minh
+                            </h4>
+
+                            <div className="urm-license">
+                                <h5>Giấy phép kinh doanh</h5>
+
+                                {selectedRequest.business_lisence ? (
+                                    <Image
+                                        src={selectedRequest.business_lisence}
+                                        alt="Giấy phép kinh doanh"
+                                        className="urm-license-image"
+                                    />
+                                ) : (
+                                    <Empty description="Chưa có giấy phép kinh doanh" />
+                                )}
+                            </div>
+
+                            <div className="urm-detail-documents">
+                                <div className="urm-license">
+                                    <h5>Ảnh CCCD mặt trước</h5>
+
+                                    {selectedRequest.id_card_front ? (
+                                        <Image
+                                            src={selectedRequest.id_card_front}
+                                            alt="CCCD mặt trước"
+                                            className="urm-license-image"
+                                        />
+                                    ) : (
+                                        <Empty description="Chưa có ảnh CCCD mặt trước" />
+                                    )}
+                                </div>
+
+                                <div className="urm-license">
+                                    <h5>Ảnh CCCD mặt sau</h5>
+
+                                    {selectedRequest.id_card_back ? (
+                                        <Image
+                                            src={selectedRequest.id_card_back}
+                                            alt="CCCD mặt sau"
+                                            className="urm-license-image"
+                                        />
+                                    ) : (
+                                        <Empty description="Chưa có ảnh CCCD mặt sau" />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Thông tin xét duyệt */}
+                        <div className="urm-detail-section">
+                            <h4>
+                                <FaClipboardCheck /> Thông tin xét duyệt
+                            </h4>
+
+                            <div className="urm-detail-grid">
+                                <div className="urm-detail-item">
+                                    <FaCalendarAlt />
+                                    <div>
+                                        <span>Ngày gửi yêu cầu</span>
+                                        <strong>
+                                            {formatDate(selectedRequest.submitted_at)}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="urm-detail-item">
+                                    <FaCalendarCheck />
+                                    <div>
+                                        <span>Ngày xét duyệt</span>
+                                        <strong>
+                                            {selectedRequest.reviewed_at
+                                                ? formatDate(selectedRequest.reviewed_at)
+                                                : "Chưa xét duyệt"}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="urm-detail-item">
+                                    <FaUserCheck />
+                                    <div>
+                                        <span>Admin xét duyệt</span>
+                                        <strong>
+                                            {selectedRequest.admin_id?.username || "Chưa có"}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="urm-detail-item">
+                                    <FaStickyNote />
+                                    <div>
+                                        <span>Ghi chú của Admin</span>
+                                        <strong>
+                                            {selectedRequest.admin_note || "Không có ghi chú"}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Thao tác xét duyệt */}
                         {selectedRequest.status === "pending" && (
                             <div className="urm-detail-actions">
                                 <button
